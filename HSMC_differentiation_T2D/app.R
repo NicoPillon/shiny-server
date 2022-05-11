@@ -47,8 +47,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("In vitro differentiation of primary skeletal muscle cells"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update", 
-                            Sys.Date())
+                            "/ last update 2021-09-30")
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 0% 8%;",
                          "Primary human myoblasts differentiated into myotubes from",

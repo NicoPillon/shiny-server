@@ -64,7 +64,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
                          h3("Transcriptomic response to hypoxia"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), "/ last update", Sys.Date())
+                                    target="_blank", style="color:#D9DADB"), "/ last update 2021-09-09")
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          selectizeInput("genesymbol", "Gene Symbol:", choices=NULL, multiple=F),

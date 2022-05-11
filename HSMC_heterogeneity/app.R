@@ -47,8 +47,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Heterogeneity and sex differences in primary human myotubes"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update", 
-                            Sys.Date())
+                            "/ last update 2021-09-09")
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 0% 8%;",
                          "Primary human myoblasts differentiated into myotubes from published and unpublished transcriptomic analyses
