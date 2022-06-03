@@ -13,5 +13,6 @@ saveRDS(readRDS("../../R_databases/Obesity_Human/Obesity_Human_samples.Rds"),
 
 # list of datasets
 datasets <- read_xlsx("../../R_databases/Obesity_Human/Obesity_Human.xlsx")
-datasets <- datasets[1:16, c(1,2,20)]
+datasets <- datasets[1:29, c(1,2,20)]
+datasets <- datasets[!duplicated(datasets$GEO),]
 saveRDS(datasets, file="data/datasets.Rds")

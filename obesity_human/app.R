@@ -37,7 +37,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 
                 fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;;text-align:center",
-                         em(h5("If you know other datasets that could be incorporated in this tool, please",
+                         em(h5("WORK IN PROGRESS: I will keep adding more datasets in the coming weeks."),
+                            h5("If you know other datasets that could be incorporated in this tool, please",
                                a("let me know!", href="mailto:nicolas.pillon@ki.se", 
                                  target="_blank", style="color:#5B768E"))),
                          tags$hr()
@@ -85,7 +86,7 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=genelist, 
                        server=TRUE, 
-                       selected=c("ITGAX", "LEP"), 
+                       selected=c("ITGAM", "IGFBP1"), 
                        options=NULL)
   
   plotInput <- eventReactive(input$updatePlot, {
@@ -119,8 +120,8 @@ server <- function(input, output, session) {
       scale_fill_manual(values=c("#56B4E9", "#E69F00", "#D55E00"))  +
       stat_compare_means(aes(group = diagnosis.weight, label = ifelse(
         p < 0.001, "p < 0.001", sprintf("p = %5.3f", as.numeric(..p..)))), 
-        size = 3, vjust=-2) +
-      scale_y_continuous(expand = c(0,3)) 
+        size = 3, vjust=-1) +
+      scale_y_continuous(expand = c(0,1)) 
     gg
     
   })
