@@ -23,9 +23,25 @@ theme <- theme(plot.title  = element_text(face="bold", color="black", size=13, a
 #load data
 HFD_data <- readRDS('data/data_raw.Rds')
 genelist <- rownames(HFD_data)
-samples <- data.frame(str_split_fixed(colnames(HFD_data), "\\.|_",4))[,1:3]
-colnames(samples) <- c('tissue', 'diet', 'GEO')
+samples <- readRDS("data/metadata.Rds")
 datasets <- readRDS("data/datasets.Rds")
+
+#organize diet duration
+samples$diet.duration.cat <- "< 6 weeks"
+samples$diet.duration.cat[samples$diet.duration > 6] <- "6-12 weeks"
+samples$diet.duration.cat[samples$diet.duration > 12] <- "12-18 weeks"
+samples$diet.duration.cat[samples$diet.duration > 18] <- "> 18 weeks"
+
+#organize age
+samples$age.at.start.cat <- "3-4 weeks"
+samples$age.at.start.cat[samples$age.at.start > 4] <- "5-6 weeks"
+samples$age.at.start.cat[samples$age.at.start > 6] <- "8-9 weeks"
+
+#organize diet
+samples$diet.composition.cat <- "< 50 %"
+samples$diet.composition.cat[samples$diet.composition >= 50] <- "50-55 %"
+samples$diet.composition.cat[samples$diet.composition >= 55] <- "> 55 %"
+
 
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
@@ -33,15 +49,44 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Gene expression in tissues from mice fed a high fat diet"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2021-12-02")
+                            "/ last update 2022-06-02")
                 ),
-                tags$br(),
+                
+                fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;;text-align:center",
+                         em(h5("If you know other datasets that could be incorporated in this tool, please",
+                               a("let me know!", href="mailto:nicolas.pillon@ki.se", 
+                                 target="_blank", style="color:#5B768E"))),
+                         tags$hr()
+                ),
+                
                 fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;",
-                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
-                         #checkboxGroupInput("diet_duration", 
-                        #                    label="Diet duration (weeks)", 
-                        #                    selected=c("4", "8", "10", "11", "12", "14", "15"), 
-                        #                    c("4", "8", "10", "11", "12", "14", "15")),
+                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=1000),
+                         column(2, checkboxGroupInput("diet_duration", 
+                                            label = "Diet duration", 
+                                            selected = c("< 6 weeks",
+                                                         "6-12 weeks", 
+                                                         "12-18 weeks",
+                                                         "> 18 weeks"), 
+                                            choices = c("< 6 weeks",
+                                                        "6-12 weeks", 
+                                                        "12-18 weeks",
+                                                        "> 18 weeks"))),
+                         column(2, checkboxGroupInput("age_start", 
+                                            label = "Age at start", 
+                                            selected = c("3-4 weeks",
+                                                         "5-6 weeks",
+                                                         "8-9 weeks"), 
+                                            choices = c("3-4 weeks",
+                                                        "5-6 weeks",
+                                                        "8-9 weeks"))),
+                         column(2, checkboxGroupInput("diet_composition", 
+                                                      label = "Diet composition", 
+                                                      selected = c("< 50 %",
+                                                                   "50-55 %",
+                                                                   "> 55 %"), 
+                                                      choices = c("< 50 %",
+                                                                  "50-55 %",
+                                                                  "> 55 %"))),
                          actionButton("updatePlot", "Refresh plot", icon("refresh"))
                 ),
                 fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
@@ -49,7 +94,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          tags$hr(),
-                         h3("Datasets"),
+                         h3("Datasets Included in the Analysis"),
                          dataTableOutput("datasets")
                 )
 )
@@ -78,8 +123,11 @@ server <- function(input, output, session) {
     }
     
     #filter according to selected categories
-    #testdata <- testdata[testdata$Treatment %in% input$diet_duration,]
+    data <- data[data$diet.duration.cat %in% input$diet_duration &
+                   data$age.at.start.cat %in% input$age_start  &
+                   data$diet.composition.cat %in% input$diet_composition,]
     
+    #plot
     gg <- ggplot(data, aes(x=tissue, y=data, fill=diet)) +  
       geom_boxplot()  + 
       theme_bw() + theme +
