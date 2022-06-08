@@ -29,7 +29,7 @@ datasets <- readRDS("data/datasets.Rds")
 #organize diet duration
 samples$diet.duration.cat <- "< 6 weeks"
 samples$diet.duration.cat[samples$diet.duration > 6] <- "6-12 weeks"
-samples$diet.duration.cat[samples$diet.duration > 12] <- "12-18 weeks"
+samples$diet.duration.cat[samples$diet.duration > 12] <- "13-18 weeks"
 samples$diet.duration.cat[samples$diet.duration > 18] <- "> 18 weeks"
 
 #organize age
@@ -38,9 +38,8 @@ samples$age.at.start.cat[samples$age.at.start > 4] <- "5-6 weeks"
 samples$age.at.start.cat[samples$age.at.start > 6] <- "8-9 weeks"
 
 #organize diet
-samples$diet.composition.cat <- "< 50 %"
-samples$diet.composition.cat[samples$diet.composition >= 50] <- "50-55 %"
-samples$diet.composition.cat[samples$diet.composition >= 55] <- "> 55 %"
+samples$diet.composition.cat <- "32 - 45 %"
+samples$diet.composition.cat[samples$diet.composition > 45] <- "50 - 60 %"
 
 
 # Define UI ----
@@ -81,12 +80,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                                                         "8-9 weeks"))),
                          column(2, checkboxGroupInput("diet_composition", 
                                                       label = "Diet composition", 
-                                                      selected = c("< 50 %",
-                                                                   "50-55 %",
-                                                                   "> 55 %"), 
-                                                      choices = c("< 50 %",
-                                                                  "50-55 %",
-                                                                  "> 55 %"))),
+                                                      selected = c("32 - 45 %",
+                                                                   "50 - 60 %"), 
+                                                      choices = c("32 - 45 %",
+                                                                  "50 - 60 %"))),
                          actionButton("updatePlot", "Refresh plot", icon("refresh"))
                 ),
                 fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",

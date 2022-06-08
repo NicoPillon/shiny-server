@@ -37,7 +37,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 
                 fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;;text-align:center",
-                         em(h5("WORK IN PROGRESS: I will keep adding more datasets in the coming weeks."),
+                         em(h5("WORK IN PROGRESS: I will keep adding more datasets in the coming weeks.", style="color:red"),
                             h5("If you know other datasets that could be incorporated in this tool, please",
                                a("let me know!", href="mailto:nicolas.pillon@ki.se", 
                                  target="_blank", style="color:#5B768E"))),
