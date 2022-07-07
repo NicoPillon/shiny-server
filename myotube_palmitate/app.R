@@ -25,7 +25,7 @@ library(ggprism)
 
 
 #--------------------------------------------------------------------------------------------------------
-# AMPK
+# Palmitate
 #--------------------------------------------------------------------------------------------------------
 PAL_data <- readRDS("data/data.Rds")
 
@@ -44,16 +44,36 @@ genelist <- unique(rownames(PAL_data))
 #--------------------------------------------------------------------------------------------------------
 #find sample list
 Sample_norm <- data.frame(sample=colnames(PAL_data),
-                          str_split_fixed(colnames(PAL_data), "_|\\.", 3))
-colnames(Sample_norm) <- c("sample", "GEO", "group", "repeats")
+                          str_split_fixed(colnames(PAL_data), "_|\\.", 4))
+colnames(Sample_norm) <- c("sample", "GEO", "treatment", "time", "repeats")
 
-Sample_norm$group <- gsub("[0-9].*", "", Sample_norm$group)
+Sample_norm$concentration <- gsub("PAL", "", Sample_norm$treatment)
+Sample_norm$concentration <- gsub("BSA", "0", Sample_norm$concentration)
+Sample_norm$concentration <- as.numeric(Sample_norm$concentration)
 
-#batch pairs
-Sample_norm$repeats <- gsub('BSA', '', Sample_norm$sample)
-Sample_norm$repeats <- gsub('PAL200', '', Sample_norm$repeats)
-Sample_norm$repeats <- gsub('PAL500', '', Sample_norm$repeats)
+Sample_norm$time <- as.numeric(gsub("H", "", Sample_norm$time))
 
+Sample_norm$treatment <- gsub("[0-9].*", "", Sample_norm$treatment)
+
+Sample_norm$model
+Sample_norm$model[Sample_norm$GEO %in% "GSE6766"] <- "C2C12"
+Sample_norm$model[Sample_norm$GEO %in% "GSE18589"] <- "HSMC"
+Sample_norm$model[Sample_norm$GEO %in% "GSE38590"] <- "C2C12"
+Sample_norm$model[Sample_norm$GEO %in% "GSE53116"] <- "LHCN-M2"
+Sample_norm$model[Sample_norm$GEO %in% "GSE126101"] <- "HSMC"
+Sample_norm$model[Sample_norm$GEO %in% "GSE205677"] <- "HSMC"
+
+Sample_norm$repeats <- paste(Sample_norm$GEO,
+                             Sample_norm$time,
+                             Sample_norm$repeats)
+
+#add description of stidues
+Sample_norm$description <- paste0(
+  Sample_norm$GEO, ", ",
+  Sample_norm$model, ", ",
+  Sample_norm$concentration, "uM, ",
+  Sample_norm$time, "h"
+)
 
 
 # Define UI ----
@@ -61,7 +81,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
                          h3("Transcriptomic response of skeletal myotubes to palmitate"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), "/ last update 2021-10-04")
+                                    target="_blank", style="color:#D9DADB"), "/ last update 2022-07-07")
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 0% 8%;",
                          "Myotubes exposed to BSA-conjugated palmitate from",
@@ -72,15 +92,57 @@ ui <- fluidPage(theme = "bootstrap.css",
                          a("GSE38590", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE38590", target="_blank", style="color:#5B768E"), 
                          "(C2C12, n=1),",
                          a("GSE53116", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53116", target="_blank", style="color:#5B768E"), 
-                         "(LHCN-M2, n=2) and",
+                         "(LHCN-M2, n=2), ",
                          a("GSE126101", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE126101", target="_blank", style="color:#5B768E"), 
-                         "(HSMC, n=4).", 
+                         "(HSMC, n=4) and", 
+                         a("GSE205677", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205677", target="_blank", style="color:#5B768E"), 
+                         "(HSMC, n=7).", 
 
 
                 ),
                 tags$hr(),
                 fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;",
                          selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
+                         column(2, checkboxGroupInput("concentration", 
+                                                      label = "Concentration (µM)", 
+                                                      selected = c(100,
+                                                                   200,
+                                                                   400,
+                                                                   500), 
+                                                      choices = c(100,
+                                                                  200,
+                                                                  400,
+                                                                  500))),
+                         column(2, checkboxGroupInput("time", 
+                                                      label = "Duration (h)", 
+                                                      selected = c(12,
+                                                                   16,
+                                                                   18,
+                                                                   20,
+                                                                   24,
+                                                                   30,
+                                                                   36,
+                                                                   42,
+                                                                   48,
+                                                                   54), 
+                                                      choices = c(12,
+                                                                  16,
+                                                                  18,
+                                                                  20,
+                                                                  24,
+                                                                  30,
+                                                                  36,
+                                                                  42,
+                                                                  48,
+                                                                  54))),
+                         column(2, checkboxGroupInput("model", 
+                                                      label = "Cell type", 
+                                                      selected = c("C2C12",
+                                                                   "HSMC",
+                                                                   "LHCN-M2"), 
+                                                      choices = c("C2C12",
+                                                                  "HSMC",
+                                                                  "LHCN-M2"))),
                          actionButton("updatePlot", "Refresh plot", icon("refresh"))
                 ),
                 fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
@@ -88,7 +150,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          tags$hr(),
-                         h3("Statistics"),
+                         h3("Statistics (calculated with all samples included)"),
                          dataTableOutput("stats")
                 )
 )
@@ -100,7 +162,7 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=genelist, 
                        server=TRUE, 
-                       selected=c("GPSM2", "ANGPTL4", "HMOX1", "CCL2", "IL6"), 
+                       selected=c("PDK4", "ANGPTL4", "EPHA7", "NEFL", "IL6"), 
                        options=NULL)
   
   # AMPK plot
@@ -112,35 +174,33 @@ server <- function(input, output, session) {
     #plot
     testdata <- data.frame()
     for( i in genename) { 
-      y     <- as.numeric(PAL_data[i,])              #collect data for gene name i
-      datay <- cbind.data.frame(Sample_norm[,2:4], y, rep(i))   #create table with x="sample type", y="data", "gene name"
-      colnames(datay) <- c("GEO", "treatment","Repeat", "data", "gene")                #rename column names to make it possible to rbind later
+      data <- as.numeric(PAL_data[i,])              #collect data for gene name i
+      datay <- cbind.data.frame(Sample_norm[,2:8], data, gene=rep(i))   #create table with x="sample type", y="data", "gene name"
       testdata  <- rbind.data.frame(testdata, datay)              #bind the new gene data at the bottom of the previous one
     }
-    
-    testdata$concentration <- ""
-    testdata$concentration[testdata$GEO %in% "GSE6766"] <- "C2C12, 500uM, 16h"
-    testdata$concentration[testdata$GEO %in% "GSE18589"] <- "HSMC, 100uM, 24h"
-    testdata$concentration[testdata$GEO %in% "GSE38590"] <- "C2C12, 200uM, 20h"
-    testdata$concentration[testdata$GEO %in% "GSE53116"] <- "LHCN-M2, 500uM, 16h"
-    testdata$concentration[testdata$GEO %in% "GSE126101"] <- "HSMC, 500uM, 48h"
-    testdata$legend <- paste(testdata$GEO, " (", testdata$concentration, ")", sep="")
     
     testdata$gene <- factor(testdata$gene,
                             levels=unique(str_sort(testdata$gene, numeric = TRUE)))
     
+    #filter according to selected categories
+    testdata <- testdata[testdata$concentration %in% input$concentration &
+                           testdata$time %in% input$time &
+                           testdata$model %in% input$model 
+                         ,]
+    
     #get stats from ggpubr
     stat.test <- compare_means(data=na.omit(testdata), data ~ treatment, group.by = "gene")
     
-    #replace stats by the ones from limma
-    stat.test$p <- na.omit(PAL_stats[genename,])$P.Value
-    stat.test$p.adj <- na.omit(PAL_stats[genename,])$adj.P.Val
+    #adjust for multiple testing
+    stat.test$p.adj <- p.adjust(stat.test$p, 
+                                method="bonferroni",
+                                n=nrow(PAL_stats))
     stat.test$p.adj.signif <- "ns"
     stat.test$p.adj.signif[stat.test$p.adj<0.05] <- "*"
     stat.test$p.adj.signif[stat.test$p.adj<0.01] <- "**"
     stat.test$p.adj.signif[stat.test$p.adj<0.001] <- "***"
     
-    #plot 2 - only treated condition relative to each basal
+    #plot only treated condition relative to each basal
     foldchange <- testdata[testdata$treatment %in% "PAL",]
     foldchange$data <- testdata[testdata$treatment %in% "PAL",]$data - testdata[testdata$treatment %in% "BSA",]$data 
     
@@ -155,8 +215,12 @@ server <- function(input, output, session) {
 
     #bar plot
     plot_C2C12 <- ggbarplot(foldchange, x="gene", y="data", add="mean_se", fill="gray80", size=0.5) +  
-      geom_hline(yintercept = 0, linetype=1) +
-      geom_point(aes(color=legend, shape=legend), size=2, position=position_jitter(0.1)) +
+      geom_hline(yintercept = 0, 
+                 linetype=1) +
+      geom_point(aes(color=description), 
+                 size=2, 
+                 position=position_jitter(0.1),
+                 alpha=0.2) +
       labs(title="Myotubes exposed to palmitate",
            x="",
            y="Palmitate-induced mRNA\nlog2(relative to control)") +

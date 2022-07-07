@@ -28,8 +28,8 @@ datasets <- readRDS("data/datasets.Rds")
 
 #organize diet duration
 samples$diet.duration.cat <- "< 6 weeks"
-samples$diet.duration.cat[samples$diet.duration > 6] <- "6-12 weeks"
-samples$diet.duration.cat[samples$diet.duration > 12] <- "13-18 weeks"
+samples$diet.duration.cat[samples$diet.duration >= 6] <- "6-12 weeks"
+samples$diet.duration.cat[samples$diet.duration >= 13] <- "13-18 weeks"
 samples$diet.duration.cat[samples$diet.duration > 18] <- "> 18 weeks"
 
 #organize age
