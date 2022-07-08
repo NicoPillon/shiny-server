@@ -85,17 +85,23 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 0% 8%;",
                          "Myotubes exposed to BSA-conjugated palmitate from",
-                         a("GSE6766", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE6766", target="_blank", style="color:#5B768E"), 
+                         a("GSE6766", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE6766", 
+                           target="_blank", style="color:#5B768E"), 
                          "(C2C12, n=3),",
-                         a("GSE18589", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18589", target="_blank", style="color:#5B768E"), 
+                         a("GSE18589", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18589", 
+                           target="_blank", style="color:#5B768E"), 
                          "(HSMC, n=3),",
-                         a("GSE38590", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE38590", target="_blank", style="color:#5B768E"), 
+                         a("GSE38590", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE38590", 
+                           target="_blank", style="color:#5B768E"), 
                          "(C2C12, n=1),",
-                         a("GSE53116", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53116", target="_blank", style="color:#5B768E"), 
+                         a("GSE53116", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53116", 
+                           target="_blank", style="color:#5B768E"), 
                          "(LHCN-M2, n=2), ",
-                         a("GSE126101", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE126101", target="_blank", style="color:#5B768E"), 
+                         a("GSE126101", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE126101", 
+                           target="_blank", style="color:#5B768E"), 
                          "(HSMC, n=4) and", 
-                         a("GSE205677", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205677", target="_blank", style="color:#5B768E"), 
+                         a("GSE205677", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205677", 
+                           target="_blank", style="color:#5B768E"), 
                          "(HSMC, n=7).", 
 
 
@@ -146,7 +152,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                          actionButton("updatePlot", "Refresh plot", icon("refresh"))
                 ),
                 fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
-                         plotOutput("PalPlot", height="400px") %>% withSpinner(color="#5b768e")
+                         plotOutput("PalPlot", height="400px") %>% withSpinner(color="#5b768e"),
+                         h5("Statistics presented on the plot are paired t-test (palmitate vs BSA-vehicle)
+                            with Bonferroni correction for multiple testing of 12 265 genes in the dataset.
+                            Statistics are dynamically calculated based on the selection criteria.")
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          tags$hr(),
@@ -189,12 +198,25 @@ server <- function(input, output, session) {
                          ,]
     
     #get stats from ggpubr
-    stat.test <- compare_means(data=na.omit(testdata), data ~ treatment, group.by = "gene")
+    stat.test <- compare_means(data=na.omit(testdata), 
+                               data ~ treatment, 
+                               group.by = "gene")
     
     #adjust for multiple testing
     stat.test$p.adj <- p.adjust(stat.test$p, 
                                 method="bonferroni",
                                 n=nrow(PAL_stats))
+    
+    #format FDR
+    stat.test$p.adj.format <- ifelse(stat.test$p.adj > 0.05,
+           "ns",
+           paste0(
+             "p.adj =\n",
+             format(signif(stat.test$p.adj, 2), scientific = TRUE)
+             )
+           )
+    
+    #add significance
     stat.test$p.adj.signif <- "ns"
     stat.test$p.adj.signif[stat.test$p.adj<0.05] <- "*"
     stat.test$p.adj.signif[stat.test$p.adj<0.01] <- "**"
@@ -221,15 +243,16 @@ server <- function(input, output, session) {
                  size=2, 
                  position=position_jitter(0.1),
                  alpha=0.2) +
-      labs(title="Myotubes exposed to palmitate",
+      labs(subtitle = "",
            x="",
            y="Palmitate-induced mRNA\nlog2(relative to control)") +
       theme_bw() + theme + theme(legend.title=element_blank()) +
       add_pvalue(stat.test, bracket.size = NA, 
                  xmin = "gene",
                  xmax = "gene",
-                 label = "p.adj.signif",
-                 y.position = "y.position", label.size=10) +
+                 label = "p.adj.format",
+                 y.position = "y.position", 
+                 label.size = 3.5) +
       scale_y_continuous(expand = expansion(mult = c(0.1, 0.15)))
     plot_C2C12
   })
