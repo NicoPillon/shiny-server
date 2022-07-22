@@ -1,6 +1,6 @@
 FROM rocker/shiny:4.0.5
 LABEL authors="Roy Francis"
-ARG REPO="NicoPillon/MetaMEx"
+ARG REPO="NicoPillon/shiny-server"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
