@@ -78,7 +78,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                          "(C2C12, n=6),",
                          a("GSE200335", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE200335", 
                            target="_blank", style="color:#5B768E"), 
-                         "(HSMC, n=7).", 
+                         "(HSMC, n=7),", 
+                         a("GSE201340", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE201340", 
+                           target="_blank", style="color:#5B768E"), 
+                         "(HSMC, n=4)."
 
 
                 ),
@@ -88,9 +91,11 @@ ui <- fluidPage(theme = "bootstrap.css",
                          column(2, checkboxGroupInput("time", 
                                                       label = "Duration (h)", 
                                                       selected = c(3,
-                                                                   24), 
+                                                                   24,
+                                                                   48), 
                                                       choices = c(3,
-                                                                  24))),
+                                                                  24,
+                                                                  48))),
                          column(2, checkboxGroupInput("model", 
                                                       label = "Cell type", 
                                                       selected = c("C2C12",
@@ -101,8 +106,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
                          plotOutput("PalPlot", height="400px") %>% withSpinner(color="#5b768e"),
-                         h5("Statistics presented on the plot are paired t-test (palmitate vs BSA-vehicle)
-                            without correction for multiple testing. Statistics are dynamically calculated 
+                         h5("Statistics presented on the plot are paired t-test (EPS vs control)
+                            with Bonferrone correction for multiple testing. Statistics are dynamically calculated 
                             based on the selection criteria.")
                 )
 )
@@ -193,7 +198,7 @@ server <- function(input, output, session) {
       add_pvalue(stat.test, bracket.size = NA, 
                  xmin = "gene",
                  xmax = "gene",
-                 label = "p.format",
+                 label = "p.adj.format",
                  y.position = "y.position", 
                  label.size = 3.5) +
       scale_y_continuous(expand = expansion(mult = c(0.1, 0.15)))
