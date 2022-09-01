@@ -8,10 +8,10 @@ setwd(dirname(getActiveDocumentContext()$path))
 library(readxl)
 
 # data
-saveRDS(readRDS("../../R_databases/Myotube_Palmitate/C2C12_fattyAcids_norm.Rds"),
+saveRDS(readRDS("../../R_databases/Myotube_Palmitate/Myotube_Palmitate_norm.Rds"),
         file="data/data.Rds")
 
 
 #stats
-saveRDS(readRDS("../../R_databases/Myotube_Palmitate/C2C12_palmitate_stats.Rds"),
+saveRDS(readRDS("../../R_databases/Myotube_Palmitate/Myotube_Palmitate_stats.Rds"),
         file="data/stats.Rds")

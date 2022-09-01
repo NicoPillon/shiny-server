@@ -159,7 +159,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          tags$hr(),
-                         h3("Statistics (calculated with all samples included)"),
+                         h3("Statistics (calculated with limma on all samples)"),
                          dataTableOutput("stats")
                 )
 )
@@ -200,7 +200,8 @@ server <- function(input, output, session) {
     #get stats from ggpubr
     stat.test <- compare_means(data=na.omit(testdata), 
                                data ~ treatment, 
-                               group.by = "gene")
+                               group.by = "gene",
+                               paired = T)
     
     #adjust for multiple testing
     stat.test$p.adj <- p.adjust(stat.test$p, 
