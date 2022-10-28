@@ -70,13 +70,13 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=genelist, 
                        server=TRUE, 
-                       selected=c("EGR1", "HES1", "NR4A3", "IL6"), 
+                       selected=c("PPARGC1A", "HES1", "CX3CL1", "IL1B"), 
                        options=NULL)
   
   # AMPK plot
   plotData <- eventReactive(input$updatePlot, {
     validate(need(input$inputGeneSymbol, " "))
-    genename <- c("EGR1", "HES1", "NR4A3", "IL6")
+    genename <- c("PPARGC1A", "HES1", "CX3CL1", "IL1B")
     genename <- input$inputGeneSymbol
     
     #plot
@@ -88,6 +88,7 @@ server <- function(input, output, session) {
               position = position_dodge(0.7),
               facet.by = "Gene_name",
               size = 0.2) +
+      facet_wrap(.~Gene_name, scale="free") +
       theme_bw(14) + theme(legend.position = "none") +
       labs(x = element_blank(),
            y = "Response to exercise, log(score)") +
