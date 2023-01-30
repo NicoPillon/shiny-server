@@ -70,6 +70,9 @@ ui <- fluidPage(theme = "bootstrap.css",
                          a("GSE44051", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE44051", 
                            target="_blank", style="color:#5B768E"), 
                          "(HSMC, n=12),",
+                         a("GSE139872", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE139872", 
+                           target="_blank", style="color:#5B768E"), 
+                         "(C2C12, n=4),",
                          a("GSE183159", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183159", 
                            target="_blank", style="color:#5B768E"), 
                          "(C2C12, n=1),",
@@ -187,10 +190,10 @@ server <- function(input, output, session) {
     plot_EPS <- ggbarplot(foldchange, x="gene", y="data", add="mean_se", fill="gray80", size=0.5) +  
       geom_hline(yintercept = 0, 
                  linetype=1) +
-      geom_point(aes(color=description), 
+      geom_point(aes(color = description, shape = description), 
                  size=2, 
                  position=position_jitter(0.1),
-                 alpha=0.2) +
+                 alpha=0.8) +
       labs(subtitle = "",
            x="",
            y="Palmitate-induced mRNA\nlog2(relative to control)") +
