@@ -32,13 +32,13 @@ HSMC_sex_stats <- readRDS('data/sex_stats.Rds')
 genelist <- rownames(HSMC_sex_stats)
 
 #normalize to female
-sample.data <- data.frame(t(data.frame(str_split(colnames(HSMC_data), "_"))))
+sample.data <- data.frame(t(data.frame(str_split(colnames(HSMC_sex_data), "_"))))
 rownames(sample.data) <- c()
 colnames(sample.data) <- c("donor", "experimenter", "condition", "platform")
 sample.data$sex <- "M"
 sample.data$sex[sample.data$donor %in% c("DK02", "DK04", "DK06", "DK08", "DK10")] <- "F"
-res.F <- rowMedians(as.matrix(HSMC_data[,sample.data$sex == "F"]))
-HSMC_data <- data.frame(HSMC_data - res.F)
+res.F <- rowMedians(as.matrix(HSMC_sex_data[,sample.data$sex == "F"]))
+HSMC_sex_data <- sweep(HSMC_sex_data, 1, res.F)
 
 
 # Define UI ----
@@ -47,7 +47,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Heterogeneity and sex differences in primary human myotubes"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2021-09-09")
+                            "/ last update 2023-02-09")
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 0% 8%;",
                          "Primary human myoblasts differentiated into myotubes from published and unpublished transcriptomic analyses

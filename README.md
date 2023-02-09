@@ -3,3 +3,5 @@ Collection of shiny apps by the team [Inflammation & Metabolism](https://ki.se/f
 We regularly download and process public data for our various projects related to skeletal muscle adaptation to exercise, metabolic diseases and inflammation. This server provides access to all the data in the form of shiny apps to easily interrogate the different datasets.
 
 **IMPORTANT:** These datasets presented here are updated regularly and without notice. Do not use the figures presented here for publication as they will lack reproducibility. [Contact me](mailto:nicolas.pillon@ki.se) so that we define precisely the adequate methods for you and make the best figures for publication.
+
+**HOW-TO** Any folder containing a shiny app in the folder *shiny-server* will be served automatically uploaded and served on Nicolas Pillon's server at http://13.51.164.241:3838/

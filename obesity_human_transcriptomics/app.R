@@ -69,9 +69,19 @@ ui <- fluidPage(theme = "bootstrap.css",
 
                          actionButton("updatePlot", "Refresh plot", icon("refresh"))
                 ),
+
                 fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
-                         plotOutput("genePlot", height="400px") %>% withSpinner(color="#5b768e")
+                         tags$hr(),
+                         tags$b("Grouped by weight"),
+                         plotOutput("genePlotObesity", height="400px") %>% withSpinner(color="#5b768e")
                 ),
+                
+                fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
+                         tags$hr(),
+                         tags$b("Grouped by diabetes"),
+                         plotOutput("genePlotDiabetes", height="400px") %>% withSpinner(color="#5b768e")
+                ),
+                
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          tags$hr(),
                          h3("Datasets Included in the Analysis"),
@@ -111,6 +121,12 @@ server <- function(input, output, session) {
                                     levels=c("Lean", "Overweight", "Obesity"))
     
     #plot
+    return(data)
+    
+  })
+
+  output$genePlotObesity <- renderPlot({
+    data <- plotInput()
     gg <- ggplot(data, aes(x=tissue, y=data, fill=diagnosis.weight)) +  
       geom_boxplot()  + 
       theme_bw() + theme +
@@ -123,14 +139,23 @@ server <- function(input, output, session) {
         size = 3, vjust=-1) +
       scale_y_continuous(expand = c(0,1)) 
     gg
-    
-  })
-
-  output$genePlot <- renderPlot({
-    plotInput()
   })
   
-  
+  output$genePlotDiabetes <- renderPlot({
+    data <- plotInput()
+    gg <- ggplot(data, aes(x=tissue, y=data, fill=diagnosis.diabetes)) +  
+      geom_boxplot()  + 
+      theme_bw() + theme +
+      facet_wrap(~Gene, scales="free_y") +
+      labs(x=element_blank(),
+           y="mRNA expression, log2") +
+      scale_fill_manual(values=c("#56B4E9", "#E69F00", "#D55E00"))  +
+      stat_compare_means(aes(group = diagnosis.diabetes, label = ifelse(
+        p < 0.001, "p < 0.001", sprintf("p = %5.3f", as.numeric(..p..)))), 
+        size = 3, vjust=-1) +
+      scale_y_continuous(expand = c(0,1)) 
+    gg
+  })
   ##################################################################################################################
   #Dataset tables
   output$datasets <- renderDataTable(options=list(signif = 3),{
