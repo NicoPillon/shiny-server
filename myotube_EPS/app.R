@@ -196,7 +196,7 @@ server <- function(input, output, session) {
                  alpha=0.8) +
       labs(subtitle = "",
            x="",
-           y="Palmitate-induced mRNA\nlog2(relative to control)") +
+           y="EPS-induced mRNA\nlog2(relative to control)") +
       theme_bw() + theme + theme(legend.title=element_blank()) +
       add_pvalue(stat.test, bracket.size = NA, 
                  xmin = "gene",
