@@ -65,21 +65,25 @@ inventory_file_human <- read.xlsx(paste0(taqman_folder, "1_Human_Taqman_assays_2
 inventory_file_human <- inventory_file_human[,c("Box","Pos","Protein", "Gene",
                                                 "CAT.#.or.accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_human) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
+inventory_file_human$Species <- "Human"
 
 inventory_file_mouse <- read.xlsx(paste0(taqman_folder, "2_Mouse_Taqman_assays_220414.xlsx"), sheet = 1)
 inventory_file_mouse <- inventory_file_mouse[,c("Box#", "Pos", "Protein", "Gene",
                                                 "CAT#.or.Accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_mouse) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
+inventory_file_mouse$Species <- "Mouse"
 
 inventory_file_rat <- read.xlsx(paste0(taqman_folder, "3_Rat_Taqman_assays_220419.xlsx"), sheet = 1)
 inventory_file_rat <- inventory_file_rat[,c("Box","Position", "Protein", "Gene",
                                             "CAT#.or.Accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_rat) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
+inventory_file_rat$Species <- "Rat"
 
 inventory_file_hamster <- read.xlsx(paste0(taqman_folder, "4_ChineseHamster_Taqman_assays_220414.xlsx"), sheet = 1)
 inventory_file_hamster <- inventory_file_hamster[,c("Box", "Pos", "Protein", "Gene",
                                                     "CAT.#.or.accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_hamster) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
+inventory_file_hamster$Species <- "ChineseHamster"
 
 inventory_file <- rbind(
   inventory_file_human,
@@ -89,7 +93,7 @@ inventory_file <- rbind(
 )
 
 # common boxes don't need names
-inventory_file$Name <- NA
+inventory_file$Name <- "Common"
 
 # merge protein and gene names
 inventory_file$Gene <- paste(inventory_file$Gene, inventory_file$Protein)
@@ -108,6 +112,24 @@ full_inventory <- full_inventory[,
 
 # clean rows without cat.number
 full_inventory <- full_inventory[!is.na(full_inventory$cat.number),]
+
+# clean Species
+table(full_inventory$Species)
+full_inventory$Species[!full_inventory$Species %in% c("Human", "Mouse", "Rat", 
+                                                      "ChineseHamster", "C.elegans")] <- NA
+species_from_ref <- full_inventory$cat.number
+species_from_ref <- gsub("Hs.*", "Human", species_from_ref, ignore.case = T)
+species_from_ref <- gsub("Mm.*", "Mouse", species_from_ref, ignore.case = T)
+species_from_ref <- gsub("Rn.*", "Rat", species_from_ref, ignore.case = T)
+species_from_ref <- gsub("Cg.*", "ChineseHamster", species_from_ref, ignore.case = T)
+table(species_from_ref)
+
+# replace NA by the new species
+full_inventory$Species <- ifelse(is.na(full_inventory$Species),
+                                 species_from_ref,
+                                 full_inventory$Species
+                                 )
+table(full_inventory$Species)
 
 # if the same probe is present in both the common box and the order list, 
 # it means that it was transferred in the common boxes during an inventory.
