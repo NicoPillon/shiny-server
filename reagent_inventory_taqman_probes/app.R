@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 #
-# Invenotry of the TaqMan probes
+# Inventory of the TaqMan probes
 #
 #----------------------------------------------------------------------
 library(DT)
@@ -13,14 +13,16 @@ ui <- fluidPage(theme = "bootstrap.css",
                 fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
                          h3("TaqMan Probes Inventory"),
                          "Search probes currently available in the lab as of",
-                         last_update
+                         tags$br(), tags$b(last_update)
                 ),
                 fluidRow(style="padding:1% 2% 1% 4%;text-align:left;font-size: 100%",
                          
                   tags$u("General rules:"),
                   tags$li("Whenever possible, use SYBRgreen oligos instead of TaqMan assays."),
                   tags$li("Always search the inventory before ordering new probes."),
-                  tags$li("Talk to Mutsumi if you want your probes to be transfered to the common boxes."),
+                  tags$li("Talk to", 
+                          a("Mutsumi Katayama", href="mailto:mutsumi.katayama@ki.se"),
+                          "if you want your probes to be transfered to the common boxes."),
                   tags$hr(),
                   
                   tags$u("Probes are stored in 2 main locations:"),
@@ -29,8 +31,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ),
                 tags$hr(),
                 fluidRow(style="padding:1% 2% 1% 2%;text-align:center;font-size: 90%",
-                         "Search and select the samples you want in the first tab.",
-                         "Selected samples are available to donwload in the second tab.",
+                         "Search and select the probes you want in the first tab.",
+                         "Selected probes are available to donwload in the second tab.",
                          tabsetPanel(type = "tabs", 
                                      tabPanel("Probes", style="padding:1% 2% 1% 2%;text-align:left",
                                               dataTableOutput("LNtable")

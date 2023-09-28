@@ -1,8 +1,24 @@
+#set working directory to source file location
+library(rstudioapi)
+setwd(dirname(getActiveDocumentContext()$path))
+
 # Load libraries
 library(openxlsx)
 library(DT)
 library(dplyr)
 library(readxl)
+
+#scrape data from order list - 2020
+order_file_2020 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2020.xlsx",
+                             skip = 6)
+order_file_2020 <- order_file_2020[,c(3,4,7,10,13)]
+colnames(order_file_2020) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
+
+#scrape data from order list - 2021
+order_file_2021 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2021.xlsx",
+                             skip = 6)
+order_file_2021 <- order_file_2021[,c(3,4,8,11,13)]
+colnames(order_file_2021) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 #scrape data from order list - 2022
 order_file_2022 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2022.xlsx",
@@ -17,7 +33,9 @@ order_file_2023 <- order_file_2023[,c(3,4,8,11,13)]
 colnames(order_file_2023) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 # merge orders
-order_file <- rbind(order_file_2022,
+order_file <- rbind(order_file_2020,
+                    order_file_2021,
+                    order_file_2022,
                     order_file_2023)
 
 # keep only rows with keywords
