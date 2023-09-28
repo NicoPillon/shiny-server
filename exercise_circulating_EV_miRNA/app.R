@@ -11,18 +11,17 @@ library(metaviz)
 
 
 #--------------------------------------------------------------------------------------------------------
-# Palmitate
+# Load data
 #--------------------------------------------------------------------------------------------------------
-EV_data <- readRDS("data/data.Rds")
-
-#get stats from limma
-EV_stats <- readRDS("data/stats.Rds")
+datasets <- readRDS("data/datasets.Rds")
+stats <- readRDS("data/data.Rds")
+metastats <- readRDS("data/stats.Rds")
 
 
 #--------------------------------------------------------------------------------------------------------
 # List of genes
 #--------------------------------------------------------------------------------------------------------
-genelist <- unique(EV_stats$miR)
+genelist <- unique(metastats$miR)
 
 
 
@@ -44,6 +43,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                          a("GSE209880", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE209880", 
                            target="_blank", style="color:#5B768E"), 
                          a("GSE218103", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE218103", 
+                           target="_blank", style="color:#5B768E"),
+                         a("GSE232700", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE232700", 
                            target="_blank", style="color:#5B768E")
                 ),
                 tags$hr(),
@@ -71,27 +72,30 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=genelist, 
                        server=TRUE, 
-                       selected=c("hsa-miR-122-5p"), 
+                       selected=c("hsa-miR-127-3p"), 
                        options=NULL)
   
 
   metaAnalysis <- function(){
     validate(need(input$inputGeneSymbol, " "))
-    miRointerest <- c("hsa-miR-122-5p")
+    miRointerest <- c("hsa-miR-127-3p")
     miRointerest <- input$inputGeneSymbol
     
+    # organise data for plot - in the same order as above datasets
     plotdata <- data.frame(
-      GSE121874 = as.numeric(EV_data[["GSE121874"]][miRointerest, ]),
-      GSE136997 = as.numeric(EV_data[["GSE136997"]][miRointerest, ]),
-      GSE144627.H00 = as.numeric(EV_data[["GSE144627.H00"]][miRointerest, ]),
-      GSE144627.H03 = as.numeric(EV_data[["GSE144627.H03"]][miRointerest, ]),
-      GSE218103 = as.numeric(EV_data[["GSE218103"]][miRointerest, ]),
-      GSE218103.CebPalsy = as.numeric(EV_data[["GSE218103.CebPalsy"]][miRointerest, ]),
-      GSE209880.H00 = as.numeric(EV_data[["GSE209880.H00"]][miRointerest, ]),
-      GSE209880.H03 = as.numeric(EV_data[["GSE209880.H03"]][miRointerest, ]),
-      GSE209880.H24 = as.numeric(EV_data[["GSE209880.H24"]][miRointerest, ])
+      GSE121874 = as.numeric(stats[["GSE121874"]][miRointerest, ]),
+      GSE136997 = as.numeric(stats[["GSE136997"]][miRointerest, ]),
+      GSE144627.H00 = as.numeric(stats[["GSE144627.H00"]][miRointerest, ]),
+      GSE144627.H03 = as.numeric(stats[["GSE144627.H03"]][miRointerest, ]),
+      GSE218103 = as.numeric(stats[["GSE218103"]][miRointerest, ]),
+      GSE218103.CebPalsy = as.numeric(stats[["GSE218103.CebPalsy"]][miRointerest, ]),
+      GSE209880.H00 = as.numeric(stats[["GSE209880.H00"]][miRointerest, ]),
+      GSE209880.H24 = as.numeric(stats[["GSE209880.H24"]][miRointerest, ]),
+      GSE209880.H03 = as.numeric(stats[["GSE209880.H03"]][miRointerest, ]),
+      GSE232700.sed = as.numeric(stats[["GSE232700.sed"]][miRointerest, ]),
+      GSE232700.trained = as.numeric(stats[["GSE232700.trained"]][miRointerest, ])
     )
-    rownames(plotdata) <- gsub(".*_", "", colnames(EV_data[["GSE121874"]]))
+    rownames(plotdata) <- gsub(".*_", "", colnames(stats[["GSE121874"]]))
     
     selectedata <- data.frame(t(plotdata))
     selectedata <- na.omit(selectedata)
@@ -107,35 +111,31 @@ server <- function(input, output, session) {
     
     output$EvPlot <- renderPlot({
       meta <- metaAnalysis()
+      
     #Make tables and forest plot figures from rma
-    study_table <- data.frame(
-      Reference = c("Shah et al, 2017", 
-                    "Just et al, 2020", 
-                    "Nair et al, 2020", 
-                    "Nair et al, 2020", 
-                    "Vechetti et al, 2022",
-                    "Vechetti et al, 2022",
-                    "Lavin et al, 2023",
-                    "Lavin et al, 2023",
-                    "Lavin et al, 2023"
-      ),
-      GEO = meta$slab,
-      logFC = format(round(meta$data$logFC, digits=2)),
-      P.Val = format(meta$data$P.Value,   scientific=T, digits=2),
-      n = c("5", "6", "10", "10", "3", "3", "40", "40", "40"))
-    
-    
-    
-    summary_table <- data.frame(
-      Reference = input$inputGeneSymbol,
-      GEO = "Meta-analysis",
-      logFC = format(round(meta$beta, digits=2)),
-      adj.P.Val = format(meta$pval,   scientific=F, digits=2),
-      n = 14)
+      study_table <- data.frame(
+        Reference = datasets$Reference,
+        GEO = datasets$GEO,
+        Diagnosis = datasets$Diagnosis,
+        Fitness = datasets$Fitness,
+        Time = datasets$Time,
+        logFC = format(round(meta$data$logFC, digits=2)),
+        P.Val = format(meta$data$P.Value,   scientific=T, digits=2),
+        n = datasets$n)
+      
+      summary_table <- data.frame(
+        Reference = miRointerest,
+        GEO = "Meta-analysis",
+        Diagnosis = "",
+        Fitness = "",
+        Time.after.exercise = "",
+        logFC = format(round(meta$beta, digits=2)),
+        adj.P.Val = format(meta$pval,   scientific=F, digits=2),
+        n = sum(datasets$n))
     
     #forest plot with tables
     return(viz_forest(meta,
-                      text_size = 5,
+                      text_size = 4,
                       study_table = study_table,
                       summary_table = summary_table,
                       col = "#D55E00",
@@ -145,7 +145,7 @@ server <- function(input, output, session) {
     
     output$funnelPlot <- renderPlot({
       meta <- metaAnalysis()
-      funnel(meta)
+      funnel(meta, label="out")
     })
 
     output$metaStats <- renderTable(colnames = FALSE,{

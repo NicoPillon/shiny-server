@@ -110,7 +110,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
                          plotOutput("PalPlot", height="400px") %>% withSpinner(color="#5b768e"),
                          h5("Statistics presented on the plot are paired t-test (EPS vs control)
-                            with Bonferrone correction for multiple testing. Statistics are dynamically calculated 
+                            with Bonferroni correction for multiple testing. Statistics are dynamically calculated 
                             based on the selection criteria.")
                 )
 )
