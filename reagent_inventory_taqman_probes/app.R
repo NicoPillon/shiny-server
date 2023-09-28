@@ -16,11 +16,16 @@ ui <- fluidPage(theme = "bootstrap.css",
                          last_update
                 ),
                 fluidRow(style="padding:1% 2% 1% 4%;text-align:left;font-size: 100%",
+                         
+                  tags$u("General rules:"),
                   tags$li("Whenever possible, use SYBRgreen oligos instead of TaqMan assays."),
-                  tags$li("Probes are stored in 2 locations: common boxes and personal boxes."),
                   tags$li("Always search the inventory before ordering new probes."),
-                  tags$li("If a probe is labelled with a box numer and location, it is in one of the common boxes."),
-                  tags$li("If a probe only has a person's name, it is likely in a personal box. Ask that person!\n")
+                  tags$li("Talk to Mutsumi if you want your probes to be transfered to the common boxes."),
+                  tags$hr(),
+                  
+                  tags$u("Probes are stored in 2 main locations:"),
+                  tags$li("Common boxes. If a probe is labelled with a box number and location, it is in one of the common boxes."),
+                  tags$li("Personal boxes. If a probe only has a person's name, it is likely in a personal box. Ask that person!\n")
                 ),
                 tags$hr(),
                 fluidRow(style="padding:1% 2% 1% 2%;text-align:center;font-size: 90%",
