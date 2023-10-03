@@ -4,7 +4,6 @@ setwd(dirname(getActiveDocumentContext()$path))
 
 # Load libraries
 library(openxlsx)
-library(DT)
 library(dplyr)
 library(readxl)
 
@@ -149,11 +148,18 @@ full_inventory$Species <- ifelse(is.na(full_inventory$Species),
                                  )
 table(full_inventory$Species)
 
-# if the same probe is present in both the common box and the order list, 
-# it means that it was transferred in the common boxes during an inventory.
-# Only the reference to the common box should be kept.
-duplicated_probes <- full_inventory$cat.number[duplicated(full_inventory$cat.number)]
-asd <- full_inventory[full_inventory$cat.number %in% duplicated_probes,]
+# Remove names of people who left the lab OR replace with name of person who took over the probes
+# Probes from those people should have been transfered into the common boxes
+table(full_inventory$Name)
+full_inventory$Name <- gsub(".*for all.*", "Common", full_inventory$Name)
+full_inventory$Name <- gsub(" .*", "", full_inventory$Name)
+full_inventory$Name <- gsub("/.*", "", full_inventory$Name)
+table(full_inventory$Name)
 
+old_members <- c("Juli", "Julie", "Mike", "Laura", "Lucile", "Prasad", "Rosamaria")
+full_inventory <- full_inventory[!full_inventory$Name %in% old_members,]
+table(full_inventory$Name)
+
+# save file for Shiny
 saveRDS(full_inventory, "full_inventory.Rds")
 

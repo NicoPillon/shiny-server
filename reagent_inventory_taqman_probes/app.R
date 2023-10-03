@@ -79,7 +79,10 @@ server <- function(input, output, session) {
       paste('SelectedProbes-', Sys.Date(), '.xlsx', sep='')
     },
     content = function(con) {
-      write.xlsx(full_inventory[input$LNtable_rows_selected, ], con, row.names=F)
+      asd <- full_inventory[input$LNtable_rows_selected, ]
+      asd[nrow(asd)+2,1] <- "If a probe cannot be found anywhere, tell Mutsumi and/or update the inventory."
+      asd[nrow(asd)+1,1] <- "P:/C3_Integrative_Physiology_Group/Reagent Lists/TaqMan_Assay_List"
+      write.xlsx(asd, con, row.names=F)
     }
   )
   

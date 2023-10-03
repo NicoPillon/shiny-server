@@ -4,6 +4,7 @@
 #
 #----------------------------------------------------------------------
 library(DT)
+library(openxlsx)
 Egg_all <- readRDS("full_inventory.Rds")
 last_update <- "September 28th, 2023"
 
@@ -18,9 +19,9 @@ ui <- fluidPage(theme = "bootstrap.css",
                          
                          tags$u("General rules:"),
                          tags$li("Personal stocks of cells must be in Egg14. Ask Nico if you need more space."),
-                         tags$li("Do not take cells at low passages (P2 or less)"),
+                         tags$li("Never take cells at passage P2 or less.", tags$b("Ask Katrin or Nico first!")),
                          tags$li("If you take cells at P3 always freeze down your own stocks at P5+"),
-                         tags$li("After you take a cryovial from the stocks, delete the row in the excel file on the server."),
+                         tags$li("Always", tags$b("delete the row"), "in the excel file on the server after you take a vial!"),
                          tags$hr(),
                 ),
                 fluidRow(style="padding:1% 2% 1% 2%;text-align:center;font-size: 90%",
@@ -73,7 +74,11 @@ server <- function(input, output, session) {
       paste('SelectedSamples-', Sys.Date(), '.xlsx', sep='')
     },
     content = function(con) {
-      write.xlsx(Egg_all[input$LNtable_rows_selected, c(1,4,2,5:11)], con, row.names=F)
+      asd <- Egg_all[input$LNtable_rows_selected, c(1,4,2,5:11)]
+      asd[nrow(asd)+2,1] <- "REMEMBER TO DELETE THE CORRESPONDING ROWS IN THE EXCEL FILE!"
+      asd[nrow(asd)+1,1] <- "P:/C3_Integrative_Physiology_Group/Liquid Nitrogen/LN inventory.xlsx"
+      write.xlsx(asd, con, row.names=F)
+      #write.xlsx(Egg_all[input$LNtable_rows_selected, c(1,4,2,5:11)], con, row.names=F)
     }
   )
   
@@ -81,4 +86,5 @@ server <- function(input, output, session) {
 
 # Run the app ----
 shinyApp(ui = ui, server = server)
+
 

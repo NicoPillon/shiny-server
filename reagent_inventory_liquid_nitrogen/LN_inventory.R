@@ -1,5 +1,11 @@
+#set working directory to source file location
+library(rstudioapi)
+setwd(dirname(getActiveDocumentContext()$path))
+
 # Load libraries
 library(openxlsx)
+library(dplyr)
+library(readxl)
 
 #Gets names of excel files for LN tanks and puts them in a character vector
 LN_file_names <- "P:/C3_Integrative_Physiology_Group/Liquid Nitrogen/LN inventory.xlsx"
