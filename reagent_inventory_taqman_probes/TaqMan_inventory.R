@@ -163,3 +163,6 @@ table(full_inventory$Name)
 # save file for Shiny
 saveRDS(full_inventory, "full_inventory.Rds")
 
+#save date of last update
+last_update <- format(Sys.Date(), "%B %d, %Y")
+saveRDS(last_update, "last_update.Rds")

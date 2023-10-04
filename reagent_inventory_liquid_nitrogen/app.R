@@ -9,11 +9,22 @@ Egg_all <- readRDS("full_inventory.Rds")
 last_update <- "September 28th, 2023"
 
 # Define UI ----
-ui <- fluidPage(theme = "bootstrap.css",
-                fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
+ui <- fluidPage(
+  tags$head(
+    tags$style(HTML("
+      /* Change the colors of hyperlinks */
+      a {color: #337AB7}
+ 
+      /* Change the colors of selected rows in data table */
+      .table.dataTable tbody td.active, .table.dataTable tbody tr.active td {
+      background-color: #337AB7 !important;
+      color: white !important;
+                  "))
+  ),
+  
+                fluidRow(style="color:white;background-color:#337AB7;padding:0% 1% 1% 1%;text-align:center",
                          h3("Liquid Nitrogen stocks"),
-                         "Cells and biopsies currently available in the lab as of",
-                         tags$br(), tags$b(last_update)
+                         "Last update:", last_update
                 ),
                 fluidRow(style="padding:1% 2% 1% 4%;text-align:left;font-size: 100%",
                          
@@ -50,7 +61,8 @@ server <- function(input, output, session) {
                              pageLength = 10,
                              autoWidth = T),
               filter = 'bottom',
-              rownames= FALSE)
+              rownames= FALSE,
+              style = "default")
   })
   
   selected_samples <- reactive({
@@ -75,7 +87,7 @@ server <- function(input, output, session) {
     },
     content = function(con) {
       asd <- Egg_all[input$LNtable_rows_selected, c(1,4,2,5:11)]
-      asd[nrow(asd)+2,1] <- "REMEMBER TO DELETE THE CORRESPONDING ROWS IN THE EXCEL FILE!"
+      asd[nrow(asd)+2,1] <- "REMEMBER TO DELETE THE VIALS YOU PICKED IN THE EXCEL FILE!"
       asd[nrow(asd)+1,1] <- "P:/C3_Integrative_Physiology_Group/Liquid Nitrogen/LN inventory.xlsx"
       write.xlsx(asd, con, row.names=F)
       #write.xlsx(Egg_all[input$LNtable_rows_selected, c(1,4,2,5:11)], con, row.names=F)

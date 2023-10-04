@@ -64,3 +64,6 @@ colnames(Egg_all) <- gsub("\\.", " ", colnames(Egg_all))
 
 saveRDS(Egg_all, "full_inventory.Rds")
 
+#save date of last update
+last_update <- format(Sys.Date(), "%B %d, %Y")
+saveRDS(last_update, "last_update.Rds")

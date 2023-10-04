@@ -4,16 +4,28 @@
 #
 #----------------------------------------------------------------------
 library(DT)
+library(shinythemes)
 full_inventory <- readRDS("full_inventory.Rds")
-last_update <- "September 28th, 2023"
+last_update <- readRDS("last_update.Rds")
 
 #=====================================================================================================================
 # Define UI ----
-ui <- fluidPage(theme = "bootstrap.css",
-                fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
+ui <- fluidPage(
+  tags$head(
+  tags$style(HTML("
+      /* Change the colors of hyperlinks */
+      a {color: #337AB7}
+ 
+      /* Change the colors of selected rows in data table */
+      .table.dataTable tbody td.active, .table.dataTable tbody tr.active td {
+      background-color: #337AB7 !important;
+      color: white !important;
+                  "))
+),
+
+                fluidRow(style="color:white;background-color:#337AB7;padding:0% 1% 1% 1%;text-align:center",
                          h3("TaqMan Probes Inventory"),
-                         "Search probes currently available in the lab as of",
-                         tags$br(), tags$b(last_update)
+                         "Last update:", last_update
                 ),
                 fluidRow(style="padding:1% 2% 1% 4%;text-align:left;font-size: 100%",
                          
@@ -23,6 +35,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                   tags$li("Talk to", 
                           a("Mutsumi Katayama", href="mailto:mutsumi.katayama@ki.se"),
                           "if you want your probes to be transfered to the common boxes."),
+                  tags$li("If a probe cannot be found anywhere, tell Mutsumi and/or update the inventory."),
                   tags$hr(),
                   
                   tags$u("Probes are stored in 2 main locations:"),
@@ -32,8 +45,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                 tags$hr(),
                 fluidRow(style="padding:1% 2% 1% 2%;text-align:center;font-size: 90%",
                          "Search and select the probes you want in the first tab.",
-                         "Selected probes are available to donwload in the second tab.",
-                         tabsetPanel(type = "tabs", 
+                         "Selected probes are available to download in the second tab.",
+                         tabsetPanel(type = "tabs",
                                      tabPanel("Probes", style="padding:1% 2% 1% 2%;text-align:left",
                                               dataTableOutput("LNtable")
                                      ),
@@ -55,7 +68,8 @@ server <- function(input, output, session) {
                              pageLength = 10,
                              autoWidth = T),
               filter = 'bottom',
-              rownames= FALSE)
+              rownames= FALSE,
+              style = "bootstrap")
   })
   
   selected_samples <- reactive({
@@ -64,7 +78,7 @@ server <- function(input, output, session) {
   })
   
   # Make file output with selected rows
-  output$selected_samples <- renderDataTable({ 
+  output$selected_samples <- renderDT({ 
     selected_samples <- selected_samples()
     datatable(selected_samples, 
               options = list(lengthMenu = c(10, 50, 100), 
@@ -80,7 +94,7 @@ server <- function(input, output, session) {
     },
     content = function(con) {
       asd <- full_inventory[input$LNtable_rows_selected, ]
-      asd[nrow(asd)+2,1] <- "If a probe cannot be found anywhere, tell Mutsumi and/or update the inventory."
+      asd[nrow(asd)+2,1] <- "CANNOT FIND A PROBE? Tell Mutsumi and/or update the inventory."
       asd[nrow(asd)+1,1] <- "P:/C3_Integrative_Physiology_Group/Reagent Lists/TaqMan_Assay_List"
       write.xlsx(asd, con, row.names=F)
     }
