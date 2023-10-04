@@ -4,7 +4,6 @@
 #
 #----------------------------------------------------------------------
 library(DT)
-library(shinythemes)
 full_inventory <- readRDS("full_inventory.Rds")
 last_update <- readRDS("last_update.Rds")
 
