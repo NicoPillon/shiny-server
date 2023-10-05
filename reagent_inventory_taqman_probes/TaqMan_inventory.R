@@ -7,6 +7,18 @@ library(openxlsx)
 library(dplyr)
 library(readxl)
 
+#scrape data from order list - 2018
+order_file_2018 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2018.xlsx",
+                             skip = 6)
+order_file_2018 <- order_file_2018[,c(3,4,6,9,13)]
+colnames(order_file_2018) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
+
+#scrape data from order list - 2019
+order_file_2019 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2018.xlsx",
+                             skip = 6)
+order_file_2019 <- order_file_2019[,c(3,4,6,9,13)]
+colnames(order_file_2019) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
+
 #scrape data from order list - 2020
 order_file_2020 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2020.xlsx",
                              skip = 6)
@@ -32,14 +44,23 @@ order_file_2023 <- order_file_2023[,c(3,4,8,11,13)]
 colnames(order_file_2023) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 # merge orders
-order_file <- rbind(order_file_2020,
+order_file <- rbind(order_file_2018,
+                    order_file_2019,
+                    order_file_2020,
                     order_file_2021,
                     order_file_2022,
                     order_file_2023)
 
+rm(order_file_2018,
+   order_file_2019,
+   order_file_2020,
+   order_file_2021,
+   order_file_2022,
+   order_file_2023)
+
 # keep only rows with keywords
 order_taqman <- order_file[grepl("taqman", order_file$Product, ignore.case = TRUE), ]
-order_taqman <- order_taqman[!grepl("mix|kit", order_taqman$Product, ignore.case = TRUE), ]
+order_taqman <- order_taqman[!grepl("mix|kit|array", order_taqman$Product, ignore.case = TRUE), ]
 
 # fix dates
 # replace missing dates (NA) with the preceding value
@@ -156,7 +177,17 @@ full_inventory$Name <- gsub(" .*", "", full_inventory$Name)
 full_inventory$Name <- gsub("/.*", "", full_inventory$Name)
 table(full_inventory$Name)
 
-old_members <- c("Juli", "Julie", "Mike", "Laura", "Lucile", "Prasad", "Rosamaria")
+old_members <- c("Brendan",
+                 "Juli", 
+                 "Julie", 
+                 "Mike", 
+                 "Laura", 
+                 "Lucile", 
+                 "Melissa",
+                 "Prasad", 
+                 "Rasmus",
+                 "Rosamaria", 
+                 "Son")
 full_inventory <- full_inventory[!full_inventory$Name %in% old_members,]
 table(full_inventory$Name)
 
