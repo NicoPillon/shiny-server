@@ -124,7 +124,7 @@ server <- function(input, output, session) {
         n = datasets$n)
       
       summary_table <- data.frame(
-        Reference = miRointerest,
+        Reference = " ",
         GEO = "Meta-analysis",
         Diagnosis = "",
         Fitness = "",
