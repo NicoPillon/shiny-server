@@ -53,7 +53,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Reference values for maximal oxygen uptake"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2023-11-22")
+                            "/ last update 2023-11-23")
                 ),
                 
                 tags$br(),

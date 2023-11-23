@@ -12,7 +12,7 @@ saveRDS(readRDS("../../R_databases/VO2_range/data/pool_data.Rds"),
         file="data/data.Rds")
 
 
-studies <- read_xlsx("../../R_databases/VO2_range/publications/000_Studies.xlsx")[,c(1:4,6)]
+studies <- read_xlsx("../../R_databases/VO2_range/000_Studies.xlsx")[,c(1:5)]
 
 
 createLink <- function(val) {
