@@ -67,8 +67,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                                             value = 30),
                                numericInput("vo2max",
                                             label = "VO2max (mL/min/kg)",
-                                            value = 40),
-                               "The data in the plot besides was calculated from the publications listed in the table below."
+                                            value = 35)
                                ),
                   mainPanel(width = 10,
                             plotOutput("VO2plot")
@@ -77,8 +76,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                 
                 fluidRow(style="padding:1% 2% 1% 2%",
                   tags$hr(),
+                  h4("The data in the plot above was calculated from the following publications:"),
                   DT::dataTableOutput("studies_table"),
-                  tags$hr(),
                   plotOutput("studies_plot", height = 500)
                 )
 )
@@ -163,7 +162,8 @@ server <- function(input, output, session) {
   
   output$studies_table <- DT::renderDataTable(escape = FALSE, 
                                               rownames = FALSE, 
-                                              options=list(paging = FALSE), 
+                                              options=list(paging = FALSE,
+                                                           dom = 't'), 
                                               { studies })
   
   output$studies_plot <- renderPlot({
@@ -171,9 +171,10 @@ server <- function(input, output, session) {
     ggplot(VO2_data[VO2_data$Percentile == "Mean",], 
            aes(x = Age, y = VO2max, 
                color = Reference, shape = Reference)) +
+      labs(x = "Age (Years)",
+           y = "VO2max (mL/min/kg)") +
       theme_bw(16) +
       theme(legend.key.size = unit(20, "pt")) +
-      labs(subtitle = "Mean VO2max by age") +
       facet_wrap(.~Sex) +
       geom_point(size = 1.5) +
       geom_line(linewidth = 0.25) +
