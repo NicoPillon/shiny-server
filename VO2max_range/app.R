@@ -55,6 +55,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                                     target="_blank", style="color:#D9DADB"), 
                             "/ last update 2023-11-22")
                 ),
+                
+                tags$br(),
 
                 sidebarLayout(
                   sidebarPanel(width = 2,
