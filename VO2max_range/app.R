@@ -66,10 +66,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                                            choices = c("Female", "Male")),
                                numericInput("age",
                                             label = "Age (years)",
-                                            value = 30),
+                                            value = 31),
                                numericInput("vo2max",
                                             label = "VO2max (mL/min/kg)",
-                                            value = 35)
+                                            value = 33)
                                ),
                   mainPanel(width = 10,
                             plotOutput("VO2plot")
@@ -78,7 +78,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 
                 fluidRow(style="padding:1% 2% 1% 2%",
                   tags$hr(),
-                  h4("The data in the plot above was calculated from the following publications:"),
+                  h4("The data in the plot above was generated from data extracted from the following publications:"),
                   DT::dataTableOutput("studies_table"),
                   plotOutput("studies_plot", height = 500)
                 )
