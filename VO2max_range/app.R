@@ -22,7 +22,8 @@ VO2_data$Percentile <- factor(VO2_data$Percentile,
                                          "Mean", 
                                          "Percentile 0.4", "Percentile 0.25", "Percentile 0.1"))
 # lsit of studies
-studies <- readRDS("data/studies.Rds")
+studies_included <- readRDS("data/studies_included.Rds")
+studies_excluded <- readRDS("data/studies_excluded.Rds")
 
 # function for plots
 fct_nomogram <- function(dat){
@@ -66,7 +67,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                                            choices = c("Female", "Male")),
                                numericInput("age",
                                             label = "Age (years)",
-                                            value = 31),
+                                            value = 32),
                                numericInput("vo2max",
                                             label = "VO2max (mL/min/kg)",
                                             value = 33)
@@ -78,9 +79,19 @@ ui <- fluidPage(theme = "bootstrap.css",
                 
                 fluidRow(style="padding:1% 2% 1% 2%",
                   tags$hr(),
-                  h4("The data in the plot above was generated from data extracted from the following publications:"),
-                  DT::dataTableOutput("studies_table"),
-                  plotOutput("studies_plot", height = 500)
+                  h4("The plot above was generated from data extracted from the following publications:"),
+                  plotOutput("studies_plot", height = 500),
+                  tags$hr(),
+                  h4("The following studies were screened for data:"),
+                  tabsetPanel(type = "tabs",
+                              tabPanel("Studies included", style="padding:1% 2% 1% 2%;text-align:left",
+                                       DT::dataTableOutput("studies_included")
+                              ),
+                              tabPanel("Studies excluded", style="padding:1% 2% 1% 2%;text-align:left",
+                                       dataTableOutput("studies_excluded")
+                              )
+                  )
+
                 )
 )
 
@@ -162,11 +173,17 @@ server <- function(input, output, session) {
     )
   })
   
-  output$studies_table <- DT::renderDataTable(escape = FALSE, 
-                                              rownames = FALSE, 
-                                              options=list(paging = FALSE,
-                                                           dom = 't'), 
-                                              { studies })
+  output$studies_included <- DT::renderDataTable(escape = FALSE, 
+                                                 rownames = FALSE, 
+                                                 options=list(paging = FALSE,
+                                                              dom = 't'), 
+                                                 { studies_included })
+  
+  output$studies_excluded <- DT::renderDataTable(escape = FALSE, 
+                                                 rownames = FALSE, 
+                                                 options=list(paging = FALSE,
+                                                              dom = 't'), 
+                                                 { studies_excluded })
   
   output$studies_plot <- renderPlot({
     # plot mean only for all studies
