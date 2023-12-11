@@ -19,7 +19,7 @@ VO2_data <- readRDS("data/data.Rds")
 # make factor to place mean in between percentiles
 VO2_data$Percentile <- factor(VO2_data$Percentile,
                               levels = c("Percentile 0.9", "Percentile 0.75", "Percentile 0.6",
-                                         "Mean", 
+                                         "Median", 
                                          "Percentile 0.4", "Percentile 0.25", "Percentile 0.1"))
 # lsit of studies
 studies_included <- readRDS("data/studies_included.Rds")
@@ -187,11 +187,11 @@ server <- function(input, output, session) {
   
   output$studies_plot <- renderPlot({
     # plot mean only for all studies
-    ggplot(VO2_data[VO2_data$Percentile == "Mean",], 
+    ggplot(VO2_data[VO2_data$Percentile == "Median",], 
            aes(x = Age, y = VO2max, 
                color = Reference, shape = Reference)) +
       labs(x = "Age (Years)",
-           y = "VO2max (mL/min/kg)") +
+           y = "Median VO2max (mL/min/kg)") +
       theme_bw(16) +
       theme(legend.key.size = unit(20, "pt")) +
       facet_wrap(.~Sex) +
