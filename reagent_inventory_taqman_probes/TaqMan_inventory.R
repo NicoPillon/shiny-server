@@ -8,37 +8,37 @@ library(dplyr)
 library(readxl)
 
 #scrape data from order list - 2018
-order_file_2018 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2018.xlsx",
+order_file_2018 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_orders/OrderList 2018.xlsx",
                              skip = 6)
-order_file_2018 <- order_file_2018[,c(3,4,6,9,13)]
+order_file_2018 <- order_file_2018[,c(3,4,6,9,14)]
 colnames(order_file_2018) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 #scrape data from order list - 2019
-order_file_2019 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2018.xlsx",
+order_file_2019 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_orders/OrderList 2018.xlsx",
                              skip = 6)
-order_file_2019 <- order_file_2019[,c(3,4,6,9,13)]
+order_file_2019 <- order_file_2019[,c(3,4,6,9,14)]
 colnames(order_file_2019) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 #scrape data from order list - 2020
-order_file_2020 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2020.xlsx",
+order_file_2020 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_orders/OrderList 2020.xlsx",
                              skip = 6)
-order_file_2020 <- order_file_2020[,c(3,4,7,10,13)]
+order_file_2020 <- order_file_2020[,c(3,4,7,10,14)]
 colnames(order_file_2020) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 #scrape data from order list - 2021
-order_file_2021 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2021.xlsx",
+order_file_2021 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_orders/OrderList 2021.xlsx",
                              skip = 6)
-order_file_2021 <- order_file_2021[,c(3,4,8,11,13)]
+order_file_2021 <- order_file_2021[,c(3,4,8,11,14)]
 colnames(order_file_2021) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 #scrape data from order list - 2022
-order_file_2022 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/Older files/OrderList 2022.xlsx",
+order_file_2022 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_orders/OrderList 2022.xlsx",
                              skip = 6)
 order_file_2022 <- order_file_2022[,c(3,4,8,11,13)]
 colnames(order_file_2022) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 #scrape data from order list - 2023
-order_file_2023 <- read_xlsx("P:/C3_Integrative_Physiology_Group/Orders/OrderList 2023.xlsx",
+order_file_2023 <- read_xlsx("../../000_IntFys_documents/Order_lists/OrderList 2023.xlsx",
                              skip = 6)
 order_file_2023 <- order_file_2023[,c(3,4,8,11,13)]
 colnames(order_file_2023) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
@@ -74,15 +74,6 @@ for (i in 2:length(date_vec)) {
 # replace the dates in the dataframe and format
 order_taqman$Date <- as.Date(as.numeric(date_vec), origin = "1900-01-01")
 
-# Find species
-order_taqman$Species <- gsub(".*uman.*", "Human", order_taqman$Product)
-order_taqman$Species <- gsub(".*hsa.*", "Human", order_taqman$Species)
-
-order_taqman$Species <- gsub(".*ouse.*", "Mouse", order_taqman$Species)
-order_taqman$Species <- gsub(".*mmu.*", "Mouse", order_taqman$Species)
-
-order_taqman$Species <- gsub(".*cel.*", "C.elegans", order_taqman$Species)
-
 # Find gene names
 order_taqman$Gene <- gsub("taqman", "", order_taqman$Product, ignore.case = TRUE)
 order_taqman$Gene <- gsub("human", "", order_taqman$Gene, ignore.case = TRUE)
@@ -94,10 +85,10 @@ order_taqman$in.pack <- gsub("[^0-9.-]", "", order_taqman$in.pack) %>%
   as.numeric()
 
 # rename column names
-colnames(order_taqman) <- c("order", "cat.number", "Reactions", "Name", "received.date", "Species", "Gene")
+colnames(order_taqman) <- c("order", "cat.number", "Reactions", "Name", "received.date", "Gene")
 
 #Gets names of excel files for inventory
-taqman_folder <- "P:/C3_Integrative_Physiology_Group/Reagent Lists/TaqMan_Assay_List/"
+taqman_folder <- "../../000_IntFys_documents/Reagents/Primers_TaqMan/"
 
 inventory_file_human <- read.xlsx(paste0(taqman_folder, "1_Human_Taqman_assays_220412.xlsx"), sheet = 1)
 inventory_file_human <- inventory_file_human[,c("Box","Pos","Protein", "Gene",
@@ -131,16 +122,25 @@ inventory_file <- rbind(
 )
 
 # common boxes don't need names
-inventory_file$Name <- "Common"
+inventory_file$Name <- NULL
 
 # merge protein and gene names
 inventory_file$Gene <- paste(inventory_file$Gene, inventory_file$Protein)
 inventory_file$Gene <- gsub("NA", "", inventory_file$Gene)
 inventory_file$Protein <- NULL
 
-# full inventory
-full_inventory <- full_join(inventory_file,
-                            order_taqman)
+# full inventory - left join because everything in order list should be in the inventory
+full_inventory <- full_join(order_taqman,
+                            inventory_file,
+                            by = "cat.number")
+colnames(full_inventory)
+
+# merge the "gene columns"
+full_inventory$Gene.x[is.na(full_inventory$Gene.x)] <- ""
+full_inventory$Gene.y[is.na(full_inventory$Gene.y)] <- ""
+full_inventory$Gene <- paste(full_inventory$Gene.x, full_inventory$Gene.y)
+full_inventory$Gene.x <- NULL
+full_inventory$Gene.y <- NULL
 
 # order columns
 full_inventory <- full_inventory[,
@@ -191,8 +191,25 @@ old_members <- c("Brendan",
 full_inventory <- full_inventory[!full_inventory$Name %in% old_members,]
 table(full_inventory$Name)
 
+#some more cleaning
+full_inventory$Gene <- gsub("assay ", "", full_inventory$Gene, ignore.case = TRUE)
+full_inventory$Gene <- gsub("Primer ", "", full_inventory$Gene, ignore.case = TRUE)
+
+full_inventory$Gene <- sapply(full_inventory$Gene, function(s) {
+  words <- strsplit(s, " ")[[1]]  # Split the string into words
+  unique_words <- unique(words)   # Remove duplicate words
+  paste(unique_words, collapse = " ")  # Recombine into a single string
+})
+
+
+# when rows are duplicated, keep only the one with the most recent date
+df <- full_inventory %>%
+  group_by(cat.number, Box, Position) %>%  # Group by all columns except 'date'
+  filter(received.date == max(received.date)) %>%  # Filter rows with the most recent date in each group
+  ungroup()  # Remove the grouping
+
 # save file for Shiny
-saveRDS(full_inventory, "full_inventory.Rds")
+saveRDS(df, "full_inventory.Rds")
 
 #save date of last update
 last_update <- format(Sys.Date(), "%B %d, %Y")

@@ -15,6 +15,8 @@ library(rlang)
 # Palmitate
 #--------------------------------------------------------------------------------------------------------
 VO2_data <- readRDS("data/data.Rds")
+VO2_data$Modality <- gsub(".*treadmill.*", "Treadmill", VO2_data$Reference)
+VO2_data$Modality <- gsub(".*cycle.*", "Cycle", VO2_data$Modality)
 
 # make factor to place mean in between percentiles
 VO2_data$Percentile <- factor(VO2_data$Percentile,
@@ -194,7 +196,7 @@ server <- function(input, output, session) {
            y = "Median VO2max (mL/min/kg)") +
       theme_bw(16) +
       theme(legend.key.size = unit(20, "pt")) +
-      facet_wrap(.~Sex) +
+      facet_wrap(.~Modality+Sex) +
       geom_point(size = 1.5) +
       geom_line(linewidth = 0.25) +
       scale_x_continuous(breaks = seq(20, 90, 10)) +
