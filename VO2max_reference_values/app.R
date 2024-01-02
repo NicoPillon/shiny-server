@@ -10,22 +10,15 @@ library(ggrepel)
 library(DT)
 library(cowplot)
 library(rlang)
+library(dplyr)
 
 #--------------------------------------------------------------------------------------------------------
 # Palmitate
 #--------------------------------------------------------------------------------------------------------
 VO2_data <- readRDS("data/data.Rds")
-VO2_data$Modality <- gsub(".*treadmill.*", "Treadmill", VO2_data$Reference)
-VO2_data$Modality <- gsub(".*cycle.*", "Cycle", VO2_data$Modality)
 
-# make factor to place mean in between percentiles
-VO2_data$Percentile <- factor(VO2_data$Percentile,
-                              levels = c("Percentile 0.9", "Percentile 0.75", "Percentile 0.6",
-                                         "Median", 
-                                         "Percentile 0.4", "Percentile 0.25", "Percentile 0.1"))
 # lsit of studies
 studies_included <- readRDS("data/studies_included.Rds")
-studies_excluded <- readRDS("data/studies_excluded.Rds")
 
 # function for plots
 fct_nomogram <- function(dat){
@@ -56,7 +49,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Reference values for maximal oxygen uptake"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2023-11-23")
+                            "/ last update 2024-01-01")
                 ),
                 
                 tags$br(),
@@ -82,19 +75,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                 fluidRow(style="padding:1% 2% 1% 2%",
                   tags$hr(),
                   h4("The plot above was generated from data extracted from the following publications:"),
-                  plotOutput("studies_plot", height = 500),
-                  tags$hr(),
-                  h4("The following studies were screened for data:"),
-                  tabsetPanel(type = "tabs",
-                              tabPanel("Studies included", style="padding:1% 2% 1% 2%;text-align:left",
-                                       DT::dataTableOutput("studies_included")
-                              ),
-                              tabPanel("Studies excluded", style="padding:1% 2% 1% 2%;text-align:left",
-                                       dataTableOutput("studies_excluded")
-                              )
+                  DT::dataTableOutput("studies_included")
                   )
-
-                )
 )
 
 
@@ -181,28 +163,6 @@ server <- function(input, output, session) {
                                                               dom = 't'), 
                                                  { studies_included })
   
-  output$studies_excluded <- DT::renderDataTable(escape = FALSE, 
-                                                 rownames = FALSE, 
-                                                 options=list(paging = FALSE,
-                                                              dom = 't'), 
-                                                 { studies_excluded })
-  
-  output$studies_plot <- renderPlot({
-    # plot mean only for all studies
-    ggplot(VO2_data[VO2_data$Percentile == "Median",], 
-           aes(x = Age, y = VO2max, 
-               color = Reference, shape = Reference)) +
-      labs(x = "Age (Years)",
-           y = "Median VO2max (mL/min/kg)") +
-      theme_bw(16) +
-      theme(legend.key.size = unit(20, "pt")) +
-      facet_wrap(.~Modality+Sex) +
-      geom_point(size = 1.5) +
-      geom_line(linewidth = 0.25) +
-      scale_x_continuous(breaks = seq(20, 90, 10)) +
-      scale_shape_manual(values = rep(c(15,16,17,18), 20))
-  })
-
 }
 
 # Run the app ----
