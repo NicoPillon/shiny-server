@@ -34,7 +34,7 @@ fct_nomogram <- function(dat){
     scale_y_continuous(breaks = seq(0, 100, 10),
                        minor_breaks = seq(0, 100, 1)) +
     labs(x = "Age (Years)",
-         y = "VO2max (mL/min/kg)") +
+         y = expression(dot("V")["O"[2]] ~ "peak (mL/min/kg)")) +
     #facet_wrap(.~Sex, scales = "free_y", ncol = 2) +
     geom_smooth(se = FALSE, method = "lm", linewidth = 0.5, alpha = 0.9) +
     scale_colour_manual(values = c("#2E7F18", "#45731E", "#675E24",
@@ -49,7 +49,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Reference values for maximal oxygen uptake"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-01-01")
+                            "/ last update 2024-01-06")
                 ),
                 
                 tags$br(),
@@ -60,6 +60,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                                            label = "Sex", 
                                            selected = "Female", 
                                            choices = c("Female", "Male")),
+                               selectInput("modality",
+                                           label = "Modality", 
+                                           selected = "Cycle", 
+                                           choices = c("Cycle", "Treadmill")),
                                numericInput("age",
                                             label = "Age (years)",
                                             value = 32),
@@ -90,13 +94,18 @@ server <- function(input, output, session) {
     input_age = 30
     input_vo2max = 40
     input_sex = "Male"
+    input_modality = "Cycle"
     input_age = input$age
     input_vo2max = input$vo2max
     input_sex = input$sex
+    input_modality = input$modality
 
     # error messages
     validate(need(input_age, "Please provide a numeric value age"))
     validate(need(input_vo2max, "Please provide a numeric value for VO2max"))
+
+    # subset modality
+    VO2_data <- subset(VO2_data, Modality == input_modality)
     
     # subset selected sex
     VO2_data_M <- subset(VO2_data, Sex == "Male")

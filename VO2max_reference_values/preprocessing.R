@@ -19,6 +19,8 @@ VO2_data <- pivot_longer(VO2_data,
                          names_to = "Percentile",
                          values_to = "VO2max")
 VO2_data$Percentile <- gsub("P0.5", "Median", VO2_data$Percentile)
+VO2_data$Modality <-  str_to_title(VO2_data$Modality)
+
 
 saveRDS(VO2_data, file = "data/data.Rds")
 
