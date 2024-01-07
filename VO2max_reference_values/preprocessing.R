@@ -21,6 +21,11 @@ VO2_data <- pivot_longer(VO2_data,
 VO2_data$Percentile <- gsub("P0.5", "Median", VO2_data$Percentile)
 VO2_data$Modality <-  str_to_title(VO2_data$Modality)
 
+# make factor to place mean in between percentiles
+VO2_data$Percentile <- factor(VO2_data$Percentile,
+                              levels = c("P0.9", "P0.75", "P0.6",
+                                         "Median", 
+                                         "P0.4", "P0.25", "P0.1"))
 
 saveRDS(VO2_data, file = "data/data.Rds")
 
