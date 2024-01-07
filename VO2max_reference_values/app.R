@@ -74,13 +74,13 @@ ui <- fluidPage(theme = "bootstrap.css",
                   mainPanel(width = 10,
                             plotOutput("VO2plot")
                             )
-                ),
-                
-                fluidRow(style="padding:1% 2% 1% 2%",
-                  tags$hr(),
-                  h4("The plot above was generated from data extracted from the following publications:"),
-                  DT::dataTableOutput("studies_included")
-                  )
+                )#,
+                # 
+                # fluidRow(style="padding:1% 2% 1% 2%",
+                #   tags$hr(),
+                #   h4("The plot above was generated from data extracted from the following publications:"),
+                #   DT::dataTableOutput("studies_included")
+                #   )
 )
 
 
