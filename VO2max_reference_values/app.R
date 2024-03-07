@@ -37,10 +37,10 @@ fct_nomogram <- function(dat){
          y = expression(dot("V")["O"[2]] ~ "peak (mL/min/kg)")) +
     #facet_wrap(.~Sex, scales = "free_y", ncol = 2) +
     geom_smooth(se = FALSE, method = "lm", linewidth = 0.5, alpha = 0.9) +
-    scale_colour_manual(values = c("#2E7F18", "#45731E", "#675E24",
+    scale_colour_manual(values = c("#097910", "#1d7c0f", "#38800d", "#53840c",
                                    "black",
-                                   "#8D472B", "#B13433", "#C82538")) +
-    scale_linetype_manual(values = c(4,3,2,1,2,3,4))
+                                   "#8c8d08", "#a99106", "#c99604", "#e69a02")) +
+    scale_linetype_manual(values = c(5,4,3,2,1,2,3,4,5))
 }
 
 # Define UI ----
@@ -49,7 +49,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Reference values for maximal oxygen uptake"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-01-06")
+                            "/ last update 2024-03-07")
                 ),
                 
                 tags$br(),
@@ -60,16 +60,20 @@ ui <- fluidPage(theme = "bootstrap.css",
                                            label = "Sex", 
                                            selected = "Female", 
                                            choices = c("Female", "Male")),
-                               selectInput("modality",
-                                           label = "Modality", 
-                                           selected = "Cycle", 
-                                           choices = c("Cycle", "Treadmill")),
                                numericInput("age",
                                             label = "Age (years)",
                                             value = 32),
                                numericInput("vo2max",
                                             label = "VO2max (mL/min/kg)",
-                                            value = 33)
+                                            value = 33),
+                               checkboxGroupInput("country",
+                                           label = "Country", 
+                                           selected = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", "Greece", "Japan", "Lithuania", "Netherlands", "Norway",
+                                                        "Spain", "Switzerland", "United Kingdom", "United States"), 
+                                           choices = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", "Greece", "Japan", "Lithuania", "Netherlands", "Norway",
+                                                       "Spain", "Switzerland", "United Kingdom", "United States")),
+                               sliderInput("date", "Publication date",
+                                           min = 1990, max = 2023, value = c(1990,2023), step = 1, sep = "")
                                ),
                   mainPanel(width = 10,
                             plotOutput("VO2plot")
@@ -94,18 +98,27 @@ server <- function(input, output, session) {
     input_age = 30
     input_vo2max = 40
     input_sex = "Male"
-    input_modality = "Cycle"
+    input_country = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", "Greece", "Japan", "Lithuania", "Netherlands", "Norway",
+                      "Spain", "Switzerland", "United Kingdom", "United States")
+    input_date_min = 2000
+    input_date_max = 2022
+    
     input_age = input$age
     input_vo2max = input$vo2max
     input_sex = input$sex
-    input_modality = input$modality
-
+    input_country = input$country
+    input_date_min = input$date[1]
+    input_date_max = input$date[2]
+    
     # error messages
     validate(need(input_age, "Please provide a numeric value age"))
     validate(need(input_vo2max, "Please provide a numeric value for VO2max"))
 
-    # subset modality
-    VO2_data <- subset(VO2_data, Modality == input_modality)
+    # subset country
+    VO2_data <- subset(VO2_data, Country %in% input_country)
+    
+    # subset publication year
+    VO2_data <- subset(VO2_data, Publication.year %in% seq(input_date_min, input_date_max))
     
     # subset selected sex
     VO2_data_M <- subset(VO2_data, Sex == "Male")
