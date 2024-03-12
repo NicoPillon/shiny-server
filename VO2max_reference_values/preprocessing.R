@@ -31,5 +31,7 @@ saveRDS(VO2_data, file = "data/data.Rds")
 
 
 studies_included <- read.csv("../../R_databases/VO2max_reference_values/data_out/references_included.csv")
+studies_included$link <- paste("https://pubmed.ncbi.nlm.nih.gov/", studies_included$PMID, sep="")
+studies_included$link  <- sapply(studies_included$link, createLink)
 saveRDS(studies_included, file = "data/studies_included.Rds")
 

@@ -19,6 +19,9 @@ VO2_data <- readRDS("data/data.Rds")
 
 # lsit of studies
 studies_included <- readRDS("data/studies_included.Rds")
+studies_included$PMID <- as.character(studies_included$PMID)
+studies_included <- studies_included[order(studies_included$First.Author),]
+sort(unique(studies_included$Country))
 
 # function for plots
 fct_nomogram <- function(dat){
@@ -68,23 +71,26 @@ ui <- fluidPage(theme = "bootstrap.css",
                                             value = 33),
                                checkboxGroupInput("country",
                                            label = "Country", 
-                                           selected = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", "Greece", "Japan", "Lithuania", "Netherlands", "Norway",
-                                                        "Spain", "Switzerland", "United Kingdom", "United States"), 
-                                           choices = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", "Greece", "Japan", "Lithuania", "Netherlands", "Norway",
-                                                       "Spain", "Switzerland", "United Kingdom", "United States")),
+                                           selected = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", 
+                                                        "Greece", "Japan", "Lithuania", "Netherlands", "Norway", "Spain", 
+                                                        "Sweden", "Switzerland", "United Kingdom", "United States"), 
+                                           choices = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", 
+                                                       "Greece", "Japan", "Lithuania", "Netherlands", "Norway", "Spain", 
+                                                       "Sweden", "Switzerland", "United Kingdom", "United States")),
                                sliderInput("date", "Publication date",
                                            min = 1990, max = 2023, value = c(1990,2023), step = 1, sep = "")
                                ),
                   mainPanel(width = 10,
-                            plotOutput("VO2plot")
-                            )
-                )#,
-                # 
-                # fluidRow(style="padding:1% 2% 1% 2%",
-                #   tags$hr(),
-                #   h4("The plot above was generated from data extracted from the following publications:"),
-                #   DT::dataTableOutput("studies_included")
-                #   )
+                            plotOutput("VO2plotMale", height = "370px", width = "500px"),
+                            plotOutput("VO2plotFemale", height = "370px", width = "500px")
+                    )
+                ),
+
+                fluidRow(style="padding:1% 2% 1% 2%",
+                  tags$hr(),
+                  h4("Selected publications:"),
+                  DT::dataTableOutput("studies_included")
+                  )
 )
 
 
@@ -92,7 +98,7 @@ ui <- fluidPage(theme = "bootstrap.css",
 server <- function(input, output, session) {
   
 
-  output$VO2plot <- renderPlot({
+  plotData <- reactive({
     
     # input values
     input_age = 30
@@ -103,9 +109,6 @@ server <- function(input, output, session) {
     input_date_min = 2000
     input_date_max = 2022
     
-    input_age = input$age
-    input_vo2max = input$vo2max
-    input_sex = input$sex
     input_country = input$country
     input_date_min = input$date[1]
     input_date_max = input$date[2]
@@ -119,71 +122,74 @@ server <- function(input, output, session) {
     
     # subset publication year
     VO2_data <- subset(VO2_data, Publication.year %in% seq(input_date_min, input_date_max))
+    VO2_data
+    })
+  
     
+    output$VO2plotMale <- renderPlot({
+
     # subset selected sex
-    VO2_data_M <- subset(VO2_data, Sex == "Male")
-    VO2_data_F <- subset(VO2_data, Sex == "Female")
-    
-    # plot
-    nomogram_legend <- get_legend(
-      fct_nomogram(VO2_data_M) + 
-        guides(color = guide_legend(ncol = 1)) 
-    )
+    VO2_data_M <- subset(plotData(), Sex == "Male")
 
     # male plot
-    nomogram_M <- fct_nomogram(VO2_data_M) + 
+    nomogram_M <- fct_nomogram(VO2_data_M) +
       labs(subtitle = "Male") +
-      theme(legend.position = "none")
-    
-    nomogram_M <- if(input_sex == "Male")
-      nomogram_M + 
-      annotate("label", 
-               x = input_age, 
-               y = input_vo2max -2, 
-               label = "Your VO2max", 
+      theme(legend.position = "right")
+
+    nomogram_M <- if(input$sex == "Male")
+      nomogram_M +
+      annotate("label",
+               x = input$age,
+               y = input$vo2max -2,
+               label = "Your VO2max",
                color = "red") +
-      annotate("pointrange", 
-               x = input_age, 
-               y = input_vo2max, 
-               ymin = input_vo2max, ymax = input_vo2max,
-               color = "red", 
+      annotate("pointrange",
+               x = input$age,
+               y = input$vo2max,
+               ymin = input$vo2max, ymax = input$vo2max,
+               color = "red",
                size = 0.5) else nomogram_M
-    
-    # female plot
-    nomogram_F <- fct_nomogram(VO2_data_F) + 
-      labs(subtitle = "Female") +
-      theme(legend.position = "none")
-    
-    nomogram_F <- if(input_sex == "Female")
-      nomogram_F + 
-      annotate("label", 
-               x = input_age, 
-               y = input_vo2max -2, 
-               label = "Your VO2max", 
-               color = "red") +
-      annotate("pointrange", 
-               x = input_age, 
-               y = input_vo2max, 
-               ymin = input_vo2max, ymax = input_vo2max,
-               color = "red", 
-               size = 0.5) else nomogram_F
-    
-    
-    # merge plots
-    cowplot::plot_grid(
-      nomogram_F,
-      nomogram_M,
-      nomogram_legend,
-      ncol = 3,
-      rel_widths = c(2,2,1)
-    )
-  })
+
+    nomogram_M
+   })
   
-  output$studies_included <- DT::renderDataTable(escape = FALSE, 
+    output$VO2plotFemale <- renderPlot({
+      VO2_data_F <- subset(plotData(), Sex == "Female")
+
+      # female plot
+      nomogram_F <- fct_nomogram(VO2_data_F) +
+        labs(subtitle = "Female") +
+        theme(legend.position = "right")
+      
+      nomogram_F <- if(input$sex == "Female")
+        nomogram_F +
+        annotate("label",
+                 x = input$age,
+                 y = input$vo2max -2,
+                 label = "Your VO2max",
+                 color = "red") +
+        annotate("pointrange",
+                 x = input$age,
+                 y = input$vo2max,
+                 ymin = input$vo2max, ymax = input$vo2max,
+                 color = "red",
+                 size = 0.5) else nomogram_F
+      
+      nomogram_F
+
+    })
+    
+    
+    
+      output$studies_included <- DT::renderDataTable(escape = FALSE, 
                                                  rownames = FALSE, 
                                                  options=list(paging = FALSE,
                                                               dom = 't'), 
-                                                 { studies_included })
+                                                 {
+                                                   selecTable <- plotData()
+                                                   selecTable <- selecTable$PMID
+                                                   selecTable <- subset(studies_included, PMID %in% selecTable)
+                                                   })
   
 }
 
