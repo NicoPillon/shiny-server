@@ -38,10 +38,16 @@ order_file_2022 <- order_file_2022[,c(3,4,8,11,13)]
 colnames(order_file_2022) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 #scrape data from order list - 2023
-order_file_2023 <- read_xlsx("../../000_IntFys_documents/Order_lists/OrderList 2023.xlsx",
+order_file_2023 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_orders/OrderList 2023.xlsx",
                              skip = 6)
 order_file_2023 <- order_file_2023[,c(3,4,8,11,13)]
 colnames(order_file_2023) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
+
+#scrape data from order list - 2023
+order_file_2024 <- read_xlsx("../../000_IntFys_documents/Order_lists/OrderList 2024.xlsx",
+                             skip = 6)
+order_file_2024 <- order_file_2024[,c(3,4,8,11,13)]
+colnames(order_file_2024) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
 # merge orders
 order_file <- rbind(order_file_2018,
@@ -49,14 +55,16 @@ order_file <- rbind(order_file_2018,
                     order_file_2020,
                     order_file_2021,
                     order_file_2022,
-                    order_file_2023)
+                    order_file_2023,
+                    order_file_2024)
 
 rm(order_file_2018,
    order_file_2019,
    order_file_2020,
    order_file_2021,
    order_file_2022,
-   order_file_2023)
+   order_file_2023,
+   order_file_2024)
 
 # keep only rows with keywords
 order_taqman <- order_file[grepl("taqman", order_file$Product, ignore.case = TRUE), ]
@@ -96,7 +104,7 @@ inventory_file_human <- inventory_file_human[,c("Box","Pos","Protein", "Gene",
 colnames(inventory_file_human) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
 inventory_file_human$Species <- "Human"
 
-inventory_file_mouse <- read.xlsx(paste0(taqman_folder, "2_Mouse_Taqman_assays_220414.xlsx"), sheet = 1)
+inventory_file_mouse <- read.xlsx(paste0(taqman_folder, "2_Mouse_Taqman_assays_240404.xlsx"), sheet = 1)
 inventory_file_mouse <- inventory_file_mouse[,c("Box#", "Pos", "Protein", "Gene",
                                                 "CAT#.or.Accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_mouse) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
