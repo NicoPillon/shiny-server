@@ -94,8 +94,8 @@ server <- function(input, output, session) {
     },
     content = function(con) {
       asd <- full_inventory[input$LNtable_rows_selected, ]
-      asd[nrow(asd)+2,1] <- "CANNOT FIND A PROBE? Tell Mutsumi and/or update the inventory."
-      asd[nrow(asd)+1,1] <- "P:/C3_Integrative_Physiology_Group/Reagent Lists/TaqMan_Assay_List"
+      asd[nrow(asd)+2,1] <- "CANNOT FIND A PROBE?"
+      asd[nrow(asd)+1,1] <- "Write it down and ask Mutsumi to update the inventory!"
       write.xlsx(asd, con, row.names=F)
     }
   )
