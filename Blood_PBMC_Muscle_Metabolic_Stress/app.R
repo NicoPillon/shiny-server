@@ -5,16 +5,8 @@
 #----------------------------------------------------------------------
 # Load data and libraries
 library(shinycssloaders)
-library(ggplot2)
-library(stringr)
-library(plyr)
-library(DT)
-library(dplyr)
-library(DescTools)
-library(ggpubr)
-library(rstatix)
-library(ggprism)
 library(tidyverse)
+library(ggpubr)
 
 #--------------------------------------------------------------------------------------------------------
 # Load data
@@ -45,7 +37,7 @@ genelist <- c(rownames(human_matrix),
               rownames(mouse_matrix)) %>%
   str_to_title() %>%
   unique()
-genelist
+
 
 
 # Define UI ----
@@ -240,7 +232,7 @@ server <- function(input, output, session) {
                               size = 0.2) +
       theme_bw() + theme(legend.position = "none") +
       labs(x = element_blank(),
-           y = paste("Exercise-induced", toupper(gene_of_interest), "(score)"),
+           y = paste(toupper(gene_of_interest), "mRNA\nscore(exercise induction)"),
            subtitle = "Skeletal muscle single cells") +
       #geom_hline(yintercept = 0, linetype = 1, linewidth = 0.2, color = "gray40") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)),

@@ -199,10 +199,18 @@ old_members <- c("Brendan",
 full_inventory <- full_inventory[!full_inventory$Name %in% old_members,]
 table(full_inventory$Name)
 
-#some more cleaning
+#--------------------------------------------------------------------------------
+#some more cleaning of gene names
+#--------------------------------------------------------------------------------
 full_inventory$Gene <- gsub("assay ", "", full_inventory$Gene, ignore.case = TRUE)
 full_inventory$Gene <- gsub("Primer ", "", full_inventory$Gene, ignore.case = TRUE)
+full_inventory$Gene <- gsub("miRNA:", "", full_inventory$Gene, ignore.case = TRUE)
+full_inventory$Gene <- gsub(".*miRNA Assay, ", "", full_inventory$Gene, ignore.case = TRUE)
 
+# Removing leading spaces
+full_inventory$Gene <- sub("^\\s+", "", full_inventory$Gene)
+
+# remove duplicates
 full_inventory$Gene <- sapply(full_inventory$Gene, function(s) {
   words <- strsplit(s, " ")[[1]]  # Split the string into words
   unique_words <- unique(words)   # Remove duplicate words
@@ -222,3 +230,85 @@ saveRDS(df, "full_inventory.Rds")
 #save date of last update
 last_update <- format(Sys.Date(), "%B %d, %Y")
 saveRDS(last_update, "last_update.Rds")
+
+
+###########################################################################
+#
+# Best way to organize boxes
+#
+##########################################################################
+# Function to find the optimal splits
+find_splits <- function(cumsums, target, num_boxes) {
+  split_indices <- numeric(num_boxes - 1)
+  for (i in 1:(num_boxes - 1)) {
+    split_indices[i] <- which(cumsums >= i * target)[1]
+  }
+  
+  boxes <- vector("list", num_boxes)
+  start_index <- 1
+  for (j in 1:(num_boxes - 1)) {
+    boxes[[j]] <- names(cumsums)[start_index:(split_indices[j])]
+    start_index <- split_indices[j] + 1
+  }
+  boxes[[num_boxes]] <- names(cumsums)[start_index:length(cumsums)]
+  return(boxes)
+}
+
+#------------------------------------------------------------------------
+# Mouse (3 boxes)
+#------------------------------------------------------------------------
+# extract the first letter of each mouse gene
+mouse_genes <- full_inventory[full_inventory$Species == "Mouse",]
+mouse_genes$Gene <- gsub(" ", "", mouse_genes$Gene)
+mouse_genes$Gene <- toupper(mouse_genes$Gene)
+mouse_letters <- substr(mouse_genes$Gene, 1, 1)
+mouse_letters_counts <- table(mouse_letters)
+barplot(mouse_letters_counts)
+
+# Sort the table by the names (letters)
+sorted_counts <- mouse_letters_counts[order(names(mouse_letters_counts))]
+
+# Calculate cumulative sums
+cumulative_sums <- cumsum(sorted_counts)
+
+# Total sum of genes
+total_sum <- sum(sorted_counts)
+
+# Target sum for each box
+target_per_box <- total_sum / 3
+
+# Calculate the splits
+boxes <- find_splits(cumulative_sums, target_per_box, 3)
+
+# Print the optimal box distributions
+print(boxes)
+
+
+#------------------------------------------------------------------------
+# Human (3 boxes)
+#------------------------------------------------------------------------
+# extract the first letter of each mouse gene
+human_genes <- full_inventory[full_inventory$Species == "Human",]
+human_genes$Gene <- gsub(" ", "", human_genes$Gene)
+human_genes$Gene <- toupper(human_genes$Gene)
+human_letters <- substr(human_genes$Gene, 1, 1)
+human_letters_counts <- table(human_letters)
+barplot(human_letters_counts)
+
+# Sort the table by the names (letters)
+sorted_counts <- human_letters_counts[order(names(human_letters_counts))]
+
+# Calculate cumulative sums
+cumulative_sums <- cumsum(sorted_counts)
+
+# Total sum of genes
+total_sum <- sum(sorted_counts)
+
+# Target sum for each box
+target_per_box <- total_sum / 8
+
+# Calculate the splits
+boxes <- find_splits(cumulative_sums, target_per_box, 8)
+
+# Print the optimal box distributions
+print(boxes)
