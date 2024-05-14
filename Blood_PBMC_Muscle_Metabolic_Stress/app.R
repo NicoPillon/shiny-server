@@ -227,18 +227,20 @@ server <- function(input, output, session) {
     # Muscle sincle cell RNAseq
     ###############################################################################
     scRNAseq_selected <- scRNAseq[scRNAseq$Gene_name %in% toupper(gene_of_interest),]
-    fig_scRNAseq <- ggbarplot(scRNAseq_selected, x="cell.type", y="scores", fill="cell.type",
+    scRNAseq_selected$signif <- ifelse(scRNAseq_selected$pvals_adj < 0.05, TRUE, FALSE)
+    fig_scRNAseq <- ggbarplot(scRNAseq_selected, x="cell.type", y="scores", fill="signif",
                               position = position_dodge(0.7),
                               size = 0.2) +
-      theme_bw() + theme(legend.position = "none") +
+      theme_bw() + theme(legend.position = "right") +
       labs(x = element_blank(),
            y = paste(toupper(gene_of_interest), "mRNA\nscore(exercise induction)"),
-           subtitle = "Skeletal muscle single cells") +
+           subtitle = "Skeletal muscle single cells",
+           fill = "FDR < 0.05") +
       #geom_hline(yintercept = 0, linetype = 1, linewidth = 0.2, color = "gray40") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)),
                          limits = c(0,NA)) +
-      scale_fill_manual(values = c("gray80", "gray80", "gray80", "gray80", "gray80", "gray80"))
-
+      scale_fill_manual(values = c("gray50", "#2B8076"))
+    fig_scRNAseq
     
     ###############################################################################
     # Mouse Tissues
@@ -249,7 +251,8 @@ server <- function(input, output, session) {
                            outlier.size = 0.2, outlier.shape = NA) +
       geom_jitter(aes(shape = GEO), width = 0.07, size = 0.2) +
       labs(x = element_blank(),
-           y = "Pgts2 mRNA\nlog(a.u.)",
+           y = paste(toupper(gene_of_interest), "mRNA\nlog(a.u.)"),
+           title = "Mouse tissues",
            fill = element_blank()) +
       theme_bw() +
       stat_compare_means(label = "p.format",
@@ -286,10 +289,11 @@ server <- function(input, output, session) {
         guides(color = guide_legend(ncol = 1)) +
         expand_limits(y=c(-1.2, 1.5)),
       fig_scRNAseq + 
-        theme_bw(14) + theme(legend.position = "none",
+        theme_bw(14) + theme(legend.position = "right",
                             axis.text.x = element_text(angle = 45, hjust=1),
                             plot.margin = margin(5.5, 5.5, 10, 5.5, "pt")),
-      ncol = 4
+      ncol = 4,
+      rel_widths = c(1,1,1,1.25)
     )
     
     cowplot::plot_grid(
