@@ -45,7 +45,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
                          h3("Transcriptomic response of immune and muscle cells to metabolic stress"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), "/ last update 2022-07-07")
+                                    target="_blank", style="color:#D9DADB"), "/ last update 2024-05-14")
                 ),
                 tags$hr(),
                 fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;",
@@ -119,7 +119,7 @@ server <- function(input, output, session) {
       scale_color_manual(values = c("gray10", "gray20", "gray40")) +
       scale_linetype_manual(values = c(1,2,1)) +
       stat_compare_means(size = 4,
-                         label.y = 1)
+                         label.y = 1.75)
 
     
     ###############################################################################
@@ -153,7 +153,7 @@ server <- function(input, output, session) {
       scale_color_manual(values = c("gray10", "gray20", "gray40")) +
       scale_linetype_manual(values = c(1,2,1)) +
       stat_compare_means(size = 4,
-                         label.y = 1)
+                         label.y = 1.75)
 
     
     ###############################################################################
@@ -186,7 +186,7 @@ server <- function(input, output, session) {
       scale_color_manual(values = c("gray10", "gray20", "gray40")) +
       scale_linetype_manual(values = c(1,2,1)) +
       stat_compare_means(size = 4,
-                         label.y = 1)
+                         label.y = 1.75)
 
     ###############################################################################
     ## Adipose tissue - exercise
@@ -221,7 +221,7 @@ server <- function(input, output, session) {
       scale_color_manual(values = c("gray10", "gray20", "gray40")) +
       scale_linetype_manual(values = c(1,2,1)) +
       stat_compare_means(size = 4,
-                         label.y = 1)
+                         label.y = 1.75)
 
     ###############################################################################
     # Muscle sincle cell RNAseq

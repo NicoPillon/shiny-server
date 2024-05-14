@@ -12,6 +12,11 @@ All_metadata_human <- readRDS("../../R_databases/Blood_PBMC_Muscle_Metabolic_Str
 All_metadata_human <- All_metadata_human[All_metadata_human$Diagnosis %in% c("healthy", "Healthy"),]
 All_matrix_human <- All_matrix_human[,All_metadata_human$sampleID]
 
+# remove GSE83578 - blood was incuated 1h on the bench --> platelet activation
+All_metadata_human <- All_metadata_human[!All_metadata_human$GEO %in% "GSE83578",]
+All_matrix_human <- All_matrix_human[,All_metadata_human$sampleID]
+
+# slip in 3 datasets
 All_matrix_human_part1 <- All_matrix_human[,1:500]
 All_matrix_human_part2 <- All_matrix_human[,501:1000]
 All_matrix_human_part3 <- All_matrix_human[,1001:ncol(All_matrix_human)]
