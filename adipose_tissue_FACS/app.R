@@ -9,24 +9,15 @@ library(stringr)
 library(DT)
 library(plyr)
 library(ggplot2)
-theme <- theme(plot.title  = element_text(face="bold", color="black", size=13, angle=0),
-               axis.text.x = element_text(color="black", size=12, angle=90, hjust=1, vjust=0.5),
-               axis.text.y = element_text(color="black", size=11, angle=0, vjust=0.3),
-               axis.title  = element_text(face="bold", color="black", size=13, angle=0),
-               legend.text = element_text(color="black", size=13, angle=0),
-               legend.title = element_blank(),
-               legend.position="right",
-               legend.key.size = unit(30, "pt"),
-               strip.text = element_text(face="bold", color="black", size=14, angle=0))
 
 #load data
 WATFACS_data <- readRDS('data/data_raw.Rds')
 
 samples <- readRDS('data/samples.Rds')
 samples$group <- "Adipose cells"
-samples$group[samples$CellType %in% c("Monocyte/Macrophage", "Leukocyte")] <- "Leukocytes"
+samples$group[samples$CellType %in% c("Leukocyte")] <- "Leukocytes"
 samples$group[samples$CellType %in% c("Total T-cells", "CD4+ T-cells", "CD8+ T-cells")] <- "Lymphocytes"
-samples$group[samples$CellType %in% c("M1 Macrophage", "M2 Macrophage", "CD14+ Myeloid")] <- "Macrophages"
+samples$group[samples$CellType %in% c("Monocyte/Macrophage", "M1 Macrophage", "M2 Macrophage", "CD14+ Myeloid")] <- "Macrophages"
 samples$group[samples$CellType %in% c("SVF")] <- "SVF"
 
 genelist <- rownames(WATFACS_data)
@@ -84,13 +75,20 @@ server <- function(input, output, session) {
       data <- rbind(data, asd)
     }
     
-    
-    gg <- ggplot(data, aes(x=CellType, y=data, fill=Weight)) +  
-      geom_boxplot()  + theme_bw() + theme +
+    # gg <- ggplot(data, aes(x=CellType, y=data, fill=Weight)) +  
+    #   geom_boxplot()  + theme_bw() + theme +
+    #   facet_wrap(~Gene, scales="free_y") +
+    #   labs(x=element_blank(),
+    #        y="mRNA expression, log2") +
+    #   scale_fill_manual(values=c("gray", "darkred"))
+
+    gg <- ggplot(data, aes(x = CellType, y = data, fill = group)) +  
+      geom_boxplot() + theme_bw(16) + 
+      theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5),
+            legend.title = element_blank()) +
       facet_wrap(~Gene, scales="free_y") +
       labs(x=element_blank(),
-           y="mRNA expression, log2") +
-      scale_fill_manual(values=c("gray", "darkred"))
+           y="mRNA expression, log2")
     gg
     
   })
