@@ -29,9 +29,16 @@ VO2_data$Percentile <- factor(VO2_data$Percentile,
 
 saveRDS(VO2_data, file = "data/data.Rds")
 
+# table of studies included
+studies_included <- read_xlsx("../../R_databases/VO2max_reference_values/data_out/references_included.xlsx")
 
-studies_included <- read.csv("../../R_databases/VO2max_reference_values/data_out/references_included.csv")
+# make linkg to pubmed
 studies_included$link <- paste("https://pubmed.ncbi.nlm.nih.gov/", studies_included$PMID, sep="")
 studies_included$link  <- sapply(studies_included$link, createLink)
+
+# remove columns
+colnames(studies_included)
+studies_included[,c("Recruitment", "Male, Mean ± Sd", "Female, Mean ± Sd", "Type")] <- NULL
+
 saveRDS(studies_included, file = "data/studies_included.Rds")
 
