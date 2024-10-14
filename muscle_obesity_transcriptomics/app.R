@@ -54,7 +54,9 @@ ui <- fluidPage(theme = "bootstrap.css",
                                         checkboxGroupInput("diagnosis_diabetes", 
                                                            label = "Diabetes diagnosis", 
                                                            selected = c("Healthy", "Prediabetes", "T2D"),
-                                                           choices = c("Healthy", "Prediabetes", "T2D"))
+                                                           choices = c("Healthy", "Prediabetes", "T2D")),
+                                        em(h5("Prediabetes is defined as either impaired glucose tolerance measured during an OGTT or increased insulin
+                                        resistance measured with euglycemic hyperinsulinemic clamps."))
                          ),
                          mainPanel(width = 9,
                                    fluidRow(style="color:black;background-color:white;",
