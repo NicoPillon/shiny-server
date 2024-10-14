@@ -92,10 +92,9 @@ ui <- fluidPage(theme = "bootstrap.css",
                                     target="_blank", style="color:#D9DADB"), "/ last update 2022-04-07")
                 ),
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
-                         selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F),
                          sidebarLayout(
-                           sidebarPanel(width = 3, style=("font-size:75%"),
-                                        
+                           sidebarPanel(width = 2, 
+                                        selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F),                                        
                                         #checkboxGroupInput("treatment_M1", 
                                         #                   label="M1 treatment", 
                                         #                   selected=c("LPS", "IFNg", "LPS+IFNg"), 
@@ -142,6 +141,39 @@ ui <- fluidPage(theme = "bootstrap.css",
                          tags$hr(),
                          h3("Datasets"),
                          dataTableOutput("datasets")
+                ),
+                
+                # Author section at the bottom
+                fluidRow(style="color:white;background-color:#5B768E;padding:2% 1% 2% 1%;display: flex; align-items: top; ",
+                         # column(2, align="right", 
+                         #        tags$img(src = "https://ki.se/profile-image/nicpil", height = "120px", width = "120px")  # Insert image here
+                         # ),
+                         column(4, align="left", 
+                                tags$b("About the author:"), tags$br(),
+                                "Nicolas J. Pillon, PhD", tags$br(),
+                                "Associate Professor, Karolinska Institutet", tags$br(),
+                                icon("globe"), a("/inflammation-and-metabolism", href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group",
+                                                 target="_blank", style="color:white"), tags$br(),
+                                icon("linkedin"), a("/nicopillon", href="https://www.linkedin.com/in/nicopillon/",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                tags$br(),
+                                "Feel free to write to me with feedback or questions:", tags$br(),
+                                icon("envelope"), a("nicolas.pillon@ki.se", href="mailto:nicolas.pillon@ki.se",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                
+                         ),
+                         column(4, align="center",
+                                #tags$b("© 2024 Nicolas Pillon"), tags$br(),
+                                
+                         ),
+                         column(4, align="right",
+                                tags$b("Disclaimer"), tags$br(),
+                                em("The authors disclaim any responsibility for the use or interpretation of the data 
+                                   presented in this application. Users are solely responsible for ensuring the appropriate 
+                                   use of any data they choose to re-use."), tags$br(),
+                                tags$br(),
+                                tags$b("© 2024 Nicolas Pillon"),
+                         ),
                 )
 )
 

@@ -55,8 +55,8 @@ samples_names$fullname <- c("Human Primary Myotube",
                             "Human Muscle Tissue",
                             "Mouse Muscle Tissue", 
                             "Rat Muscle Tissue")
-  
-  
+
+
 # List of genes
 genelist <- unique(rownames(data_all))
 
@@ -65,31 +65,85 @@ genelist <- unique(rownames(data_all))
 # Shiny app
 #--------------------------------------------------------------------------------------------------------
 # Define UI ----
-ui <- fluidPage(theme = "bootstrap.css",
-                fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
+ui <- fluidPage(theme = "bootstrap.css", 
+                
+                # Custom CSS to change checkbox tick color
+                tags$style(HTML("
+                  input[type='checkbox'] {
+                    accent-color: #5B768E; /* Change the checkbox tick color here */
+                  }
+                ")),
+                
+                # Title ribbon
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
                          h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), "/ last update 2022-03-08")
+                                    target="_blank", style="color:#D9DADB"), 
+                            "/ last update 2024-03-07")
                 ),
                 
-                fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;;text-align:center",
-                         em(h5("If you use this tool, please cite: ", 
-                            a("Abdelmoez et al. Am J Physiol Cell Physiol. 2020 Mar 1;318(3):C615-C626.",
-                              href="https://doi.org/10.1152/ajpcell.00540.2019", target="_blank", style="color:#5B768E"))),
-                         tags$hr()
-                ),
-
-                fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;",
-                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
-                         actionButton("updatePlot", "Refresh plot", icon("refresh"))
+                # main page
+                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
+                         sidebarLayout(
+                           sidebarPanel(width = 3, 
+                                        selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
+                                        actionButton("updatePlot", "Refresh plot", icon("refresh")),
+                                        tags$hr(),
+                                        em("If you use this tool, please cite: ", 
+                                              a("Abdelmoez et al. Am J Physiol Cell Physiol. 2020 Mar 1;318(3):C615-C626.",
+                                                href="https://doi.org/10.1152/ajpcell.00540.2019", target="_blank", style="color:#5B768E"))
+                           ),
+                           mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
+                                     fluidRow(style="color:black;background-color:white;",
+                                              column(4, align="left",
+                                                     plotOutput("geneHeatmap", height="700px") %>% withSpinner(color="#5B768E")),
+                                              column(8, align="left",
+                                                     plotOutput("geneBoxplot", height="700px") %>% withSpinner(color="#5B768E"))
+                                     )
+                           )
+                           
+                         )
                 ),
                 
-                fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
-                         column(3, align="left",
-                                plotOutput("geneHeatmap", height="500px") %>% withSpinner(color="#5b768e")),
-                         column(8, align="left",
-                                plotOutput("geneBoxplot", height="500px") %>% withSpinner(color="#5b768e"))
-
+                tags$hr(),
+                
+                # Table with datasets
+                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
+                         h3("Datasets Included in the Analysis"),
+                         # dataTableOutput("datasets")
+                ),
+                
+                # Author section at the bottom
+                fluidRow(style="color:white;background-color:#5B768E;padding:2% 1% 2% 1%;display: flex; align-items: top; ",
+                         # column(2, align="right", 
+                         #        tags$img(src = "https://ki.se/profile-image/nicpil", height = "120px", width = "120px")  # Insert image here
+                         # ),
+                         column(4, align="left", 
+                                tags$b("About the author:"), tags$br(),
+                                "Nicolas J. Pillon, PhD", tags$br(),
+                                "Associate Professor, Karolinska Institutet", tags$br(),
+                                icon("globe"), a("/inflammation-and-metabolism", href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group",
+                                                 target="_blank", style="color:white"), tags$br(),
+                                icon("linkedin"), a("/nicopillon", href="https://www.linkedin.com/in/nicopillon/",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                tags$br(),
+                                "Feel free to write to me with feedback or questions:", tags$br(),
+                                icon("envelope"), a("nicolas.pillon@ki.se", href="mailto:nicolas.pillon@ki.se",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                
+                         ),
+                         column(4, align="center",
+                                #tags$b("© 2024 Nicolas Pillon"), tags$br(),
+                                
+                         ),
+                         column(4, align="right",
+                                tags$b("Disclaimer"), tags$br(),
+                                em("The authors disclaim any responsibility for the use or interpretation of the data 
+                                   presented in this application. Users are solely responsible for ensuring the appropriate 
+                                   use of any data they choose to re-use."), tags$br(),
+                                tags$br(),
+                                tags$b("© 2024 Nicolas Pillon"),
+                         ),
                 )
 )
 
@@ -121,7 +175,7 @@ server <- function(input, output, session) {
     }
     
     data <- merge(data, samples_names, by=1)
-      
+    
     data$fullname <- factor(data$fullname, levels=samples_names$fullname)
     
     plotBoxplot <- ggplot(data) +  geom_boxplot(aes(x=fullname, y=y, fill=species)) + 
@@ -133,12 +187,12 @@ server <- function(input, output, session) {
       scale_y_continuous(breaks = round(seq(-4, 8, by=2),1)) +
       geom_hline(aes(yintercept=0), linetype="dashed", show.legend=F, color="gray60") +
       scale_fill_manual(values=samples_names$species.color)
-
+    
     return(plotBoxplot)
     plotBoxplot
   })
   
-    output$geneBoxplot <- renderPlot({
+  output$geneBoxplot <- renderPlot({
     plotDataBox()
   })
   
@@ -149,7 +203,7 @@ server <- function(input, output, session) {
     validate(need(input$inputGeneSymbol, " "))
     genename <- c("NR4A3", "IL6")
     genename <- toupper(input$inputGeneSymbol)
-
+    
     #make matrix with found gene names
     df <- data_all[genename,]
     df[df=="NaN"] <- NA
@@ -158,22 +212,22 @@ server <- function(input, output, session) {
     df_mean <- data.frame(SYMBOL=rownames(df))
     for (i in 1:length(samples_names$sample)){
       df_mean <- data.frame(df_mean,
-                                  rowMedians(as.matrix(df[grepl(samples_names$sample[i], colnames(df))]), na.rm=T))
+                            rowMedians(as.matrix(df[grepl(samples_names$sample[i], colnames(df))]), na.rm=T))
     }
     df_mean <- data.frame(df_mean, row.names=1)
     colnames(df_mean) <- samples_names$fullname
     
     return(df_mean)
   })
-
+  
   
   output$geneHeatmap <- renderPlot({
-   
+    
     df_mean <- plotDataHeatmap()
     
     my_sample_col <- samples_names[,c(6,2,4)]
     my_sample_col <- data.frame(my_sample_col, row.names = 1)
-
+    
     my_colour = list(
       model = setNames(unique(samples_names$model.color), unique(samples_names$model)),
       species = setNames(unique(samples_names$species.color), unique(samples_names$species))

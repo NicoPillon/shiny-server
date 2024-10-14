@@ -48,17 +48,26 @@ fct_nomogram <- function(dat){
 
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
+                
+                # Custom CSS to change checkbox tick color
+                tags$style(HTML("
+                  input[type='checkbox'] {
+                    accent-color: #c93f1e; /* Change the checkbox tick color here */
+                  }
+                ")),
+                
+                # Title ribbon
                 fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
-                         h3("Reference values for maximal oxygen uptake"),
+                         h3("Worldwide reference values for maximal oxygen uptake"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-03-07")
+                            "/ last update 2024-10-07")
                 ),
                 
-                tags$br(),
-
-                sidebarLayout(
-                  sidebarPanel(width = 2,
+                # main page
+                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
+                         sidebarLayout(
+                           sidebarPanel(width = 3,
                                selectInput("sex",
                                            label = "Sex", 
                                            selected = "Female", 
@@ -80,17 +89,53 @@ ui <- fluidPage(theme = "bootstrap.css",
                                sliderInput("date", "Publication date",
                                            min = 1990, max = 2023, value = c(1990,2023), step = 1, sep = "")
                                ),
-                  mainPanel(width = 10,
+                  mainPanel(width = 9,
                             plotOutput("VO2plotMale", height = "370px", width = "500px"),
                             plotOutput("VO2plotFemale", height = "370px", width = "500px")
-                    )
-                ),
-
-                fluidRow(style="padding:1% 2% 1% 2%",
-                  tags$hr(),
-                  h4("Selected publications:"),
-                  DT::dataTableOutput("studies_included")
+                            )
                   )
+                  ),
+
+                tags$hr(),
+                
+                # Table with datasets
+                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
+                         h3("Datasets Included in the Analysis"),
+                         DT::dataTableOutput("studies_included")
+                         ),
+                
+                # Author section at the bottom
+                fluidRow(style="color:white;background-color:#5B768E;padding:2% 1% 2% 1%;display: flex; align-items: top; ",
+                         # column(2, align="right", 
+                         #        tags$img(src = "https://ki.se/profile-image/nicpil", height = "120px", width = "120px")  # Insert image here
+                         # ),
+                         column(4, align="left", 
+                                tags$b("About the author:"), tags$br(),
+                                "Nicolas J. Pillon, PhD", tags$br(),
+                                "Associate Professor, Karolinska Institutet", tags$br(),
+                                icon("globe"), a("/inflammation-and-metabolism", href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group",
+                                                 target="_blank", style="color:white"), tags$br(),
+                                icon("linkedin"), a("/nicopillon", href="https://www.linkedin.com/in/nicopillon/",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                tags$br(),
+                                "Feel free to write to me with feedback or questions:", tags$br(),
+                                icon("envelope"), a("nicolas.pillon@ki.se", href="mailto:nicolas.pillon@ki.se",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                
+                         ),
+                         column(4, align="center",
+                                #tags$b("© 2024 Nicolas Pillon"), tags$br(),
+                                
+                         ),
+                         column(4, align="right",
+                                tags$b("Disclaimer"), tags$br(),
+                                em("The authors disclaim any responsibility for the use or interpretation of the data 
+                                   presented in this application. Users are solely responsible for ensuring the appropriate 
+                                   use of any data they choose to re-use."), tags$br(),
+                                tags$br(),
+                                tags$b("© 2024 Nicolas Pillon"),
+                         ),
+                )
 )
 
 
