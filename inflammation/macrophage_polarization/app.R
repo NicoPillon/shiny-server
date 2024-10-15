@@ -104,12 +104,12 @@ ui <- fluidPage(theme = "bootstrap.css",
                                         #                   selected=c("IL4", "IL13", "IL4+IL13"), 
                                         #                   c("IL4", "IL13", "IL4+IL13")),
                                         # tags$hr(),
-                                        h5(helpText("Mouse Primary")),
-                                        tableOutput("mouse_means"),
-                                        h5(helpText("Human Primary")),
-                                        tableOutput("human_means"),
-                                        h5(helpText("Human WAT")),
-                                        tableOutput("human_WAT_means")
+                                        # h5(helpText("Mouse Primary")),
+                                        # tableOutput("mouse_means"),
+                                        # h5(helpText("Human Primary")),
+                                        # tableOutput("human_means"),
+                                        # h5(helpText("Human WAT")),
+                                        # tableOutput("human_WAT_means")
                            ),
                            
                            mainPanel(width = 9,
@@ -167,7 +167,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                                 
                          ),
                          column(4, align="right",
-                                tags$b("Disclaimer"), tags$br(),
+                                tags$b("Disclaimer:"), tags$br(),
                                 em("The authors disclaim any responsibility for the use or interpretation of the data 
                                    presented in this application. Users are solely responsible for ensuring the appropriate 
                                    use of any data they choose to re-use."), tags$br(),
