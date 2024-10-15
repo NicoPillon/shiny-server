@@ -70,8 +70,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                                                            label = "Diabetes diagnosis", 
                                                            selected = c("Healthy", "Prediabetes", "T2D"),
                                                            choices = c("Healthy", "Prediabetes", "T2D")),
-                                        em(h5("Prediabetes is defined as either impaired glucose tolerance measured during an OGTT or increased insulin,
-                                        resistance measured with euglycemic hyperinsulinemic clamps.")),
+                                        em(h5("Prediabetes is defined as either impaired glucose tolerance measured during an OGTT or increased insulin 
+                                              resistance measured with euglycemic hyperinsulinemic clamps.")),
                                         
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
