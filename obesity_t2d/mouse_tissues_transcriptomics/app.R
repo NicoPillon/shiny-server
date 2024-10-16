@@ -10,15 +10,10 @@ library(DT)
 library(plyr)
 library(ggplot2)
 library(ggpubr)
-theme <- theme(plot.title  = element_text(face="bold", color="black", size=13, angle=0),
-               axis.text.x = element_text(color="black", size=12, angle=90, hjust=1, vjust=0.5),
-               axis.text.y = element_text(color="black", size=11, angle=0, vjust=0.3),
-               axis.title  = element_text(face="bold", color="black", size=13, angle=0),
-               legend.text = element_text(color="black", size=13, angle=0),
-               legend.title = element_blank(),
-               legend.position="right",
-               legend.key.size = unit(30, "pt"),
-               strip.text = element_text(face="bold", color="black", size=14, angle=0))
+library(cowplot)
+library(dplyr)
+library(feather)
+
 
 #load data
 HFD_data <- readRDS('data/data_raw.Rds')
@@ -41,58 +36,100 @@ samples$age.at.start.cat[samples$age.at.start > 6] <- "8-9 weeks"
 samples$diet.composition.cat <- "32-45 %"
 samples$diet.composition.cat[samples$diet.composition > 45] <- "50-60 %"
 
+# function to format p values
+p_value_formatter <- function(p) {
+  sapply(p, function(x) {
+    if (x < 0.001) {
+      return("p < 0.001")
+    } else {
+      return(sprintf("p == %.3f", x))
+    }
+  })
+}
+
 
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
-                fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
+                
+                # Custom CSS to change checkbox tick color
+                tags$style(HTML("
+                  input[type='checkbox'] {
+                    accent-color: #c93f1e; /* Change the checkbox tick color here */
+                  }
+                ")),
+                
+                # title ribbon
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
                          h3("Gene expression in tissues from mice fed a high fat diet"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2022-06-02")
+                            "/ last update 2024-10-16")
                 ),
                 
-                fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;;text-align:center",
-                         em(h5("If you know other datasets that could be incorporated in this tool, please",
-                               a("let me know!", href="mailto:nicolas.pillon@ki.se", 
-                                 target="_blank", style="color:#5B768E"))),
-                         tags$hr()
-                ),
-                
-                fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;",
-                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=1000),
-                         column(2, checkboxGroupInput("diet_duration", 
-                                            label = "Diet duration", 
-                                            selected = c("< 6 weeks",
-                                                         "6-12 weeks", 
-                                                         "13-18 weeks",
-                                                         "> 18 weeks"), 
-                                            choices = c("< 6 weeks",
-                                                        "6-12 weeks", 
-                                                        "13-18 weeks",
-                                                        "> 18 weeks"))),
-                         column(2, checkboxGroupInput("age_start", 
-                                            label = "Age at start", 
-                                            selected = c("3-4 weeks",
-                                                         "5-6 weeks",
-                                                         "8-9 weeks"), 
-                                            choices = c("3-4 weeks",
-                                                        "5-6 weeks",
-                                                        "8-9 weeks"))),
-                         column(2, checkboxGroupInput("diet_composition", 
-                                                      label = "Diet composition", 
-                                                      selected = c("32-45 %",
-                                                                   "50-60 %"), 
-                                                      choices = c("32-45 %",
-                                                                  "50-60 %"))),
-                         actionButton("updatePlot", "Refresh plot", icon("refresh"))
-                ),
-                fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
-                         plotOutput("genePlot", height="400px") %>% withSpinner(color="#5b768e")
-                ),
+                # main page
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
-                         tags$hr(),
+                         sidebarLayout(
+                           sidebarPanel(width = 3,
+                                        selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=1000),
+                                        checkboxGroupInput("diet_duration", 
+                                                           label = "Diet duration", 
+                                                           selected = c("< 6 weeks", "6-12 weeks", "13-18 weeks", "> 18 weeks"), 
+                                                           choices = c("< 6 weeks", "6-12 weeks", "13-18 weeks", "> 18 weeks")),
+                                        checkboxGroupInput("age_start", 
+                                                           label = "Age at start", 
+                                                           selected = c("3-4 weeks", "5-6 weeks", "8-9 weeks"), 
+                                                           choices = c("3-4 weeks", "5-6 weeks", "8-9 weeks")),
+                                        checkboxGroupInput("diet_composition", 
+                                                           label = "Diet fat composition", 
+                                                           selected = c("32-45 %", "50-60 %"), 
+                                                           choices = c("32-45 %", "50-60 %"))
+                           ),
+                           mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
+                                     plotOutput("genePlot", height="500px") %>% withSpinner(color="#5b768e")
+                                     )
+                         )
+                ),
+                
+                tags$hr(),
+                
+                # Table with datasets
+                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
                          h3("Datasets Included in the Analysis"),
                          dataTableOutput("datasets")
+                ),
+                
+                
+                # Author section at the bottom
+                fluidRow(style="color:white;background-color:#5B768E;padding:2% 1% 2% 1%;display: flex; align-items: top; ",
+                         # column(2, align="right", 
+                         #        tags$img(src = "https://ki.se/profile-image/nicpil", height = "120px", width = "120px")  # Insert image here
+                         # ),
+                         column(4, align="left", 
+                                tags$b("About the author:"), tags$br(),
+                                "Nicolas J. Pillon, PhD", tags$br(),
+                                "Associate Professor, Karolinska Institutet", tags$br(),
+                                icon("globe"), a("/inflammation-and-metabolism", href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group",
+                                                 target="_blank", style="color:white"), tags$br(),
+                                icon("linkedin"), a("/nicopillon", href="https://www.linkedin.com/in/nicopillon/",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                tags$br(),
+                                "Feel free to write to me with feedback or questions:", tags$br(),
+                                icon("envelope"), a("nicolas.pillon@ki.se", href="mailto:nicolas.pillon@ki.se",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                
+                         ),
+                         column(4, align="center",
+                                #tags$b("© 2024 Nicolas Pillon"), tags$br(),
+                                
+                         ),
+                         column(4, align="right",
+                                tags$b("Disclaimer:"), tags$br(),
+                                em("The authors disclaim any responsibility for the use or interpretation of the data 
+                                   presented in this application. Users are solely responsible for ensuring the appropriate 
+                                   use of any data they choose to re-use."), tags$br(),
+                                tags$br(),
+                                tags$b("© 2024 Nicolas Pillon"),
+                         ),
                 )
 )
 
@@ -103,45 +140,52 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=genelist, 
                        server=TRUE, 
-                       selected=c("Itgax", "Lep"), 
+                       selected=c("Itgax"), 
                        options=NULL)
-  
-  plotInput <- eventReactive(input$updatePlot, {
-    validate(need(input$inputGeneSymbol, " "))
-    genename <- c("Itgax", "Lep")
-    genename <- input$inputGeneSymbol
 
-    data <- data.frame()
+  output$genePlot <- renderPlot({
+    validate(need(input$inputGeneSymbol, " "))
+    genename <- c("Itgax")
+    genename <- input$inputGeneSymbol
+    
+    plotdata <- data.frame()
     for (i in genename){
       asd <- HFD_data[i,]
       asd <- data.frame(samples, as.numeric(asd), Gene=i)
       colnames(asd) <- c(colnames(samples), "data", "Gene")
-      data <- rbind(data, asd)
+      plotdata <- rbind(plotdata, asd)
     }
     
     #filter according to selected categories
-    data <- data[data$diet.duration.cat %in% input$diet_duration &
-                   data$age.at.start.cat %in% input$age_start  &
-                   data$diet.composition.cat %in% input$diet_composition,]
+    plotdata <- plotdata[plotdata$diet.duration.cat %in% input$diet_duration &
+                           plotdata$age.at.start.cat %in% input$age_start  &
+                           plotdata$diet.composition.cat %in% input$diet_composition,]
+    
+    # label with n size
+    plotdata$sex <- gsub("^male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "male",])), plotdata$sex)
+    plotdata$sex <- gsub("^female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "female",])), plotdata$sex)
+    
+    
     
     #plot
-    gg <- ggplot(data, aes(x=tissue, y=data, fill=diet)) +  
-      geom_boxplot()  + 
-      theme_bw() + theme +
-      facet_wrap(~Gene, scales="free_y") +
+    ggplot(plotdata, aes(x=tissue, y=data, fill=diet)) +  
+      geom_boxplot(outlier.size = 0.1, position = position_dodge(0.85))  + 
+      geom_dotplot(binaxis = "y", 
+                   stackdir = "center", 
+                   dotsize = 2, 
+                   position = position_dodge(0.85), 
+                   binwidth = (max(plotdata$data, na.rm = T) - min(plotdata$data, na.rm = T))/100, 
+                   alpha = 0.5) +
+      theme_bw(16) + 
+      facet_wrap(~sex, scales="free_y") +
       labs(x=element_blank(),
            y="mRNA expression, log2") +
-      scale_fill_manual(values=c("#56B4E9", "#D55E00"))  +
-      stat_compare_means(aes(group = diet, label = ifelse(
-        p < 0.001, "p < 0.001", sprintf("p = %5.3f", as.numeric(..p..)))), 
-        size = 3, vjust=-2) +
-      scale_y_continuous(expand = c(0,3)) 
-    gg
+      scale_fill_manual(values=c("gray90", "#D55E00"))  +
+      stat_compare_means(aes(group = diet, 
+                             label = ifelse(p < 0.001, "p < 0.001", sprintf("p = %5.3f", as.numeric(..p..)))), 
+                         size = 4, vjust=-2) +
+      scale_y_continuous(expand = c(0,1)) 
     
-  })
-
-  output$genePlot <- renderPlot({
-    plotInput()
   })
   
   

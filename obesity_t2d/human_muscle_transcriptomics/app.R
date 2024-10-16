@@ -36,9 +36,9 @@ human_datasets <- human_metadata[,c("GEO", "age", "platform")] %>%
 p_value_formatter <- function(p) {
   sapply(p, function(x) {
     if (x < 0.001) {
-      return("italic(p) < 0.001")
+      return("p < 0.001")
     } else {
-      return(sprintf("italic(p) == %.3f", x))
+      return(sprintf("p == %.3f", x))
     }
   })
 }
@@ -65,7 +65,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          sidebarLayout(
                            sidebarPanel(width = 3,
-                                        selectizeInput("inputHumanGeneSymbol", "Gene Symbols:", choices=NULL, multiple=F, width=1000),
+                                        selectizeInput("inputHumanGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=1000),
                                         checkboxGroupInput("diagnosis_diabetes", 
                                                            label = "Diabetes diagnosis", 
                                                            selected = c("Healthy", "Prediabetes", "T2D"),
@@ -114,7 +114,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                                 
                                                          ),
                          column(4, align="right",
-                                tags$b("Disclaimer"), tags$br(),
+                                tags$b("Disclaimer:"), tags$br(),
                                 em("The authors disclaim any responsibility for the use or interpretation of the data 
                                    presented in this application. Users are solely responsible for ensuring the appropriate 
                                    use of any data they choose to re-use."), tags$br(),

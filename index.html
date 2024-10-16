@@ -36,10 +36,11 @@
         .footer {
             color: white;
             background-color: #5B768E;
+            font-size:14px;
             display: flex;
             justify-content: space-between;
             align-items: top;
-            padding: 1% 2% 2% 2%;
+            padding: 1% 1% 2% 1%;
         }
         .author-column {
             width: 30%;
@@ -86,54 +87,7 @@
         
 <hr>
        
-    <!-- Exercise Section -->
-    <div class="category">
-        <div style="text-align: center">
-            <h3>Exercise & Inactivity</h3>
-        </div>
-        
-        <div class="container">
-        
-            <!-- MetaMEx dataset -->
-            <div class="dataset">
-                <a href="http://metamex.eu" target="_blank">
-                    <img src="0_icons/MetaMEx.webp" alt="MetaMEx" title="Explore MetaMEx">
-                    <p><b>MetaMEx</b></p>
-                </a>
-                    <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity in mice and humans.</p>
-            </div>
-            
-            <!-- VO2max dataset -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/VO2max_reference_values/" target="_blank">
-                    <img src="0_icons/VO2max_reference_values.webp" alt="VO2max Reference">
-                    <p><b>Global VO2max</b></p>
-                </a>
-                    <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
-            </div>
-            
-            <!-- Muscle scRNAseq -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/muscle_scRNAseq_Lovric/" target="_blank">
-                    <img src="0_icons/muscle_scRNAseq_Lovric.png" alt="Muscle scRNAseq">
-                    <p><b>Single-cell RNAseq</b></p>
-                </a>
-                    <p>Exercise response in skeletal muscle analyzed by single-cell RNAseq from Lovrić et al, 2022.</p>
-            </div>
-            
-            <!-- Electrical Pulse Stimulation -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/myotube_EPS/" target="_blank">
-                    <img src="0_icons/myotube_EPS.png" alt="Electrical Pulse Stimulation">
-                    <p><b>In vitro EPS</b></p>
-                </a>
-                    <p>Transcriptomic response to electrical pulse stimulation in human primary and mouse C2C12 myotubes.</p>
-            </div>
-        </div>
-    </div>
-
-    <hr>
-    
+ 
     <!-- Obesity/T2D section -->
     <div class="category">
         <div style="text-align: center">
@@ -153,7 +107,7 @@
             <!-- Mouse high fat diet -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/obesity_t2d/mouse_tissues_transcriptomics" target="_blank">
-                    <img src="0_icons/obesity_t2d_mouse_tissues_transcriptomics.png" alt="Mouse Obesity">
+                    <img src="0_icons/obesity_t2d_mouse_tissues_transcriptomics.webp" alt="Mouse Obesity">
                     <p><b>Mouse High-fat Diet</b></p>
                 </a>
                 <p>Transcriptomics analysis of skeletal muscle, adipose tissue and liver in mice exposed to high-fat diet.</p>
@@ -202,7 +156,7 @@
             <!-- Macrophage polarization -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/inflammation/macrophage_polarization/" target="_blank">
-                    <img src="0_icons/macrophage_polarization.png" alt="Macrophage polarization">
+                    <img src="0_icons/macrophage_polarization.webp" alt="Macrophage polarization">
                     <p><b>Polarized Macrophages</b></p>
                 </a>
                 <p>Curated transcriptome of human and mouse macrophages polarized into M1/M2 phenotypes.</p>
@@ -211,7 +165,7 @@
             <!-- Adipose tissue cells -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/inflammation/human_adipose_tissue_immune_populations" target="_blank">
-                    <img src="0_icons/adipose_tissue_FACS.png" alt="Adipose tissue cells">
+                    <img src="0_icons/human_adipose_tissue_immune_populations.webp" alt="Adipose tissue cells">
                     <p><b>Adipose Tissue Cells</b></p>
                 </a>
                 <p>Transcriptomic profile of cells isolated from human adipose tissue by flow cytometry.</p>
@@ -249,7 +203,56 @@
             
         </div>
     </div>
-    
+ 
+    <hr>
+   
+    <!-- Exercise Section -->
+    <div class="category">
+        <div style="text-align: center">
+            <h3>Exercise & Inactivity</h3>
+        </div>
+        
+        <div class="container">
+        
+            <!-- MetaMEx dataset -->
+            <div class="dataset">
+                <a href="http://metamex.eu" target="_blank">
+                    <img src="0_icons/MetaMEx.webp" alt="MetaMEx" title="Explore MetaMEx">
+                    <p><b>MetaMEx</b></p>
+                </a>
+                    <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity in mice and humans.</p>
+            </div>
+            
+            <!-- VO2max dataset -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/exercise/VO2max_reference_values/" target="_blank">
+                    <img src="0_icons/VO2max_reference_values.webp" alt="VO2max Reference">
+                    <p><b>Global VO2max</b></p>
+                </a>
+                    <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
+            </div>
+            
+            <!-- Muscle scRNAseq -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/exercise/muscle_scRNAseq_Lovric/" target="_blank">
+                    <img src="0_icons/muscle_scRNAseq_Lovric.webp" alt="Muscle scRNAseq">
+                    <p><b>Single-cell RNAseq</b></p>
+                </a>
+                    <p>Exercise response in skeletal muscle analyzed by single-cell RNAseq from Lovrić et al, 2022.</p>
+            </div>
+            
+            <!-- Electrical Pulse Stimulation -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/exercise/myotube_EPS/" target="_blank">
+                    <img src="0_icons/myotube_EPS.webp" alt="Electrical Pulse Stimulation">
+                    <p><b>In vitro EPS</b></p>
+                </a>
+                    <p>Transcriptomic response to electrical pulse stimulation in human primary and mouse C2C12 myotubes.</p>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Footer -->
     <div class="footer">
         <div class="author-column">
@@ -268,7 +271,7 @@
         <div class="author-column" align="center">
             <!-- Center column left empty for potential future content -->
         </div>
-        <div class="author-column">
+        <div class="author-column style="align-text= right;">
             <b>Disclaimer:</b><br>
             <em>The authors disclaim any responsibility for the use or interpretation of the data presented in these applications. Users are solely responsible for ensuring the appropriate use of any data they choose to re-use.</em><br>
             <br>
