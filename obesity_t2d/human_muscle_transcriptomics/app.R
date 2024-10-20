@@ -61,6 +61,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                          sidebarLayout(
                            sidebarPanel(width = 3,
                                         selectizeInput("inputHumanGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=1000),
+                                        sliderInput("age", tags$b("Age (years)"),
+                                                    min = 18, max = 90, value = c(18,90), step = 1, sep = ""),
                                         checkboxGroupInput("diagnosis_diabetes", 
                                                            label = "Diabetes diagnosis", 
                                                            selected = c("Healthy", "Prediabetes", "T2D"),
@@ -141,8 +143,9 @@ server <- function(input, output, session) {
                                     levels=c("Lean", "Overweight", "Obesity"))
 
     #filter according to selected categories
-    plotdata <- plotdata[plotdata$diagnosis %in% input$diagnosis_diabetes 
-                         ,]
+    plotdata <- dplyr::filter(plotdata,
+                              diagnosis %in% input$diagnosis_diabetes ,
+                              age >= input$age[1] & age <= input$age[2])
     
     # label with n size
     plotdata$sex <- gsub("^male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "male",])), plotdata$sex)
@@ -165,8 +168,9 @@ server <- function(input, output, session) {
                  label.x = 20),
       
       ggplot(plotdata, aes(x=bmi_category, y=genedata)) +  
-        geom_jitter(aes(color = diagnosis, shape = diagnosis), size = 2, alpha = 0.25, width = 0.1) +
+        #geom_jitter(aes(color = diagnosis, shape = diagnosis), size = 2, alpha = 0.25, width = 0.1) +
         geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
+        geom_sina(aes(color = diagnosis, shape = diagnosis), size = 1.5, position = position_dodge(0), alpha = 0.25) +
         theme_bw(16) + 
         theme(legend.position = "right") +
         facet_wrap(.~sex, ncol = 1) +
@@ -190,7 +194,7 @@ server <- function(input, output, session) {
   #Dataset tables
   output$datasets <- renderDataTable(options=list(signif = 3),{
     DT::datatable(
-      references, 
+      human_references, 
       escape = FALSE, 
       rownames = FALSE,
       options = list(
