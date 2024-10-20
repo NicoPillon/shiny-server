@@ -135,7 +135,7 @@ server <- function(input, output, session) {
     
     # collect data
     plotdata <- data.frame(metadata,
-                           genedata = as.numeric(datamatrix["Itgax",]))
+                           genedata = as.numeric(datamatrix[genename,]))
     
     #filter according to selected categories
     plotdata <- dplyr::filter(plotdata,
