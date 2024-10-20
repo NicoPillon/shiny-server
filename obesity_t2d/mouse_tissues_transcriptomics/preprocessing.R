@@ -3,14 +3,14 @@ setwd(dirname(getActiveDocumentContext()$path))
 #--------------------------------------------------------------------------------------------------
 library(readxl)
 
-saveRDS(readRDS("../../R_databases/Obesity_Mouse/Obesity_Mouse_data.Rds"),
-        file="data/data_raw.Rds")
+# matrix
+datamatrix <- readRDS("../../../R_databases/obesity_t2d/mouse_tissues_transcriptomics/data_out/datamatrix.Rds")
+saveRDS(datamatrix, file="data/datamatrix.Rds")
 
-
-#list of samples and metadata
-saveRDS(readRDS("../../R_databases/Obesity_Mouse/Obesity_Mouse_samples.Rds"),
-        file="data/metadata.Rds")
+# metadata
+metadata <- readRDS("../../../R_databases/obesity_t2d/mouse_tissues_transcriptomics/data_out/metadata.Rds")
+saveRDS(metadata, file="data/metadata.Rds")
 
 # list of datasets
-datasets <- read_xlsx("../../R_databases/Obesity_Mouse/Obesity_Mouse.xlsx")
-saveRDS(datasets, file="data/datasets.Rds")
+datasets <- readRDS("../../../R_databases/obesity_t2d/mouse_tissues_transcriptomics/data_out/references.Rds")
+saveRDS(datasets, file="data/references.Rds")

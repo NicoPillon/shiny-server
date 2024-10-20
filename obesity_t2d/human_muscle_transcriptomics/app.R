@@ -58,7 +58,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                          h3("Gene expression in skeletal muscle from humans with obesity and type 2 diabetes"),
                          h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                     target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-03-07")
+                            "/ last update 2024-10-17")
                 ),
 
                 # main page

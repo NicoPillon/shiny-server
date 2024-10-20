@@ -13,28 +13,28 @@ library(ggpubr)
 library(cowplot)
 library(dplyr)
 library(feather)
-
+library(ggforce)
 
 #load data
-HFD_data <- readRDS('data/data_raw.Rds')
-genelist <- rownames(HFD_data)
-samples <- readRDS("data/metadata.Rds")
-datasets <- readRDS("data/datasets.Rds")
+datamatrix <- readRDS('data/datamatrix.Rds')
+genelist <- rownames(datamatrix)
+metadata <- readRDS("data/metadata.Rds")
+references <- readRDS("data/references.Rds")
 
-#organize diet duration
-samples$diet.duration.cat <- "< 6 weeks"
-samples$diet.duration.cat[samples$diet.duration >= 6] <- "6-12 weeks"
-samples$diet.duration.cat[samples$diet.duration >= 13] <- "13-18 weeks"
-samples$diet.duration.cat[samples$diet.duration > 18] <- "> 18 weeks"
-
-#organize age
-samples$age.at.start.cat <- "3-4 weeks"
-samples$age.at.start.cat[samples$age.at.start > 4] <- "5-6 weeks"
-samples$age.at.start.cat[samples$age.at.start > 6] <- "8-9 weeks"
-
-#organize diet
-samples$diet.composition.cat <- "32-45 %"
-samples$diet.composition.cat[samples$diet.composition > 45] <- "50-60 %"
+# #organize diet duration
+# metadata$diet.duration.cat <- "< 6 weeks"
+# metadata$diet.duration.cat[metadata$diet.duration >= 6] <- "6-12 weeks"
+# metadata$diet.duration.cat[metadata$diet.duration >= 13] <- "13-18 weeks"
+# metadata$diet.duration.cat[metadata$diet.duration > 18] <- "> 18 weeks"
+# 
+# #organize age
+# metadata$age.at.start.cat <- "3-4 weeks"
+# metadata$age.at.start.cat[metadata$age.at.start > 4] <- "5-6 weeks"
+# metadata$age.at.start.cat[metadata$age.at.start > 6] <- "8-9 weeks"
+# 
+# #organize diet
+# metadata$diet.composition.cat <- "32-45 %"
+# metadata$diet.composition.cat[metadata$diet.composition > 45] <- "50-60 %"
 
 # function to format p values
 p_value_formatter <- function(p) {
@@ -71,18 +71,12 @@ ui <- fluidPage(theme = "bootstrap.css",
                          sidebarLayout(
                            sidebarPanel(width = 3,
                                         selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=1000),
-                                        checkboxGroupInput("diet_duration", 
-                                                           label = "Diet duration", 
-                                                           selected = c("< 6 weeks", "6-12 weeks", "13-18 weeks", "> 18 weeks"), 
-                                                           choices = c("< 6 weeks", "6-12 weeks", "13-18 weeks", "> 18 weeks")),
-                                        checkboxGroupInput("age_start", 
-                                                           label = "Age at start", 
-                                                           selected = c("3-4 weeks", "5-6 weeks", "8-9 weeks"), 
-                                                           choices = c("3-4 weeks", "5-6 weeks", "8-9 weeks")),
-                                        checkboxGroupInput("diet_composition", 
-                                                           label = "Diet fat composition", 
-                                                           selected = c("32-45 %", "50-60 %"), 
-                                                           choices = c("32-45 %", "50-60 %"))
+                                        sliderInput("age_start", tags$b("Age at start (weeks)"),
+                                                    min = 3, max = 15, value = c(3,15), step = 1, sep = ""),
+                                        sliderInput("diet_duration", tags$b("Diet duration (weeks)"),
+                                                    min = 0.5, max = 25, value = c(0.5,25), step = 1, sep = ""),
+                                        sliderInput("diet_composition", tags$b("Diet fat content (%)"),
+                                                    min = 15, max = 60, value = c(15,60), step = 1, sep = "")
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                      plotOutput("genePlot", height="500px") %>% withSpinner(color="#5b768e")
@@ -92,10 +86,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                 
                 tags$hr(),
                 
-                # Table with datasets
+                # Table with references
                 fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
                          h3("Datasets Included in the Analysis"),
-                         dataTableOutput("datasets")
+                         dataTableOutput("references")
                 ),
                 
                 
@@ -148,54 +142,54 @@ server <- function(input, output, session) {
     genename <- c("Itgax")
     genename <- input$inputGeneSymbol
     
-    plotdata <- data.frame()
-    for (i in genename){
-      asd <- HFD_data[i,]
-      asd <- data.frame(samples, as.numeric(asd), Gene=i)
-      colnames(asd) <- c(colnames(samples), "data", "Gene")
-      plotdata <- rbind(plotdata, asd)
-    }
+    # collect data
+    plotdata <- data.frame(metadata,
+                           genedata = as.numeric(datamatrix_normalized["Itgax",]))
     
     #filter according to selected categories
-    plotdata <- plotdata[plotdata$diet.duration.cat %in% input$diet_duration &
-                           plotdata$age.at.start.cat %in% input$age_start  &
-                           plotdata$diet.composition.cat %in% input$diet_composition,]
+    plotdata <- dplyr::filter(plotdata,
+                              diet.duration >= input$age_start[1] & diet.duration <= input$age_start[2],
+                              age.at.start >= input$diet_duration[1] & age.at.start <= input$diet_duration[2],
+                              diet.fat.percent >= input$diet_composition[1] & diet.fat.percent <= input$diet_composition[2])
+
+    # label tissues with n sizes
+    plotdata$tissue <- gsub("BAT", paste0("BAT\nn = ", nrow(plotdata[plotdata$tissue == "BAT",])), plotdata$tissue)
+    plotdata$tissue <- gsub("Liver", paste0("Liver\nn = ", nrow(plotdata[plotdata$tissue == "Liver",])), plotdata$tissue)
+    plotdata$tissue <- gsub("Muscle", paste0("Muscle\nn = ", nrow(plotdata[plotdata$tissue == "Muscle",])), plotdata$tissue)
+    plotdata$tissue <- gsub("subcutWAT", paste0("subcutWAT\nn = ", nrow(plotdata[plotdata$tissue == "subcutWAT",])), plotdata$tissue)
+    plotdata$tissue <- gsub("visceralWAT", paste0("visceralWAT\nn = ", nrow(plotdata[plotdata$tissue == "visceralWAT",])), plotdata$tissue)
     
-    # label with n size
-    plotdata$sex <- gsub("^male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "male",])), plotdata$sex)
-    plotdata$sex <- gsub("^female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "female",])), plotdata$sex)
-    
-    
-    
-    #plot
-    ggplot(plotdata, aes(x=tissue, y=data, fill=diet)) +  
-      geom_boxplot(outlier.size = 0.1, position = position_dodge(0.85))  + 
-      geom_dotplot(binaxis = "y", 
-                   stackdir = "center", 
-                   dotsize = 2, 
-                   position = position_dodge(0.85), 
-                   binwidth = (max(plotdata$data, na.rm = T) - min(plotdata$data, na.rm = T))/100, 
-                   alpha = 0.5) +
+    # plot
+    ggplot(plotdata, aes(x=tissue, y=genedata, fill=diet)) +  
+      geom_boxplot(position = position_dodge(0.8), outlier.size = 0) +
+      geom_sina(size = 0.5, position = position_dodge(0.8)) +
       theme_bw(16) + 
-      facet_wrap(~sex, scales="free_y") +
       labs(x=element_blank(),
            y="mRNA expression, log2") +
       scale_fill_manual(values=c("gray90", "#D55E00"))  +
       stat_compare_means(aes(group = diet, 
                              label = ifelse(p < 0.001, "p < 0.001", sprintf("p = %5.3f", as.numeric(..p..)))), 
                          size = 4, vjust=-2) +
-      scale_y_continuous(expand = c(0,1)) 
-    
+      scale_y_continuous(expand = c(0,1.5)) 
   })
   
   
   ##################################################################################################################
   #Dataset tables
-  output$datasets <- renderDataTable(options=list(signif = 3),{
-    DT::datatable(datasets, 
-                  options = list(lengthMenu = c(10, 50, 100), 
-                                 pageLength = 10),
-                  rownames= FALSE)
+  output$references <- renderDataTable(options=list(signif = 3),{
+    DT::datatable(
+      references, 
+      escape = FALSE, 
+      rownames = FALSE,
+      options = list(
+        columnDefs = list(
+          list(className = 'dt-center', targets = 2),  # Align column to the center
+          list(className = 'dt-center', targets = 3),  # Align column to the center
+          list(className = 'dt-center', targets = 4)  # Align column to the right
+          # Add more lines for additional columns if needed
+        )
+      )
+    )
   })
   
 }
