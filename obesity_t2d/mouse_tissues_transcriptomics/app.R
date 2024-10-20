@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 #
-# Mouse Obesity
+# Obesity
 #
 #----------------------------------------------------------------------
 # Load libraries
@@ -15,26 +15,17 @@ library(dplyr)
 library(feather)
 library(ggforce)
 
-#load data
-datamatrix <- readRDS('data/datamatrix.Rds')
-genelist <- rownames(datamatrix)
+#load metadata
+genelist <- readRDS("data/genelist.Rds")
 metadata <- readRDS("data/metadata.Rds")
 references <- readRDS("data/references.Rds")
 
-# #organize diet duration
-# metadata$diet.duration.cat <- "< 6 weeks"
-# metadata$diet.duration.cat[metadata$diet.duration >= 6] <- "6-12 weeks"
-# metadata$diet.duration.cat[metadata$diet.duration >= 13] <- "13-18 weeks"
-# metadata$diet.duration.cat[metadata$diet.duration > 18] <- "> 18 weeks"
-# 
-# #organize age
-# metadata$age.at.start.cat <- "3-4 weeks"
-# metadata$age.at.start.cat[metadata$age.at.start > 4] <- "5-6 weeks"
-# metadata$age.at.start.cat[metadata$age.at.start > 6] <- "8-9 weeks"
-# 
-# #organize diet
-# metadata$diet.composition.cat <- "32-45 %"
-# metadata$diet.composition.cat[metadata$diet.composition > 45] <- "50-60 %"
+# load matrix
+datamatrix_1 <- read_feather('data/datamatrix_1.feather')
+datamatrix_2 <- read_feather('data/datamatrix_2.feather')
+datamatrix <- data.frame(rbind(datamatrix_1,
+                               datamatrix_2))
+rownames(datamatrix) <- genelist
 
 # function to format p values
 p_value_formatter <- function(p) {
@@ -144,7 +135,7 @@ server <- function(input, output, session) {
     
     # collect data
     plotdata <- data.frame(metadata,
-                           genedata = as.numeric(datamatrix_normalized["Itgax",]))
+                           genedata = as.numeric(datamatrix["Itgax",]))
     
     #filter according to selected categories
     plotdata <- dplyr::filter(plotdata,

@@ -13,24 +13,19 @@ library(ggpubr)
 library(cowplot)
 library(dplyr)
 library(feather)
+library(ggforce)
 
-#load data
+#load metadata
 human_genelist <- readRDS("data/human_genelist.Rds")
 human_metadata <- readRDS("data/human_metadata.Rds")
+human_references <- readRDS("data/human_references.Rds")
+  
+# matrix
 human_datamatrix_1 <- read_feather('data/human_datamatrix_1.feather')
 human_datamatrix_2 <- read_feather('data/human_datamatrix_2.feather')
 human_datamatrix <- data.frame(rbind(human_datamatrix_1,
                                      human_datamatrix_2))
 rownames(human_datamatrix) <- human_genelist
-
-human_datasets <- human_metadata[,c("GEO", "age", "platform")] %>%
-  group_by(GEO) %>%
-  summarise(
-    age = round(mean(age, na.rm = TRUE), 1),  # Calculate the average age
-    platform = first(platform),          # Get the platform
-    n = n()                     # Count the total number of rows
-  )
-
 
 # function to format p values
 p_value_formatter <- function(p) {
@@ -194,10 +189,18 @@ server <- function(input, output, session) {
   ##################################################################################################################
   #Dataset tables
   output$datasets <- renderDataTable(options=list(signif = 3),{
-    DT::datatable(human_datasets,
-                  options = list(lengthMenu = c(10, 50, 100),
-                                 pageLength = 10),
-                  rownames= FALSE)
+    DT::datatable(
+      references, 
+      escape = FALSE, 
+      rownames = FALSE,
+      options = list(
+        columnDefs = list(
+          list(className = 'dt-center', targets = 1),  # Align column to the center
+          list(className = 'dt-center', targets = 2)  # Align column to the center
+          # Add more lines for additional columns if needed
+        )
+      )
+    )
   })
   
 }
