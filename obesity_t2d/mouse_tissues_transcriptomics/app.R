@@ -23,21 +23,22 @@ references <- readRDS("data/references.Rds")
 # load matrix
 datamatrix_1 <- read_feather('data/datamatrix_1.feather')
 datamatrix_2 <- read_feather('data/datamatrix_2.feather')
+datamatrix_3 <- read_feather('data/datamatrix_3.feather')
 datamatrix <- data.frame(rbind(datamatrix_1,
-                               datamatrix_2))
+                               datamatrix_2,
+                               datamatrix_3))
 rownames(datamatrix) <- genelist
 
 # function to format p values
 p_value_formatter <- function(p) {
   sapply(p, function(x) {
     if (x < 0.001) {
-      return("p < 0.001")
+      return("italic(p) < 0.001")
     } else {
-      return(sprintf("p == %.3f", x))
+      return(sprintf("italic(p) == %.3f", x))
     }
   })
 }
-
 
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
@@ -51,23 +52,32 @@ ui <- fluidPage(theme = "bootstrap.css",
                 
                 # title ribbon
                 fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
-                         h3("Gene expression in tissues from mice fed a high fat diet"),
-                         h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-10-16")
-                ),
+                         column(1, 
+                                style = "height:8vh; display:flex; justify-content:center; align-items:center;",
+                                tags$a(href = "https://shiny.nicopillon.com", 
+                                       icon("home", class = "fa-2x"), 
+                                       style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
+                         ),
+                         column(11,
+                                h3("Gene expression in tissues from mice fed a high fat diet"),
+                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
+                                           target="_blank", style="color:#D9DADB"), 
+                                   "/ last update 2024-10-16")
+                                )
+                         ),
                 
                 # main page
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          sidebarLayout(
                            sidebarPanel(width = 3,
                                         selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=1000),
-                                        sliderInput("age_start", tags$b("Age at start (weeks)"),
-                                                    min = 3, max = 15, value = c(3,15), step = 1, sep = ""),
+                                        # sliderInput("age_start", tags$b("Age at start (weeks)"),
+                                        #             min = 3, max = 14, value = c(3,14), step = 1, sep = ""),
                                         sliderInput("diet_duration", tags$b("Diet duration (weeks)"),
                                                     min = 0.5, max = 25, value = c(0.5,25), step = 1, sep = ""),
                                         sliderInput("diet_composition", tags$b("Diet fat content (%)"),
-                                                    min = 15, max = 60, value = c(15,60), step = 1, sep = "")
+                                                    min = 15, max = 60, value = c(15,60), step = 1, sep = ""),
+                                        em(h5("In this analysis of more than 700 animals, less than 20 are female, making it impossible to analyse sex differences."))
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                      plotOutput("genePlot", height="500px") %>% withSpinner(color="#5b768e")
@@ -125,7 +135,7 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=genelist, 
                        server=TRUE, 
-                       selected=c("Itgax"), 
+                       selected=c("Lep"), 
                        options=NULL)
 
   output$genePlot <- renderPlot({
@@ -139,8 +149,8 @@ server <- function(input, output, session) {
     
     #filter according to selected categories
     plotdata <- dplyr::filter(plotdata,
-                              diet.duration >= input$age_start[1] & diet.duration <= input$age_start[2],
-                              age.at.start >= input$diet_duration[1] & age.at.start <= input$diet_duration[2],
+                              diet.duration >= input$diet_duration[1] & diet.duration <= input$diet_duration[2],
+                              #age.at.start >= input$age_start[1] & age.at.start <= input$age_start[2],
                               diet.fat.percent >= input$diet_composition[1] & diet.fat.percent <= input$diet_composition[2])
 
     # label tissues with n sizes
@@ -159,8 +169,8 @@ server <- function(input, output, session) {
            y="mRNA expression, log2") +
       scale_fill_manual(values=c("gray90", "#D55E00"))  +
       stat_compare_means(aes(group = diet, 
-                             label = ifelse(p < 0.001, "p < 0.001", sprintf("p = %5.3f", as.numeric(..p..)))), 
-                         size = 4, vjust=-2) +
+                             label = after_stat(p_value_formatter(..p..))), 
+                         size = 4, vjust = -2, parse = TRUE) +
       scale_y_continuous(expand = c(0,1.5)) 
   })
   

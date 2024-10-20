@@ -31,9 +31,9 @@ rownames(human_datamatrix) <- human_genelist
 p_value_formatter <- function(p) {
   sapply(p, function(x) {
     if (x < 0.001) {
-      return("p < 0.001")
+      return("italic(p) < 0.001")
     } else {
-      return(sprintf("p == %.3f", x))
+      return(sprintf("italic(p) == %.3f", x))
     }
   })
 }
@@ -50,10 +50,18 @@ ui <- fluidPage(theme = "bootstrap.css",
                 
                 # title ribbon
                 fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
-                         h3("Gene expression in skeletal muscle from humans with obesity and type 2 diabetes"),
-                         h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-10-17")
+                         column(1, 
+                                style = "height:8vh; display:flex; justify-content:center; align-items:center;",
+                                tags$a(href = "https://shiny.nicopillon.com", 
+                                       icon("home", class = "fa-2x"), 
+                                       style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
+                         ),
+                         column(11,
+                                h3("Gene expression in skeletal muscle from humans with obesity and type 2 diabetes"),
+                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
+                                           target="_blank", style="color:#D9DADB"), 
+                                   "/ last update 2024-10-17")
+                                )
                 ),
 
                 # main page
@@ -68,7 +76,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                                                            selected = c("Healthy", "Prediabetes", "T2D"),
                                                            choices = c("Healthy", "Prediabetes", "T2D")),
                                         em(h5("Prediabetes is defined as either impaired glucose tolerance measured during an OGTT or increased insulin 
-                                              resistance measured with euglycemic hyperinsulinemic clamps.")),
+                                              resistance measured with euglycemic hyperinsulinemic clamps."))
                                         
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
@@ -162,7 +170,7 @@ server <- function(input, output, session) {
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
         scale_color_manual(values = c("darkgreen", "orange", "darkred")) +
-        scale_y_continuous(expand = c(0,1)) +
+        scale_y_continuous(expand = c(0,1.5)) +
         stat_cor(size = 4, 
                  vjust = -1, 
                  label.x = 20),
@@ -178,7 +186,7 @@ server <- function(input, output, session) {
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
         scale_color_manual(values = c("darkgreen", "orange", "darkred")) +
-        scale_y_continuous(expand = c(0,1)) +
+        scale_y_continuous(expand = c(0,1.5)) +
         stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))), 
                            ref.group = "Lean",
                            parse = TRUE,
