@@ -1,27 +1,31 @@
 #-----------------------------------------------------------------------
 #
-# Myotube differentiation
+# Diabetic Myotube differentiation
 #
 #----------------------------------------------------------------------
 # Load libraries
 library(shinycssloaders)
 library(stringr)
-library(plyr)
-library(dplyr)
 library(DT)
-library(ggpubr)
-library(rstatix)
+library(plyr)
 library(ggplot2)
-library(ggprism)
-theme <- theme(plot.title  = element_text(face="bold", color="black", size=13, angle=0),
-               axis.text.x = element_text(face="bold", color="black", size=13, angle=90, hjust=1, vjust=0.5),
-               axis.text.y = element_text(color="black", size=11, angle=0, vjust=0.3),
-               axis.title  = element_text(face="bold", color="black", size=13, angle=0),
-               legend.text = element_text(color="black", size=13, angle=0),
-               legend.title = element_blank(),
-               legend.position="right",
-               legend.key.size = unit(30, "pt"),
-               strip.text = element_text(face="bold", color="black", size=14, angle=0))
+library(ggpubr)
+library(cowplot)
+library(dplyr)
+library(feather)
+library(ggforce)
+library(rstatix)
+
+# function to format p values
+p_value_formatter <- function(p) {
+  sapply(p, function(x) {
+    if (x < 0.001) {
+      return("fdr < 0.001")
+    } else {
+      return(sprintf("fdr = %.3f", x))
+    }
+  })
+}
 
 #load data
 BlastDiffT2D_data <- readRDS('data/data_raw.Rds')
@@ -43,37 +47,101 @@ genelist <- rownames(BlastDiffT2D_data)
 
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
-                fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
-                         h3("In vitro differentiation of primary skeletal muscle cells"),
-                         h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2021-09-30")
+                
+                # Google analytics
+                tags$head(includeScript("google-analytics.html")),
+                
+                # Custom CSS to change checkbox tick color
+                tags$style(HTML("
+                  input[type='checkbox'] {
+                    accent-color: #c93f1e; /* Change the checkbox tick color here */
+                  }
+                ")),
+                
+                # title ribbon
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
+                         column(1, 
+                                style = "height:8vh; display:flex; justify-content:center; align-items:center;",
+                                tags$a(href = "https://shiny.nicopillon.com", 
+                                       icon("home", class = "fa-2x"), 
+                                       style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
+                         ),
+                         column(11,
+                                h3("Primary skeletal muscle cells from individuals with or without type 2 diabetes"),
+                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
+                                           target="_blank", style="color:#D9DADB"), 
+                                   "/ last update 2021-09-30")
+                         )
+                          
                 ),
-                fluidRow(style="color:black;background-color:white;padding:1% 8% 0% 8%;",
+
+                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
+                         sidebarLayout(
+                           sidebarPanel(width = 3,
+                                        selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
+                                        actionButton("updatePlot", "Refresh plot", icon("refresh"))
+                           ),                           
+                           mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
+                                     plotOutput("genePlot", height="600px") %>% withSpinner(color="#5b768e", proxy.height="200px")
+                           )
+                         )
+                ),
+                
+                tags$hr(),
+                
+                # Table with datasets
+                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
+                         h3("Datasets Included in the Analysis"),
                          "Primary human myoblasts differentiated into myotubes from",
                          a("GSE55650", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE55650", target="_blank", style="color:#5B768E"), 
                          "(Affymetrix HG-U133 plus2, n=5-6) and", 
                          a("GSE166502", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE166502", target="_blank", style="color:#5B768E"), 
                          "(Illumina HumanHT-12 V4.0, n=13)"
                 ),
+                
                 tags$hr(),
-                fluidRow(style="color:black;background-color:white;padding:0% 8% 1% 8%;",
-                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
-                         actionButton("updatePlot", "Refresh plot", icon("refresh"))
-                ),
-                fluidRow(style="color:black;background-color:white;padding:2% 8% 1% 8%;",
-                         plotOutput("genePlot", height="600px") %>% withSpinner(color="#5b768e", proxy.height="200px")
-                ),
-                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
-                         tags$hr(),
-                         h3("Statistics - differentiation"),
+                
+                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
+                         h3("Statistics"),
+                         h4("Overall effect of differentiation"),
                          dataTableOutput("stats_diff"),
-                         tags$hr(),
-                         h3("Statistics - T2D"),
+                         h4("Overall effect of T2D"),
                          dataTableOutput("stats_t2d"),
-                         tags$hr(),
-                         h3("Statistics - interaction"),
+                         h4("Interaction effect differentiation:diabetes"),
                          dataTableOutput("stats_int")
+                ),
+                
+                # Author section at the bottom
+                fluidRow(style="color:white;background-color:#5B768E;padding:2% 1% 2% 1%;display: flex; align-items: top; ",
+                         # column(2, align="right", 
+                         #        tags$img(src = "https://ki.se/profile-image/nicpil", height = "120px", width = "120px")  # Insert image here
+                         # ),
+                         column(4, align="left", 
+                                tags$b("About the author:"), tags$br(),
+                                "Nicolas J. Pillon, PhD", tags$br(),
+                                "Associate Professor, Karolinska Institutet", tags$br(),
+                                icon("globe"), a("/inflammation-and-metabolism", href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group",
+                                                 target="_blank", style="color:white"), tags$br(),
+                                icon("linkedin"), a("/nicopillon", href="https://www.linkedin.com/in/nicopillon/",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                tags$br(),
+                                "Feel free to write to me with feedback or questions:", tags$br(),
+                                icon("envelope"), a("nicolas.pillon@ki.se", href="mailto:nicolas.pillon@ki.se",
+                                                    target="_blank", style="color:white"), tags$br(),
+                                
+                         ),
+                         column(4, align="center",
+                                #tags$b("© 2024 Nicolas Pillon"), tags$br(),
+                                
+                         ),
+                         column(4, align="right",
+                                tags$b("Disclaimer:"), tags$br(),
+                                em("The authors disclaim any responsibility for the use or interpretation of the data 
+                                   presented in this application. Users are solely responsible for ensuring the appropriate 
+                                   use of any data they choose to re-use."), tags$br(),
+                                tags$br(),
+                                tags$b("© 2024 Nicolas Pillon"),
+                         ),
                 )
 )
 
@@ -89,7 +157,7 @@ server <- function(input, output, session) {
   
   plotData <- eventReactive(input$updatePlot, {
     validate(need(input$inputGeneSymbol, " "))
-    diff_list <- c("MKI67", "PAX7", "MYF5", "MSTN", "CKM", "AIM1", "ANOS1", "MYOD", "MYOG", "HMOX1")
+    diff_list <- c("MKI67", "PAX7", "MYF5", "MSTN", "CKM", "FBN2", "MYOD", "MYOG", "HMOX1")
     diff_list <- input$inputGeneSymbol
     
     diff_data <- t(BlastDiffT2D_data[diff_list,])
@@ -128,9 +196,9 @@ server <- function(input, output, session) {
     stats_T2Dblasts <- data.frame(BlastDiffT2D_stats_T2D_blasts[diff_list,], group1="NGT.Myoblast", group2="T2D.Myoblast")
     stats_T2Dtubes <- data.frame(BlastDiffT2D_stats_T2D_tubes[diff_list,], group1="NGT.Myotube", group2="T2D.Myotube")
     stat.limma <- rbind(stats_diffNGT[,c(1,10,11,7,8)],
-                        stats_diffT2D[,c(1,10,11,7,8)]
+                        stats_diffT2D[,c(1,10,11,7,8)],
                         #stats_T2Dblasts[,c(1,10,11,7,8)],
-                        #stats_T2Dtubes[,c(1,10,11,7,8)]
+                        stats_T2Dtubes[,c(1,10,11,7,8)]
                         )
     colnames(stat.limma)[1] <- "gene"
     
@@ -140,13 +208,11 @@ server <- function(input, output, session) {
 
     #merge with stats from limma
     stat.test <- full_join(stat.test, stat.limma)
+    stat.test <- stat.test[stat.test$adj.P.Val < 0.1,]
     stat.test <- na.omit(stat.test)
     
-    #replace stats by the ones from limma
-    stat.test$p.adj.signif <- "ns"
-    stat.test$p.adj.signif[stat.test$adj.P.Val<0.05] <- "*"
-    stat.test$p.adj.signif[stat.test$adj.P.Val<0.01] <- "**"
-    stat.test$p.adj.signif[stat.test$adj.P.Val<0.001] <- "***"
+    #format p values
+    stat.test$FDR_format <- p_value_formatter(stat.test$adj.P.Val)
     
     # Add position for adjusted p-values
     stat.test <- stat.test %>% add_x_position(x = "group")
@@ -156,17 +222,14 @@ server <- function(input, output, session) {
     colnames(max.y) <- c("gene", "y.position")
     max.y$y.position <- max.y$y.position + 0.5
     stat.test <- full_join(stat.test, max.y)
-    
-    #stat.test <- stat.test %>% add_y_position(data=plotdata, formula=data ~ group,
-    #                                          step.increase = 0.15, scales="free")
-    
+
     #plot
-    diffplot_mean <- ggboxplot(plotdata, x = "group", y = "data", facet.by = "gene", outlier.size=0.5, scales="free") +
+    ggboxplot(plotdata, x = "group", y = "data", facet.by = "gene", outlier.size=0.5, scales="free") +
       geom_hline(yintercept=0, linetype=3, color='grey30', size=0.5) +
-      theme_bw(14) + theme + theme(legend.title = element_blank()) +
+      theme_bw(16) + theme(legend.title = element_blank()) +
       labs(x=element_blank(),
            y="mRNA, log2(relative to control)") +
-      stat_pvalue_manual(stat.test, label = "p.adj.signif", hide.ns = T, label.size = 8, bracket.size = 0.5) +
+      stat_pvalue_manual(stat.test, label = "FDR_format", hide.ns = T, label.size = 4, bracket.size = 0.5) +
       geom_line(aes(group=subject, color=GEO),
                 size=0.3) +
       scale_colour_manual(values=c("#56B4E9", "#D55E00")) +
@@ -175,7 +238,7 @@ server <- function(input, output, session) {
                                 "NGT.Myotube"  = "NGT\nMyotube",
                                 "T2D.Myoblast" = "T2D\nMyoblast",
                                 "T2D.Myotube"  = "T2D\nMyotube"))
-    diffplot_mean
+
   })
 
   output$genePlot <- renderPlot({
