@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 #
-# Obesity
+# Mice on HFD
 #
 #----------------------------------------------------------------------
 # Load libraries
@@ -14,6 +14,17 @@ library(cowplot)
 library(dplyr)
 library(feather)
 library(ggforce)
+
+# function to format p values
+p_value_formatter <- function(p) {
+  sapply(p, function(x) {
+    if (x < 0.001) {
+      return("italic(p) < 0.001")
+    } else {
+      return(sprintf("italic(p) == %.3f", x))
+    }
+  })
+}
 
 #load metadata
 genelist <- readRDS("data/genelist.Rds")
@@ -29,19 +40,11 @@ datamatrix <- data.frame(rbind(datamatrix_1,
                                datamatrix_3))
 rownames(datamatrix) <- genelist
 
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
-
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
+                
+                # Google analytics
+                tags$head(includeScript("google-analytics.html")),
                 
                 # Custom CSS to change checkbox tick color
                 tags$style(HTML("

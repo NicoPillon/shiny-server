@@ -49,6 +49,9 @@ fct_nomogram <- function(dat){
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
                 
+                # Google analytics
+                tags$head(includeScript("google-analytics.html")),
+                
                 # Custom CSS to change checkbox tick color
                 tags$style(HTML("
                   input[type='checkbox'] {
@@ -56,13 +59,21 @@ ui <- fluidPage(theme = "bootstrap.css",
                   }
                 ")),
                 
-                # Title ribbon
-                fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
-                         h3("Worldwide reference values for maximal oxygen uptake"),
-                         h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-10-07")
-                ),
+                # title ribbon
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
+                         column(1, 
+                                style = "height:8vh; display:flex; justify-content:center; align-items:center;",
+                                tags$a(href = "https://shiny.nicopillon.com", 
+                                       icon("home", class = "fa-2x"), 
+                                       style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
+                         ),
+                         column(11,
+                                h3("Worldwide reference values for maximal oxygen uptake"),
+                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
+                                           target="_blank", style="color:#D9DADB"), 
+                                   "/ last update 2024-10-07")
+                                )
+                         ),
                 
                 # main page
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",

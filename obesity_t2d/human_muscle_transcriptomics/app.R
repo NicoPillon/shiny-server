@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 #
-# Obesity
+# Human Obesity
 #
 #----------------------------------------------------------------------
 # Load libraries
@@ -15,6 +15,17 @@ library(dplyr)
 library(feather)
 library(ggforce)
 
+# function to format p values
+p_value_formatter <- function(p) {
+  sapply(p, function(x) {
+    if (x < 0.001) {
+      return("italic(p) < 0.001")
+    } else {
+      return(sprintf("italic(p) == %.3f", x))
+    }
+  })
+}
+
 #load metadata
 human_genelist <- readRDS("data/human_genelist.Rds")
 human_metadata <- readRDS("data/human_metadata.Rds")
@@ -27,19 +38,11 @@ human_datamatrix <- data.frame(rbind(human_datamatrix_1,
                                      human_datamatrix_2))
 rownames(human_datamatrix) <- human_genelist
 
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
-
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
+                
+                # Google analytics
+                tags$head(includeScript("google-analytics.html")),
                 
                 # Custom CSS to change checkbox tick color
                 tags$style(HTML("
