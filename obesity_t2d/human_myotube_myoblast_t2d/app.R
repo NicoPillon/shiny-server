@@ -66,11 +66,13 @@ ui <- fluidPage(theme = "bootstrap.css",
                                        icon("home", class = "fa-2x"), 
                                        style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
                          ),
-                         column(11,
+                         column(10,
                                 h3("Primary skeletal muscle cells from individuals with or without type 2 diabetes"),
                                 h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                            target="_blank", style="color:#D9DADB"), 
                                    "/ last update 2021-09-30")
+                         ),
+                         column(1,
                          )
                           
                 ),

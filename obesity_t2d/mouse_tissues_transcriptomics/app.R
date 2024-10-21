@@ -61,12 +61,14 @@ ui <- fluidPage(theme = "bootstrap.css",
                                        icon("home", class = "fa-2x"), 
                                        style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
                          ),
-                         column(11,
+                         column(10,
                                 h3("Gene expression in tissues from mice fed a high fat diet"),
                                 h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                            target="_blank", style="color:#D9DADB"), 
                                    "/ last update 2024-10-16")
-                                )
+                                ),
+                         column(1,
+                         )
                          ),
                 
                 # main page

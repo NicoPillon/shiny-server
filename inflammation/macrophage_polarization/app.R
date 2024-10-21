@@ -86,11 +86,34 @@ firstup <- function(x) {
 
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
-                fluidRow(style="color:white;background-color:#5b768e;padding:0% 1% 1% 1%;text-align:center",
-                         h3("Transcriptomic profile of human and mouse macrophages"),
-                         h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), "/ last update 2022-04-07")
+                
+                # Google analytics
+                tags$head(includeScript("google-analytics.html")),
+                
+                # Custom CSS to change checkbox tick color
+                tags$style(HTML("
+                  input[type='checkbox'] {
+                    accent-color: #c93f1e; /* Change the checkbox tick color here */
+                  }
+                ")),
+                
+                # title ribbon
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
+                         column(1, 
+                                style = "height:8vh; display:flex; justify-content:center; align-items:center;",
+                                tags$a(href = "https://shiny.nicopillon.com", 
+                                       icon("home", class = "fa-2x"), 
+                                       style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
+                         ),
+                         column(10,
+                                h3("Transcriptomic profile of human and mouse macrophages"),
+                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
+                                           target="_blank", style="color:#D9DADB"), "/ last update 2022-04-07")
+                         ),
+                         column(1,
+                         )
                 ),
+                
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
                          sidebarLayout(
                            sidebarPanel(width = 2, 
@@ -125,20 +148,22 @@ ui <- fluidPage(theme = "bootstrap.css",
                          )
                 ),
                 
-                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
-                         tags$hr(),
+                tags$hr(),
+                
+                # statistics
+                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
                          h3("Statistics - mouse primary macrophages"),
                          dataTableOutput("mouse_stats_table"),
-                         tags$hr(),
                          h3("Statistics - human primary macrophages"),
                          dataTableOutput("human_stats_table"),
-                         tags$hr(),
                          h3("Statistics - human adipose tissue macrophages"),
                          dataTableOutput("human_WAT_stats_table")
                 ),
                 
-                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
-                         tags$hr(),
+                tags$hr(),
+                
+                # Table with datasets
+                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
                          h3("Datasets"),
                          dataTableOutput("datasets")
                 ),
