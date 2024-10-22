@@ -59,7 +59,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 ")),
                 
                 # title ribbon
-                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center; display:flex; justify-content:center; align-items:center;",
                          column(1, 
                                 style = "height:8vh; display:flex; justify-content:center; align-items:center;",
                                 tags$a(href = "https://shiny.nicopillon.com", 

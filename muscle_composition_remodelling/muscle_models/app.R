@@ -19,6 +19,7 @@ library(rstatix)
 library(ggprism)
 library(matrixStats)
 library(pheatmap)
+library(ggforce)
 
 # Load data ----
 data_all <- readRDS('data/Muscle_Models_Profiling_data.Rds')
@@ -67,19 +68,32 @@ genelist <- unique(rownames(data_all))
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css", 
                 
+                # Google analytics
+                tags$head(includeScript("google-analytics.html")),
+                
                 # Custom CSS to change checkbox tick color
                 tags$style(HTML("
                   input[type='checkbox'] {
-                    accent-color: #5B768E; /* Change the checkbox tick color here */
+                    accent-color: #c93f1e; /* Change the checkbox tick color here */
                   }
                 ")),
                 
-                # Title ribbon
-                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center",
-                         h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
-                         h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                    target="_blank", style="color:#D9DADB"), 
-                            "/ last update 2024-03-07")
+                # title ribbon
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center; display:flex; justify-content:center; align-items:center;",
+                         column(1, 
+                                tags$a(href = "https://shiny.nicopillon.com", 
+                                       icon("home", class = "fa-2x"), 
+                                       style = "color:white; text-decoration:none;"
+                                )
+                         ),
+                         column(10,
+                                h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
+                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
+                                           target="_blank", style="color:#D9DADB"), 
+                                   "/ last update 2024-03-07")
+                         ),
+                         column(1,
+                         )
                 ),
                 
                 # main page
@@ -178,7 +192,9 @@ server <- function(input, output, session) {
     
     data$fullname <- factor(data$fullname, levels=samples_names$fullname)
     
-    plotBoxplot <- ggplot(data) +  geom_boxplot(aes(x=fullname, y=y, fill=species)) + 
+    ggplot(data, aes(x=fullname, y=y, fill=species)) + 
+      geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
+      geom_sina(aes(color = species), size = 1.5, position = position_dodge(0), alpha = 0.25) +
       facet_wrap(~Gene) +
       theme_bw(14) + theme +
       labs(x="",
@@ -186,10 +202,8 @@ server <- function(input, output, session) {
            title=element_blank()) +
       scale_y_continuous(breaks = round(seq(-4, 8, by=2),1)) +
       geom_hline(aes(yintercept=0), linetype="dashed", show.legend=F, color="gray60") +
-      scale_fill_manual(values=samples_names$species.color)
+      scale_color_manual(values=samples_names$species.color)
     
-    return(plotBoxplot)
-    plotBoxplot
   })
   
   output$geneBoxplot <- renderPlot({
