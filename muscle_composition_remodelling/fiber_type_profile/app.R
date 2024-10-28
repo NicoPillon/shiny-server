@@ -93,23 +93,29 @@ ui <- fluidPage(theme = "bootstrap.css",
                          # Table with references
                          fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
                                   h3("Datasets Included in the Analysis"),
-                                  "Transcriptomics from manually isolated skeletal muscle fibers from", a("GSE28392", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE28392", 
+                                  "Transcriptomics from manually isolated skeletal muscle fibers from", 
+                                  a("Raue et al, 2012 (GSE28392)", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE28392", 
                                     target="_blank", style="color:#5B768E"), 
                                   "and",
-                                  a("GSE130977", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE130977", 
-                                    target="_blank", style="color:#5B768E"), 
-                                  tags$br(),
-                                  "Proteomics from manually isolated skeletal muscle fibers from", a("Murgia et al, 2017", href="https://doi.org/10.1016/j.celrep.2017.05.054", 
+                                  a("Rubenstein et al, 2020 (GSE130977)", href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE130977", 
                                     target="_blank", style="color:#5B768E"),
+                                  "for a total of 88 fibres.",
+                                  tags$br(),
+                                  "Proteomics from manually isolated skeletal muscle fibers from", 
+                                  a("Murgia et al, 2017", href="https://doi.org/10.1016/j.celrep.2017.05.054", 
+                                    target="_blank", style="color:#5B768E"), "and", 
+                                  a("Murgia et al, 2022", href="https://doi.org/10.1093/pnasnexus/pgac086", 
+                                    target="_blank", style="color:#5B768E"),
+                                  "for a total of 387 fibres.",
                                   tags$br(),tags$br(),
-                                  "Raw data was downloaded, processed in unison, and corrected for batch effects to ensure consistency across samples. 
-                                  Fibers were identified based on the expression of the MYH isoforms: MYH1, MYH2, MYH4, and MYH7. For each fiber, the 
-                                  total intensity of these MYH isoforms was calculated, and the percentage contribution of each isoform to the total 
-                                  intensity was determined. Tertiles were then used to categorize fibers based on the relative abundance of each isoform. 
-                                  Fibers were annotated as 'high', 'mid', or 'low' for each isoform, depending on their placement within these tertiles. 
-                                  Fibers with high MYH7 expression were categorized as Type I, fibers with high MYH2 expression were categorized as Type IIA,
-                                  fibers with high MYH1 expression were categorized as Type IIX. Fibers that did not show a predominant expression of any single isoform, 
-                                  or showed intermediate levels across multiple isoforms, were classified as 'Mixed'."
+                                  # "Raw data was downloaded, processed in unison, and corrected for batch effects to ensure consistency across samples. 
+                                  # Fibers were identified based on the expression of the MYH isoforms: MYH1, MYH2, MYH4, and MYH7. For each fiber, the 
+                                  # total intensity of these MYH isoforms was calculated, and the percentage contribution of each isoform to the total 
+                                  # intensity was determined. Tertiles were then used to categorize fibers based on the relative abundance of each isoform. 
+                                  # Fibers were annotated as 'high', 'mid', or 'low' for each isoform, depending on their placement within these tertiles. 
+                                  # Fibers with high MYH7 expression were categorized as Type I, fibers with high MYH2 expression were categorized as Type IIA,
+                                  # fibers with high MYH1 expression were categorized as Type IIX. Fibers that did not show a predominant expression of any single isoform, 
+                                  # or showed intermediate levels across multiple isoforms, were classified as 'Mixed'."
                          ),
                          
                          
@@ -175,12 +181,15 @@ ui <- fluidPage(theme = "bootstrap.css",
                     plotdata <- full_join(mRNA, protein)
                     plotdata <- pivot_longer(plotdata, cols = all_of(genes_of_interest), names_to = "gene", values_to = "data")
                     plotdata$FiberType <- factor(plotdata$FiberType,
-                                                 levels = c("Type I", "Mixed", "Type IIA", "Type IIX"))
+                                                 levels = c("Type I", "Mixed Type I/II", "Type IIA", "Mixed Type IIA/IIX", "Type IIX"))
+                    
+                    # exclude mixed fibers
+                    plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
                     
                     # Plot
                     ggplot(plotdata, aes(x = gene, y = data, fill = FiberType)) +
                       geom_boxplot(position = position_dodge(0.8), outlier.size = 0) +
-                      geom_sina(size = 0.5, position = position_dodge(0.8)) +
+                      geom_sina(size = 0.5, position = position_dodge(0.8), alpha = 0.5) +
                       facet_wrap(.~method, scales = "free", ncol = 1) +
                       theme_bw(base_size = 16) + 
                       labs(x = NULL, y = "Relative expression, log2") +
