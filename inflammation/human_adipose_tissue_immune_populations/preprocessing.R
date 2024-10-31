@@ -3,9 +3,9 @@ setwd(dirname(getActiveDocumentContext()$path))
 #--------------------------------------------------------------------------------------------------
 library(readxl)
 
-saveRDS(readRDS("../../R_databases/Adipose_tissue_FACS/FACS_WAT.Rds"),
-        file="data/data_raw.Rds")
+saveRDS(readRDS("../../../R_databases/inflammation/human_adipose_tissue_immune_populations/data_out/matrix.Rds"),
+        file="data/matrix.Rds")
 
-saveRDS(read_xlsx("../../R_databases/Adipose_tissue_FACS/FACS_WAT.xlsx"),
-        file="data/samples.Rds")
+saveRDS(readRDS("../../../R_databases/inflammation/human_adipose_tissue_immune_populations/data_out/metadata.Rds"),
+        file="data/metadata.Rds")
 
