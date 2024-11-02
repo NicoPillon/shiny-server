@@ -81,7 +81,9 @@ ui <- fluidPage(theme = "bootstrap.css",
                                                            selected = c("Healthy", "Prediabetes", "T2D"),
                                                            choices = c("Healthy", "Prediabetes", "T2D")),
                                         em(h5("Prediabetes is defined as either impaired glucose tolerance measured during an OGTT or increased insulin 
-                                              resistance measured with euglycemic hyperinsulinemic clamps."))
+                                              resistance measured with euglycemic hyperinsulinemic clamps.")),
+                                        tags$b("Statistics"),
+                                        em(h5("Spearman correlation and Wilcoxon ranked signed test comparing overweight/obesity to lean. The p values are not adjusted for multiple testing comparisons."))
                                         
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",

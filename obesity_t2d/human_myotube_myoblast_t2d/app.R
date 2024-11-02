@@ -81,7 +81,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                          sidebarLayout(
                            sidebarPanel(width = 3,
                                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
-                                        actionButton("updatePlot", "Refresh plot", icon("refresh"))
+                                        actionButton("updatePlot", "Refresh plot", icon("refresh")),
+                                        tags$br(),tags$br(),
+                                        tags$b("Statistics"),
+                                        em(h5("Linear model with empirical Bayes (eBayes) moderation in limma, adjusting for intra-study correlation. P-values are corrected with the false discovery rate."))
                            ),                           
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                      plotOutput("genePlot", height="600px") %>% withSpinner(color="#5b768e", proxy.height="200px")

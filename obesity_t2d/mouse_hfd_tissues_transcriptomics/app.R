@@ -82,7 +82,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                                                     min = 0.5, max = 25, value = c(0.5,25), step = 1, sep = ""),
                                         sliderInput("diet_composition", tags$b("Diet fat content (%)"),
                                                     min = 15, max = 60, value = c(15,60), step = 1, sep = ""),
+                                        tags$b("Statistics"),
+                                        em(h5("Wilcoxon ranked signed test comparing HFD to control. The p values are not adjusted for multiple testing comparisons.")),
                                         em(h5("In this analysis of more than 700 animals, less than 20 are female, making it impossible to analyse sex differences."))
+                                        
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                      plotOutput("genePlot", height="500px") %>% withSpinner(color="#5b768e")
@@ -189,7 +192,7 @@ server <- function(input, output, session) {
                              label = after_stat(p_value_formatter(..p..))), 
                          size = 4, 
                          label.x = 1.5, hjust = 0.5,
-                         vjust = -0.5, # Adjusted closer to help visibility
+                         vjust = 0, # Adjusted closer to help visibility
                          parse = TRUE) +
       coord_cartesian(clip = "off") # Enables room for labels without affecting y-axis
   })
