@@ -56,7 +56,6 @@ ui <- fluidPage(theme = "bootstrap.css",
                 # title ribbon
                 fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center; display:flex; justify-content:center; align-items:center;",
                          column(1, 
-                                style = "height:8vh; display:flex; justify-content:center; align-items:center;",
                                 tags$a(href = "https://shiny.nicopillon.com", 
                                        icon("home", class = "fa-2x"), 
                                        style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
@@ -188,8 +187,7 @@ server <- function(input, output, session) {
       labs(x=element_blank(),
            y = paste(genename, "mRNA\nlog2(relative to control)")) +
       scale_fill_manual(values=c("gray90", "#FDE725"))  +
-      stat_compare_means(aes(group = diet, 
-                             label = after_stat(p_value_formatter(..p..))), 
+      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))), 
                          size = 4, 
                          label.x = 1.5, hjust = 0.5,
                          vjust = 0, # Adjusted closer to help visibility

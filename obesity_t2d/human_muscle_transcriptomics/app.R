@@ -56,9 +56,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                          column(1, 
                                 tags$a(href = "https://shiny.nicopillon.com", 
                                        icon("home", class = "fa-2x"), 
-                                       style = "color:white; text-decoration:none;"
-                                       )
-                         ),
+                                       style = "color:white; text-decoration:none;")
+                                ),
                          column(10,
                                 h3("Gene expression in skeletal muscle from humans with obesity and type 2 diabetes"),
                                 h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
