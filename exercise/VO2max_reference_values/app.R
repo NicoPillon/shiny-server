@@ -71,7 +71,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                                 h3("Worldwide reference values for maximal oxygen uptake"),
                                 h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                            target="_blank", style="color:#D9DADB"), 
-                                   "/ last update 2024-10-07")
+                                   "/ last update 2024-11-22")
                                 ),
                          column(1,
                          )
@@ -91,6 +91,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                                numericInput("vo2max",
                                             label = "VO2max (mL/min/kg)",
                                             value = 33),
+                               checkboxGroupInput("modality",
+                                                  label = "Modality", 
+                                                  selected = c("Cycle", "Treadmill"), 
+                                                  choices = c("Cycle", "Treadmill")),
                                checkboxGroupInput("country",
                                            label = "Country", 
                                            selected = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", 
@@ -162,11 +166,13 @@ server <- function(input, output, session) {
     input_age = 30
     input_vo2max = 40
     input_sex = "Male"
+    input_modality = c("Cycle", "Treadmill")
     input_country = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", "Greece", "Japan", "Lithuania", "Netherlands", "Norway",
                       "Spain", "Switzerland", "United Kingdom", "United States")
     input_date_min = 2000
     input_date_max = 2022
     
+    input_modality = input$modality
     input_country = input$country
     input_date_min = input$date[1]
     input_date_max = input$date[2]
@@ -175,6 +181,9 @@ server <- function(input, output, session) {
     validate(need(input_age, "Please provide a numeric value age"))
     validate(need(input_vo2max, "Please provide a numeric value for VO2max"))
 
+    # subset modality
+    VO2_data <- subset(VO2_data, Modality %in% input_modality)
+    
     # subset country
     VO2_data <- subset(VO2_data, Country %in% input_country)
     

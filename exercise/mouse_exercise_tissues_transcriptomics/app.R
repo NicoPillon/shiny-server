@@ -77,7 +77,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                            sidebarPanel(width = 3,
                                         selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=1000),
                                         tags$b("Statistics"),
-                                        em(h5("Wilcoxon ranked signed test comparing exercise to control. The p values are not adjusted for multiple testing comparisons."))
+                                        em(h5("ANOVA with GEO studies included as a covariate for each tissue. 
+                                              P-values are not adjusted for multiple testing comparisons."))
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                      plotOutput("genePlot", height="500px") %>% withSpinner(color="#5b768e")
@@ -140,7 +141,7 @@ server <- function(input, output, session) {
 
   output$genePlot <- renderPlot({
     validate(need(input$inputGeneSymbol, " "))
-    genename <- c("Nr4a3")
+    genename <- c("Ptgs2")
     genename <- input$inputGeneSymbol
     
     # collect data
@@ -166,6 +167,47 @@ server <- function(input, output, session) {
       ungroup() %>%
       dplyr::select(-control_median) # Remove the temporary `control_median` column if no longer needed
 
+    ##################################################################################
+    # Statistics
+    ##################################################################################
+    
+    # Split data based on number of GEO levels within each Tissue
+    multi_geo <- plotdata_normalized %>%
+      group_by(Tissue) %>%
+      filter(n_distinct(GEO) > 1) %>%
+      ungroup()
+    
+    single_geo <- plotdata_normalized %>%
+      group_by(Tissue) %>%
+      filter(n_distinct(GEO) == 1) %>%
+      ungroup()
+    
+    # Run ANOVA with GEO as a covariate for tissues with multiple GEO levels
+    results_multi_geo <- multi_geo %>%
+      group_by(Tissue) %>%
+      do({
+        model <- aov(normalized_data ~ Time + GEO, data = .)
+        anova_summary <- summary(model)
+        p_value <- anova_summary[[1]]["Time", "Pr(>F)"]
+        data.frame(Tissue = unique(.$Tissue), p_value = p_value)
+      }) %>%
+      ungroup()
+    
+    # Run ANOVA without GEO for tissues with a single GEO level
+    results_single_geo <- single_geo %>%
+      group_by(Tissue) %>%
+      do({
+        model <- aov(normalized_data ~ Time, data = .)
+        anova_summary <- summary(model)
+        p_value <- anova_summary[[1]]["Time", "Pr(>F)"]
+        data.frame(Tissue = unique(.$Tissue), p_value = p_value)
+      }) %>%
+      ungroup()
+    
+    # Combine results
+    results <- bind_rows(results_multi_geo, results_single_geo)
+    results$p.label <- p_value_formatter(results$p_value)
+    
     # plot
     ggplot(plotdata_normalized, aes(x=Time, y=normalized_data, fill = Time)) +
       facet_wrap_paginate(.~Tissue, ncol = 5, scales = "free_y") +
@@ -176,12 +218,18 @@ server <- function(input, output, session) {
       labs(x=element_blank(),
            y = paste(genename, "mRNA\nlog2(relative to control)")) +
       scale_fill_manual(values=c("gray90", "#B8DE29"))  +
-      stat_compare_means(aes(group = Time, 
-                             label = after_stat(p_value_formatter(..p..))), 
-                         size = 4, 
-                         label.x = 1.5, hjust = 0.5,
-                         vjust = 0, # Adjusted closer to help visibility
-                         parse = TRUE) +
+      # stat_compare_means(aes(group = Time, 
+      #                        label = after_stat(p_value_formatter(..p..))), 
+      #                    size = 4, 
+      #                    label.x = 1.5, hjust = 0.5,
+      #                    vjust = 0, # Adjusted closer to help visibility
+      #                    parse = TRUE) +
+      geom_text(data = results, 
+                aes(label = p.label, x = 1.5, y = Inf, vjust = -1), 
+                parse = TRUE,
+                vjust = 1.5, 
+                size = 4, 
+                inherit.aes = FALSE) +
       coord_cartesian(clip = "off") # Enables room for labels without affecting y-axis
   })
   

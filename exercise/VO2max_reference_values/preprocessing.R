@@ -12,7 +12,7 @@ createLink <- function(val) {
 }
 
 # data
-VO2_data <- readRDS("../../R_databases/VO2max_reference_values/data_out/dat_adjusted.Rds")
+VO2_data <- readRDS("../../../R_databases/exercise/VO2max_reference_values/data_out/data_raw.Rds")
 
 VO2_data <- pivot_longer(VO2_data,
                          cols = c("P0.01", "P0.1", "P0.25", "P0.4", "P0.5", "P0.6", "P0.75", "P0.9", "P0.99"),
@@ -30,7 +30,7 @@ VO2_data$Percentile <- factor(VO2_data$Percentile,
 saveRDS(VO2_data, file = "data/data.Rds")
 
 # table of studies included
-studies_included <- read_xlsx("../../R_databases/VO2max_reference_values/data_out/references_included.xlsx")
+studies_included <- read_xlsx("../../../R_databases/exercise/VO2max_reference_values/data_out/references_included.xlsx")
 
 # make linkg to pubmed
 studies_included$link <- paste("https://pubmed.ncbi.nlm.nih.gov/", studies_included$PMID, sep="")
