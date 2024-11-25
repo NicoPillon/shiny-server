@@ -117,7 +117,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                 
                 # Table with datasets
                 fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
-                         h3("Datasets Included in the Analysis"),
+                         h3("Datasets Selected in the Analysis"),
                          DT::dataTableOutput("studies_included")
                          ),
                 
