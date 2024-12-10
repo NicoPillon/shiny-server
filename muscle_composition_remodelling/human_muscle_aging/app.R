@@ -158,6 +158,7 @@ server <- function(input, output, session) {
     plotdata <- dplyr::filter(plotdata,
                               diagnosis %in% input$diagnosis_sarcopenia)
     
+    
     # label with n size
     plotdata$sex <- gsub("^male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "male",])), plotdata$sex)
     plotdata$sex <- gsub("^female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "female",])), plotdata$sex)
@@ -174,7 +175,7 @@ server <- function(input, output, session) {
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
         scale_color_manual(values = c("blue", "darkred")) +
-        scale_y_continuous(expand = c(0,1.5)) +
+        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
         stat_cor(size = 4, 
                  vjust = -1, 
                  label.x = 20),
@@ -182,7 +183,7 @@ server <- function(input, output, session) {
       ggplot(plotdata, aes(x=age_group, y=genedata)) +
         geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
         geom_sina(aes(color = diagnosis, shape = diagnosis), 
-                  size = 1.5, position = position_dodge(0), alpha = 0.25) +
+                  size = 1.5, position = position_dodge(0), alpha = 0.5) +
         theme_bw(16) + 
         theme(legend.position = "right", 
               legend.title = element_blank()) +
@@ -191,8 +192,8 @@ server <- function(input, output, session) {
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
         scale_color_manual(values = c("blue", "darkred")) +
-        scale_y_continuous(expand = c(0,1.5)) +
-        stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))), 
+        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
+        stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
                            ref.group = "40-60",
                            parse = TRUE,
                            size = 4, 

@@ -176,7 +176,7 @@ server <- function(input, output, session) {
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
         scale_color_manual(values = c("darkgreen", "orange", "darkred")) +
-        scale_y_continuous(expand = c(0,1.5)) +
+        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
         stat_cor(size = 4, 
                  vjust = -1, 
                  label.x = 20),
@@ -193,7 +193,7 @@ server <- function(input, output, session) {
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
         scale_color_manual(values = c("darkgreen", "orange", "darkred")) +
-        scale_y_continuous(expand = c(0,1.5)) +
+        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
         stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))), 
                            ref.group = "Lean",
                            parse = TRUE,
