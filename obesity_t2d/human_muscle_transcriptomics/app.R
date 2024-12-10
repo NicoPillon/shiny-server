@@ -62,7 +62,7 @@ ui <- fluidPage(theme = "bootstrap.css",
                                 h3("Gene expression in skeletal muscle from humans with obesity and type 2 diabetes"),
                                 h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
                                            target="_blank", style="color:#D9DADB"), 
-                                   "/ last update 2024-10-17")
+                                   "/ last update 2024-11-27")
                                 ),
                          column(1,
                          )
@@ -186,7 +186,8 @@ server <- function(input, output, session) {
         geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
         geom_sina(aes(color = diagnosis, shape = diagnosis), size = 1.5, position = position_dodge(0), alpha = 0.25) +
         theme_bw(16) + 
-        theme(legend.position = "right") +
+        theme(legend.position = "right",
+              legend.title = element_blank()) +
         facet_wrap(.~sex, ncol = 1) +
         labs(x="BMI category",
              y="mRNA expression, log2") +
