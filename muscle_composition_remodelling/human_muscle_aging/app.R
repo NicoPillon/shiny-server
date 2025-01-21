@@ -160,8 +160,8 @@ server <- function(input, output, session) {
     
     
     # label with n size
-    plotdata$sex <- gsub("^male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "male",])), plotdata$sex)
-    plotdata$sex <- gsub("^female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "female",])), plotdata$sex)
+    plotdata$sex <- gsub("^Male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "Male",])), plotdata$sex)
+    plotdata$sex <- gsub("^Female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "Female",])), plotdata$sex)
     
     cowplot::plot_grid(
       ggplot(plotdata, aes(x=age, y=genedata)) +
