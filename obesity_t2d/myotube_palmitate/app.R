@@ -4,27 +4,22 @@
 #
 #----------------------------------------------------------------------
 # Load libraries
+library(feather)
 library(shinycssloaders)
-library(stringr)
-library(DT)
-library(plyr)
+library(tidyverse)
 library(ggplot2)
 library(ggpubr)
-library(cowplot)
-library(dplyr)
-library(feather)
 library(ggforce)
+library(cowplot)
+library(DT)
 
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
+# library(stringr)
+# library(plyr)
+# library(ggplot2)
+# library(ggpubr)
+# library(cowplot)
+# library(dplyr)
+# library(ggforce)
 
 
 #--------------------------------------------------------------------------------------------------------
@@ -272,6 +267,31 @@ ui <- fluidPage(theme = "bootstrap.css",
                       paste0(g, "\nn = ", gene_count)
                     })
                     
+                    # Compute p-values **for each gene**
+                    p_values <- plotdata %>%
+                      group_by(gene) %>%
+                      summarise(p = wilcox.test(data ~ treatment, exact = FALSE)$p.value) %>%
+                      ungroup()
+                    
+                    # function to format p values
+                    p_value_formatter <- function(p) {
+                      sapply(p, function(x) {
+                        if (x < 0.001) {
+                          return("italic(p) < 0.001")
+                        } else {
+                          return(sprintf("italic(p) == %.3f", x))
+                        }
+                      })
+                    }
+                    
+                    # Add formatted p-values
+                    p_values$formatted_p <- p_value_formatter(p_values$p)
+                    
+                    # Define y-position for annotation (above max value for each gene)
+                    p_values$y_position <- max(data, na.rm = TRUE) * 1.05
+                    
+                    # Assign `treatment` column to place p-values above **PAL** (not BSA)
+                    p_values$treatment <- "PAL"
                     
                     # plot
                     ggplot(plotdata, aes(x = gene, y = data, fill = treatment)) +
@@ -281,8 +301,8 @@ ui <- fluidPage(theme = "bootstrap.css",
                       labs(x=element_blank(),
                            y="mRNA expression, log2") +
                       scale_fill_manual(values=c("gray90", "#D55E00"))  +
-                      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))), 
-                                         size = 4, vjust = -2, parse = TRUE) +
+                      geom_text(data = p_values, aes(x = gene, y = y_position, label = formatted_p), 
+                                parse = TRUE, size = 4, vjust = -1) +  # Manually add p-values
                       scale_y_continuous(expand = c(0,1.5)) 
                   })
                   

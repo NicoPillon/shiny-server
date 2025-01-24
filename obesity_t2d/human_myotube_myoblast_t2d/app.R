@@ -4,28 +4,21 @@
 #
 #----------------------------------------------------------------------
 # Load libraries
+library(feather)
 library(shinycssloaders)
-library(stringr)
-library(DT)
-library(plyr)
+library(tidyverse)
 library(ggplot2)
 library(ggpubr)
+library(ggforce)
 library(cowplot)
+library(DT)
+
+
+library(stringr)
+library(plyr)
 library(dplyr)
 library(feather)
-library(ggforce)
 library(rstatix)
-
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("fdr < 0.001")
-    } else {
-      return(sprintf("fdr = %.3f", x))
-    }
-  })
-}
 
 #load data
 BlastDiffT2D_data <- readRDS('data/data_raw.Rds')
@@ -215,6 +208,17 @@ server <- function(input, output, session) {
     stat.test <- full_join(stat.test, stat.limma)
     stat.test <- stat.test[stat.test$adj.P.Val < 0.1,]
     stat.test <- na.omit(stat.test)
+    
+    # function to format p values
+    p_value_formatter <- function(p) {
+      sapply(p, function(x) {
+        if (x < 0.001) {
+          return("fdr < 0.001")
+        } else {
+          return(sprintf("fdr = %.3f", x))
+        }
+      })
+    }
     
     #format p values
     stat.test$FDR_format <- p_value_formatter(stat.test$adj.P.Val)

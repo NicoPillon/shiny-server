@@ -4,27 +4,15 @@
 #
 #----------------------------------------------------------------------
 # Load libraries
+library(feather)
 library(shinycssloaders)
-library(stringr)
-library(DT)
-library(plyr)
+library(tidyverse)
 library(ggplot2)
 library(ggpubr)
-library(cowplot)
-library(dplyr)
-library(feather)
 library(ggforce)
+library(cowplot)
+library(DT)
 
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
 
 #load metadata
 human_genelist <- readRDS("data/human_genelist.Rds")
@@ -37,6 +25,7 @@ human_datamatrix_2 <- read_feather('data/human_datamatrix_2.feather')
 human_datamatrix <- data.frame(rbind(human_datamatrix_1,
                                      human_datamatrix_2))
 rownames(human_datamatrix) <- human_genelist
+
 
 # Define UI ----
 ui <- fluidPage(theme = "bootstrap.css",
@@ -165,6 +154,31 @@ server <- function(input, output, session) {
     plotdata$sex <- gsub("^male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "male",])), plotdata$sex)
     plotdata$sex <- gsub("^female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "female",])), plotdata$sex)
     
+    # Compute p-values for each category (for precomputing)
+    p_values <- compare_means(genedata ~ bmi_category, data = plotdata, method = "wilcox.test")
+    
+    # Define function to format p-values
+    p_value_formatter <- function(p) {
+      sapply(p, function(x) {
+        if (x < 0.001) {
+          return("italic(p) < 0.001")
+        } else {
+          return(sprintf("italic(p) == %.3f", x))
+        }
+      })
+    }
+    
+    # Create precomputed labels
+    p_values$formatted_p <- p_value_formatter(p_values$p)
+    
+    # Define y-position for annotation
+    p_values$y_position <- max(plotdata$genedata, na.rm = TRUE) * 1.05  # Slightly above the highest value
+    
+    # keep only relevant comparisons
+    p_values <- p_values %>%
+      subset(group1 == "Lean")
+    
+    # plot
     cowplot::plot_grid(
       ggplot(plotdata, aes(x=bmi, y=genedata)) +  
         geom_point(aes(color = diagnosis, shape = diagnosis), size = 3, alpha = 0.25)  + 
@@ -193,12 +207,9 @@ server <- function(input, output, session) {
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
         scale_color_manual(values = c("darkgreen", "orange", "darkred")) +
-        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
-        stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))), 
-                           ref.group = "Lean",
-                           parse = TRUE,
-                           size = 4, 
-                           vjust = -1),
+        scale_y_continuous(expand = expansion(mult = c(0, .15)))  +
+        geom_text(data = p_values, aes(x = group2, y = y_position, label = formatted_p), 
+                  parse = TRUE, size = 4, vjust = -1),  # Manually add p-values
       
       ncol = 2
     )

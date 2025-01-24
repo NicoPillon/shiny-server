@@ -4,27 +4,14 @@
 #
 #----------------------------------------------------------------------
 # Load libraries
+library(feather)
 library(shinycssloaders)
-library(stringr)
-library(DT)
-library(plyr)
+library(tidyverse)
 library(ggplot2)
 library(ggpubr)
-library(cowplot)
-library(dplyr)
-library(feather)
 library(ggforce)
-
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
+library(cowplot)
+library(DT)
 
 #load metadata
 genelist <- readRDS("data/genelist.Rds")
@@ -177,6 +164,39 @@ server <- function(input, output, session) {
       ungroup() %>%
       dplyr::select(-control_median) # Remove the temporary `control_median` column if no longer needed
     
+    # Compute p-values **for each tissue**
+    p_values <- plotdata_normalized %>%
+      group_by(tissue) %>%
+      summarise(
+        p = wilcox.test(normalized_data ~ diet, data = cur_data(), exact = FALSE)$p.value
+      ) %>%
+      ungroup()
+    
+    # Define function to format p-values
+    p_value_formatter <- function(p) {
+      sapply(p, function(x) {
+        if (x < 0.001) {
+          return("italic(p) < 0.001")
+        } else {
+          return(sprintf("italic(p) == %.3f", x))
+        }
+      })
+    }
+    
+    # Create formatted p-values
+    p_values$formatted_p <- p_value_formatter(p_values$p)
+    
+    # Define y-position for annotation (above max value for each tissue)
+    y_pos <- plotdata_normalized %>%
+      group_by(tissue) %>%
+      summarise(y_position = max(normalized_data, na.rm = TRUE) * 1.1)
+    
+    # Merge y_position into p_values dataframe
+    p_values <- left_join(p_values, y_pos, by = "tissue")
+    
+    # Assign `diet` column to place p-values at `HFD`
+    p_values$diet <- "HFD"
+    
     # plot
     ggplot(plotdata_normalized, aes(x=diet, y=normalized_data, fill = diet)) +
       facet_wrap_paginate(.~tissue, ncol = 5, scales = "free_y") +
@@ -187,12 +207,9 @@ server <- function(input, output, session) {
       labs(x=element_blank(),
            y = paste(genename, "mRNA\nlog2(relative to control)")) +
       scale_fill_manual(values=c("gray90", "#FDE725"))  +
-      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))), 
-                         size = 4, 
-                         label.x = 1.5, hjust = 0.5,
-                         vjust = 0, # Adjusted closer to help visibility
-                         parse = TRUE) +
-      coord_cartesian(clip = "off") # Enables room for labels without affecting y-axis
+      scale_y_continuous(expand = expansion(mult = c(0, .1)))  +
+      geom_text(data = p_values, aes(x = 1.5, y = y_position, label = formatted_p), 
+                parse = TRUE, size = 4, vjust = -1)  # Manually add p-values
   })
   
   
