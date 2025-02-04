@@ -7,14 +7,8 @@
 library(shinycssloaders)
 library(tidyverse)
 library(ggplot2)
-theme <- theme(plot.title  = element_text(face="bold", color="black", size=13, angle=0),
-               axis.text.x = element_text(face="bold", color="black", size=13, angle=45, hjust=1),
-               axis.text.y = element_text(color="black", size=11, angle=0, vjust=0.3),
-               axis.title  = element_text(face="bold", color="black", size=13, angle=0),
-               legend.text = element_text(color="black", size=12, angle=0),
-               legend.title = element_text(face="bold", color="black", size=12, angle=0),
-               legend.position="right",
-               legend.key.size = unit(18, "pt"))
+library(ggpubr)
+library(ggprism)
 
 #--------------------------------------------------------------------------------------------------------
 # Data from Lovric et al
