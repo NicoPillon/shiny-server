@@ -5,6 +5,7 @@
 #----------------------------------------------------------------------
 # Load data and libraries
 library(shinycssloaders)
+library(tidyverse)
 library(ggplot2)
 theme <- theme(plot.title  = element_text(face="bold", color="black", size=13, angle=0),
                axis.text.x = element_text(face="bold", color="black", size=13, angle=45, hjust=1),
@@ -14,15 +15,6 @@ theme <- theme(plot.title  = element_text(face="bold", color="black", size=13, a
                legend.title = element_text(face="bold", color="black", size=12, angle=0),
                legend.position="right",
                legend.key.size = unit(18, "pt"))
-library(stringr)
-library(plyr)
-library(DT)
-library(dplyr)
-library(DescTools)
-library(ggpubr)
-library(rstatix)
-library(ggprism)
-
 
 #--------------------------------------------------------------------------------------------------------
 # Data from Lovric et al
