@@ -15,17 +15,6 @@ library(dplyr)
 library(feather)
 library(ggforce)
 
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
-
 #load metadata
 genelist <- readRDS("data/genelist.Rds")
 metadata <- readRDS("data/metadata.Rds")
@@ -206,6 +195,17 @@ server <- function(input, output, session) {
     
     # Combine results
     results <- bind_rows(results_multi_geo, results_single_geo)
+    
+    # function to format p values
+    p_value_formatter <- function(p) {
+      sapply(p, function(x) {
+        if (x < 0.001) {
+          return("italic(p) < 0.001")
+        } else {
+          return(sprintf("italic(p) == %.3f", x))
+        }
+      })
+    }
     results$p.label <- p_value_formatter(results$p_value)
     
     # plot

@@ -16,17 +16,6 @@ library(feather)
 library(tidyverse)
 library(ggforce)
 
-# function to format p values
-p_value_formatter <- function(p) {
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
-
 
 #--------------------------------------------------------------------------------------------------------
 # Palmitate
@@ -186,6 +175,48 @@ ui <- fluidPage(theme = "bootstrap.css",
                     # exclude mixed fibers
                     plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
                     
+                    # Compute ANOVA p-values for each gene and method
+                    p_values <- plotdata %>%
+                      group_by(gene, method) %>%
+                      summarise(
+                        p_value = ifelse(length(unique(FiberType)) > 1, 
+                                         tryCatch(
+                                           summary(aov(data ~ FiberType, data = cur_data()))[[1]][["Pr(>F)"]][1], 
+                                           error = function(e) NA
+                                         ), 
+                                         NA),
+                        .groups = "drop"
+                      )
+                    
+                    # Function to format p-values
+                    p_value_formatter <- function(p) {
+                      sapply(p, function(x) {
+                        if (!is.na(x) && x < 0.001) {
+                          return("italic(p) < 0.001")
+                        } else if (!is.na(x)) {
+                          return(sprintf("italic(p) == %.3f", x))
+                        } else {
+                          return(NA)
+                        }
+                      })
+                    }
+                    
+                    
+                    # Add formatted p-values
+                    p_values$formatted_p <- p_value_formatter(p_values$p_value)
+                    
+                    # Compute max data for each method
+                    method_max_values <- plotdata %>%
+                      group_by(method) %>%
+                      summarise(y_position = max(data, na.rm = TRUE) * 1.05, .groups = "drop")
+                    
+                    # Merge to assign y_position based on method
+                    p_values <- p_values %>%
+                      left_join(method_max_values, by = "method")
+                    
+                    # Assign `FiberType` column to place p-values above **PAL** (not BSA)
+                    p_values$FiberType <- "Type IIA"
+                    
                     # Plot
                     ggplot(plotdata, aes(x = gene, y = data, fill = FiberType)) +
                       geom_boxplot(position = position_dodge(0.8), outlier.size = 0) +
@@ -193,11 +224,10 @@ ui <- fluidPage(theme = "bootstrap.css",
                       facet_wrap(.~method, scales = "free", ncol = 1) +
                       theme_bw(base_size = 16) + 
                       labs(x = NULL, y = "Relative expression, log2") +
-                      stat_compare_means(aes(group = FiberType, 
-                                             label = after_stat(p_value_formatter(..p..))), 
-                                         size = 4, vjust = -2, parse = TRUE) +
                       scale_y_continuous(expand = c(0, 4)) +
-                      scale_fill_manual(values = c("Type I" = "#8B0000", "Type IIA" = "#F5DEB3", "Type IIX"= "#D3D3D3", "Mixed" = "#A0522D"))
+                      scale_fill_manual(values = c("Type I" = "#8B0000", "Type IIA" = "#F5DEB3", "Type IIX"= "#D3D3D3", "Mixed" = "#A0522D"))+
+                      geom_text(data = p_values, aes(x = gene, y = y_position, label = formatted_p), 
+                                parse = TRUE, size = 4, vjust = -1)  # Manually add p-values
                   })
                   
                   
