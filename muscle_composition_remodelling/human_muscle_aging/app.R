@@ -14,9 +14,10 @@ library(cowplot)
 library(dplyr)
 library(feather)
 library(ggforce)
+#source("../../functions.R")
 
 # function to format p values
-p_value_formatter <- function(p) {
+p_value_formatter <<- function(p) { # <<- operator forces the function into the global environment.
   sapply(p, function(x) {
     if (x < 0.001) {
       return("italic(p) < 0.001")
@@ -202,7 +203,7 @@ server <- function(input, output, session) {
     )
     
     
-  })
+  }, env = environment())
   
   ##################################################################################################################
   #Dataset tables
