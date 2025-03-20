@@ -43,11 +43,18 @@ order_file_2023 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_order
 order_file_2023 <- order_file_2023[,c(3,4,8,11,13)]
 colnames(order_file_2023) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
 
-#scrape data from order list - 2023
-order_file_2024 <- read_xlsx("../../000_IntFys_documents/Order_lists/OrderList 2024.xlsx",
+#scrape data from order list - 2024
+order_file_2024 <- read_xlsx("../../000_IntFys_documents/Order_lists/Older_orders/OrderList 2024.xlsx",
                              skip = 6)
 order_file_2024 <- order_file_2024[,c(3,4,8,11,13)]
 colnames(order_file_2024) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
+
+#scrape data from order list - 2025
+order_file_2025 <- read_xlsx("../../000_IntFys_documents/Order_lists/OrderList 2025.xlsx",
+                             skip = 6)
+order_file_2025 <- order_file_2025[,c(3,4,7,10,11)]
+colnames(order_file_2025) <- c("Product", "Product.number", "in.pack", "Ordered.for", "Date")
+
 
 # merge orders
 order_file <- rbind(order_file_2018,
@@ -56,7 +63,8 @@ order_file <- rbind(order_file_2018,
                     order_file_2021,
                     order_file_2022,
                     order_file_2023,
-                    order_file_2024)
+                    order_file_2024,
+                    order_file_2025)
 
 rm(order_file_2018,
    order_file_2019,
@@ -64,7 +72,8 @@ rm(order_file_2018,
    order_file_2021,
    order_file_2022,
    order_file_2023,
-   order_file_2024)
+   order_file_2024,
+   order_file_2025)
 
 # keep only rows with keywords
 order_taqman <- order_file[grepl("taqman", order_file$Product, ignore.case = TRUE), ]
@@ -98,25 +107,25 @@ colnames(order_taqman) <- c("order", "cat.number", "Reactions", "Name", "receive
 #Gets names of excel files for inventory
 taqman_folder <- "../../000_IntFys_documents/Reagents/Primers_TaqMan/"
 
-inventory_file_human <- read.xlsx(paste0(taqman_folder, "1_Human_Taqman_assays_220412.xlsx"), sheet = 1)
+inventory_file_human <- read.xlsx(paste0(taqman_folder, "1_Human_Taqman_assays.xlsx"), sheet = 1)
 inventory_file_human <- inventory_file_human[,c("Box","Pos","Protein", "Gene",
-                                                "CAT.#.or.accession.#" ,"Name", "Exp.date")]
+                                                "CAT.#.or.accession.#" ,"Ordered_by", "Exp.date")]
 colnames(inventory_file_human) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
 inventory_file_human$Species <- "Human"
 
-inventory_file_mouse <- read.xlsx(paste0(taqman_folder, "2_Mouse_Taqman_assays_240404.xlsx"), sheet = 1)
+inventory_file_mouse <- read.xlsx(paste0(taqman_folder, "2_Mouse_Taqman_assays.xlsx"), sheet = 1)
 inventory_file_mouse <- inventory_file_mouse[,c("Box#", "Pos", "Protein", "Gene",
                                                 "CAT#.or.Accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_mouse) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
 inventory_file_mouse$Species <- "Mouse"
 
-inventory_file_rat <- read.xlsx(paste0(taqman_folder, "3_Rat_Taqman_assays_220419.xlsx"), sheet = 1)
+inventory_file_rat <- read.xlsx(paste0(taqman_folder, "3_Rat_Taqman_assays.xlsx"), sheet = 1)
 inventory_file_rat <- inventory_file_rat[,c("Box","Position", "Protein", "Gene",
                                             "CAT#.or.Accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_rat) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
 inventory_file_rat$Species <- "Rat"
 
-inventory_file_hamster <- read.xlsx(paste0(taqman_folder, "4_ChineseHamster_Taqman_assays_220414.xlsx"), sheet = 1)
+inventory_file_hamster <- read.xlsx(paste0(taqman_folder, "4_ChineseHamster_Taqman_assays.xlsx"), sheet = 1)
 inventory_file_hamster <- inventory_file_hamster[,c("Box", "Pos", "Protein", "Gene",
                                                     "CAT.#.or.accession.#" ,"Name", "Exp.date")]
 colnames(inventory_file_hamster) <- c("Box", "Position", "Protein", "Gene", "cat.number", "Name", "Exp.date")
@@ -186,15 +195,18 @@ full_inventory$Name <- gsub("/.*", "", full_inventory$Name)
 table(full_inventory$Name)
 
 old_members <- c("Brendan",
-                 "Juli", 
-                 "Julie", 
-                 "Mike", 
-                 "Laura", 
-                 "Lucile", 
+                 "Flavia",
+                 "Ilke",
+                 "Juli",
+                 "Julie",
+                 "Mike",
+                 "Laura",
+                 "Lucile",
                  "Melissa",
-                 "Prasad", 
+                 "Mike",
+                 "Prasad",
                  "Rasmus",
-                 "Rosamaria", 
+                 "Rosamaria",
                  "Son")
 full_inventory <- full_inventory[!full_inventory$Name %in% old_members,]
 table(full_inventory$Name)
@@ -255,6 +267,43 @@ find_splits <- function(cumsums, target, num_boxes) {
 }
 
 #------------------------------------------------------------------------
+# Human
+#------------------------------------------------------------------------
+# extract the first letter of each mouse gene
+human_genes <- full_inventory[full_inventory$Species == "Human",]
+human_genes$Gene <- gsub(" ", "", human_genes$Gene)
+human_genes$Gene <- toupper(human_genes$Gene)
+human_letters <- substr(human_genes$Gene, 1, 1)
+human_letters_counts <- table(human_letters)
+barplot(human_letters_counts)
+
+# Sort the table by the names (letters)
+sorted_counts <- human_letters_counts[order(names(human_letters_counts))]
+
+# Calculate cumulative sums
+cumulative_sums <- cumsum(sorted_counts)
+
+# Total sum of genes
+total_sum <- sum(sorted_counts)
+
+# Target sum for each box
+target_per_box <- total_sum / 15
+
+# Calculate the splits
+boxes <- find_splits(cumulative_sums, target_per_box, 15)
+
+# Print the optimal box distributions
+print(boxes)
+
+# Count the number of genes in each box
+box_counts <- sapply(boxes, function(letters) sum(sorted_counts[names(sorted_counts) %in% letters]))
+
+# Print summary of tubes per box
+barplot(box_counts)
+
+
+
+#------------------------------------------------------------------------
 # Mouse (3 boxes)
 #------------------------------------------------------------------------
 # extract the first letter of each mouse gene
@@ -283,32 +332,3 @@ boxes <- find_splits(cumulative_sums, target_per_box, 3)
 # Print the optimal box distributions
 print(boxes)
 
-
-#------------------------------------------------------------------------
-# Human (3 boxes)
-#------------------------------------------------------------------------
-# extract the first letter of each mouse gene
-human_genes <- full_inventory[full_inventory$Species == "Human",]
-human_genes$Gene <- gsub(" ", "", human_genes$Gene)
-human_genes$Gene <- toupper(human_genes$Gene)
-human_letters <- substr(human_genes$Gene, 1, 1)
-human_letters_counts <- table(human_letters)
-barplot(human_letters_counts)
-
-# Sort the table by the names (letters)
-sorted_counts <- human_letters_counts[order(names(human_letters_counts))]
-
-# Calculate cumulative sums
-cumulative_sums <- cumsum(sorted_counts)
-
-# Total sum of genes
-total_sum <- sum(sorted_counts)
-
-# Target sum for each box
-target_per_box <- total_sum / 8
-
-# Calculate the splits
-boxes <- find_splits(cumulative_sums, target_per_box, 8)
-
-# Print the optimal box distributions
-print(boxes)

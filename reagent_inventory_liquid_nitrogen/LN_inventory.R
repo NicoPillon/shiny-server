@@ -8,7 +8,7 @@ library(dplyr)
 library(readxl)
 
 #Gets names of excel files for LN tanks and puts them in a character vector
-LN_file_names <- "P:/C3_Integrative_Physiology_Group/Liquid Nitrogen/LN inventory.xlsx"
+LN_file_names <- "../../../000_IntFys_secure/Liquid_nitrogen/LN inventory.xlsx"
 
 #Stores excel files as workbooks into a list
 LN_tank_workbooks <- list()
