@@ -4,17 +4,14 @@
 #
 #----------------------------------------------------------------------
 # Load data and libraries
+library(feather)
 library(shinycssloaders)
+library(tidyverse)
 library(ggplot2)
-library(stringr)
-library(plyr)
-library(DT)
-library(dplyr)
-library(DescTools)
 library(ggpubr)
-library(rstatix)
-library(ggprism)
-
+library(ggforce)
+library(cowplot)
+library(DT)
 
 #--------------------------------------------------------------------------------------------------------
 # AMPK
