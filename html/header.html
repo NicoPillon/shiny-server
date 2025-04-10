@@ -1,97 +1,15 @@
-<!-- Reset margins + full-width header -->
-<style>
-    /* Basic reset */
-    html, body {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      width: 100%;
-    }
-  
-    *, *::before, *::after {
-      box-sizing: inherit;
-    }
-  
-    /* Header styling */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5% 2% 2% 2%;
-      background-color: #5B768E;
-      color: white;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-  
-    .header a {
-      color: white;
-      text-decoration: none;
-    }
-  
-    .dropdown-content a {
-      display: block;
-      padding: 0.5rem 1rem;
-      color: #333;
-      text-decoration: none;
-    }
-  
-    .dropdown-content a:hover {
-      background-color: #f0f0f0;
-    }
-  
-    /* Prevent dropdown from pushing the layout wider */
-    .dropdown-content {
-      max-width: 100vw;
-      box-sizing: border-box;
-    }
-  </style>
-  
-  <!-- Header -->
-  <div class="header">
-    <!-- Left: Icon + Title wrapped in a link -->
-    <a href="https://shiny.nicopillon.com" style="display: flex; align-items: center;">
-      <span style="font-size: 2rem; margin-right: 0.5rem;">💪</span>
-      <h1 style="margin: 0; font-size: 2rem;">skeletal-muscle</h1>
-    </a>
-  
-    <!-- Right: Navigation -->
-    <div style="display: flex; align-items: center; gap: 1.5rem; font-size: 1.5rem; flex-wrap: wrap;">
-      <a href="https://shiny.nicopillon.com">Home</a>
-  
-      <!-- Dropdown -->
-      <div style="position: relative;">
-        <a href="#">Information ▾</a>
-        <div class="dropdown-content" style="
-          display: none;
-          position: absolute;
-          top: 100%;
-          right: 0;
-          background-color: white;
-          border: 1px solid #ddd;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-          z-index: 10;
-          min-width: 180px;
-        ">
-          <a href="https://shiny.nicopillon.com/html/about.html">About</a>
-          <a href="#get-started">Get started</a>
-          <a href="#contribute">Contribute</a>
-        </div>
-      </div>
-    </div>
+<!-- Header -->
+<div class="header">
+  <!-- Left: Title & logo (both wrapped in a link) -->
+  <a href="https://shiny.nicopillon.com" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+    <span style="font-size: 32px;">💪</span>
+    <h1>skeletal-muscle</h1>
+  </a>
+
+  <!-- Right: Navigation -->
+  <div style="display: flex; gap: 64px; flex-wrap: wrap;">
+    <a href="https://shiny.nicopillon.com">Home</a>
+    <a href="https://shiny.nicopillon.com/html/about.html">About</a>
+    <a href="mailto:nicolas.pillon@ki.se">Contact</a>
   </div>
-  
-  <!-- Dropdown behavior -->
-  <script>
-    const dropdown = document.querySelector('.dropdown-content');
-    const infoLink = dropdown.parentElement;
-  
-    infoLink.addEventListener('mouseover', () => {
-      dropdown.style.display = 'block';
-    });
-  
-    infoLink.addEventListener('mouseout', () => {
-      dropdown.style.display = 'none';
-    });
-  </script>
-  
+</div>

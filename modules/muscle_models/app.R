@@ -63,32 +63,22 @@ genelist <- unique(rownames(data_all))
 ui <- fluidPage(# Google analytics
                 tags$head(includeScript("../../google-analytics.html")),
                 
-                # Custom CSS to change checkbox tick color
-                tags$style(HTML("
-                  input[type='checkbox'] {
-                    accent-color: #c93f1e; /* Change the checkbox tick color here */
-                  }
-                ")),
-                
-                # General header
-                fluidRow(style="color:white;background-color:#5B768E;padding:1% 1% 0% 1%;text-align:center; display:flex; justify-content:center; align-items:center;",
-                         includeHTML("../../html/header.html")),
+                # CSS for style
+                tags$head(includeCSS("../../html/custom_css.css")),
+
+                # HTML header
+                fluidRow(includeHTML("../../html/header.html")),
 
                 # title ribbon
                 fluidRow(
                   style = "color:black; padding:0% 1% 1% 1%; text-align:left;",
-                  column(
-                    width = 12,
-                    h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
-                    h5("Last update 2024-03-07"),
-                    tags$hr()
-                  )
-                ),
-                
-                
+                  h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
+                  h5("Last update 2024-03-07"),
+                  tags$hr()
+                  ),
                 
                 # main page
-                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
+                fluidRow(style="color:black;background-color:white;padding:1% 5% 1% 5%;",
                          sidebarLayout(
                            sidebarPanel(width = 3, 
                                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
@@ -100,9 +90,9 @@ ui <- fluidPage(# Google analytics
                            ),
                            mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                      fluidRow(style="color:black;background-color:white;",
-                                              column(4, align="left",
+                                              column(3, align="left",
                                                      plotOutput("geneHeatmap", height="700px") %>% withSpinner(color="#5B768E")),
-                                              column(8, align="left",
+                                              column(7, align="left",
                                                      plotOutput("geneBoxplot", height="700px") %>% withSpinner(color="#5B768E"))
                                      )
                            )
@@ -117,10 +107,8 @@ ui <- fluidPage(# Google analytics
                          # dataTableOutput("datasets")
                 ),
                 
-                # Author section at the bottom
-                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 3% 1%;display: flex; align-items: top; ",
-                         includeHTML("../../html/footer.html")
-                )
+                # HTML footer
+                fluidRow(includeHTML("../../html/footer.html"))
 )
 
 
