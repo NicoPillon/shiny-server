@@ -4,22 +4,16 @@
 #
 #----------------------------------------------------------------------
 # Load data and libraries
+library(feather)
 library(shinycssloaders)
+library(tidyverse)
 library(ggplot2)
-theme <- theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5),
-               legend.position = "none",
-               legend.key.size = unit(30, "pt"))
-library(stringr)
-library(plyr)
-library(DT)
-library(dplyr)
-library(DescTools)
 library(ggpubr)
-library(rstatix)
-library(ggprism)
+library(ggforce)
+library(cowplot)
+library(DT)
 library(matrixStats)
 library(pheatmap)
-library(ggforce)
 
 # Load data ----
 data_all <- readRDS('data/Muscle_Models_Profiling_data.Rds')
@@ -66,10 +60,8 @@ genelist <- unique(rownames(data_all))
 # Shiny app
 #--------------------------------------------------------------------------------------------------------
 # Define UI ----
-ui <- fluidPage(theme = "bootstrap.css", 
-                
-                # Google analytics
-                tags$head(includeScript("google-analytics.html")),
+ui <- fluidPage(# Google analytics
+                tags$head(includeScript("../../google-analytics.html")),
                 
                 # Custom CSS to change checkbox tick color
                 tags$style(HTML("
@@ -78,23 +70,22 @@ ui <- fluidPage(theme = "bootstrap.css",
                   }
                 ")),
                 
+                # General header
+                fluidRow(style="color:white;background-color:#5B768E;padding:1% 1% 0% 1%;text-align:center; display:flex; justify-content:center; align-items:center;",
+                         includeHTML("../../html/header.html")),
+
                 # title ribbon
-                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center; display:flex; justify-content:center; align-items:center;",
-                         column(1, 
-                                tags$a(href = "https://shiny.nicopillon.com", 
-                                       icon("home", class = "fa-2x"), 
-                                       style = "color:white; text-decoration:none;"
-                                )
-                         ),
-                         column(10,
-                                h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
-                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                           target="_blank", style="color:#D9DADB"), 
-                                   "/ last update 2024-03-07")
-                         ),
-                         column(1,
-                         )
+                fluidRow(
+                  style = "color:black; padding:0% 1% 1% 1%; text-align:left;",
+                  column(
+                    width = 12,
+                    h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
+                    h5("Last update 2024-03-07"),
+                    tags$hr()
+                  )
                 ),
+                
+                
                 
                 # main page
                 fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
@@ -119,45 +110,16 @@ ui <- fluidPage(theme = "bootstrap.css",
                          )
                 ),
                 
-                tags$hr(),
-                
                 # Table with datasets
                 fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
+                         tags$hr(),
                          h3("Datasets Included in the Analysis"),
                          # dataTableOutput("datasets")
                 ),
                 
                 # Author section at the bottom
-                fluidRow(style="color:white;background-color:#5B768E;padding:2% 1% 2% 1%;display: flex; align-items: top; ",
-                         # column(2, align="right", 
-                         #        tags$img(src = "https://ki.se/profile-image/nicpil", height = "120px", width = "120px")  # Insert image here
-                         # ),
-                         column(4, align="left", 
-                                tags$b("About the author:"), tags$br(),
-                                "Nicolas J. Pillon, PhD", tags$br(),
-                                "Associate Professor, Karolinska Institutet", tags$br(),
-                                icon("globe"), a("/inflammation-and-metabolism", href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group",
-                                                 target="_blank", style="color:white"), tags$br(),
-                                icon("linkedin"), a("/nicopillon", href="https://www.linkedin.com/in/nicopillon/",
-                                                    target="_blank", style="color:white"), tags$br(),
-                                tags$br(),
-                                "Feel free to write to me with feedback or questions:", tags$br(),
-                                icon("envelope"), a("nicolas.pillon@ki.se", href="mailto:nicolas.pillon@ki.se",
-                                                    target="_blank", style="color:white"), tags$br(),
-                                
-                         ),
-                         column(4, align="center",
-                                #tags$b("© 2024 Nicolas Pillon"), tags$br(),
-                                
-                         ),
-                         column(4, align="right",
-                                tags$b("Disclaimer"), tags$br(),
-                                em("The authors disclaim any responsibility for the use or interpretation of the data 
-                                   presented in this application. Users are solely responsible for ensuring the appropriate 
-                                   use of any data they choose to re-use."), tags$br(),
-                                tags$br(),
-                                tags$b("© 2024 Nicolas Pillon"),
-                         ),
+                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 3% 1%;display: flex; align-items: top; ",
+                         includeHTML("../../html/footer.html")
                 )
 )
 
@@ -194,9 +156,10 @@ server <- function(input, output, session) {
     
     ggplot(data, aes(x=fullname, y=y, fill=species)) + 
       geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
-      geom_sina(aes(color = species), size = 1.5, position = position_dodge(0), alpha = 0.25) +
+      geom_sina(aes(color = species), size = 1.5, position = position_dodge(0), alpha = 0.1) +
       facet_wrap(~Gene) +
-      theme_bw(14) + theme +
+      theme_bw(16) + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
       labs(x="",
            y="mRNA expression (log2)",
            title=element_blank()) +

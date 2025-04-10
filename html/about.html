@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 2rem;">
+
+  <!-- Header placeholder (loaded via JS) -->
+  <div id="header-placeholder"></div>
+
+  <script>
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("header-placeholder").innerHTML = data;
+      });
+  </script>
+
+  <h2>Citation</h2>
+  Please cite original source publications when using its content in your research. For data references, check the dataset details within each module.
+
+  <hr>
+
+  <h2>Credits</h2>
+  <ul>
+    <li><strong>Programming:</strong> <a href="https://nicopillon.com/contact" target="_blank">Nicolas J. Pillon</a></li>
+    <li><strong>Shiny server:</strong> <a href="https://www.nbis.se/about/staff/nanjiang-shu/" target="_blank">Nanjiang Shu</a> from the National Bioinformatics Infrastructure Sweden (<a href="https://nbis.se/" target="_blank">NBIS</a>)</li>
+    <li><strong>Computation:</strong> The RNA sequencing computations were performed on resources provided by the
+      <a href="https://www.snic.se/" target="_blank">Swedish National Infrastructure for Computing (SNIC)</a>
+      through Uppsala Multidisciplinary Center for Advanced Computational Science (UPPMAX) under Project SNIC 2021/22-91 and 2021/23-126.</li>
+    <li><strong>Illustration and design:</strong> <a href="http://misshue.net" target="_blank">Csil</a></li>
+  </ul>
+
+  <hr>
+
+  <h2>Funding</h2>
+  <p>This work was supported by the Marie Sklodowska-Curie Actions (European Commission), the Novo Nordisk Foundation, the Swedish Diabetes Foundation, the European Foundation for the Study of Diabetes (EFSD), the Swedish Research Council, the Strategic Research Program in Diabetes at Karolinska Institutet, the Swedish Research Council for Sport Science and the foundation for research without animal research (Forska utan Djurforsök)</p>
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+    <img src="funding_bodies/Karolinska_Institutet_Logo.png" alt="KI Logo" style="height: 50px;">
+    <img src="funding_bodies/European_Commission_Logo.png" alt="EU Logo" style="height: 50px;">
+    <img src="funding_bodies/Novo_nordisk_foundation_Logo.png" alt="Novo Nordisk Logo" style="height: 50px;">
+    <img src="funding_bodies/Swedish_Research_Council_logo.png" alt="VR Logo" style="height: 50px;">
+    <img src="funding_bodies/Swedish_Research_Council_for_Sport_Science_Logo.png" alt="Sport Science Logo" style="height: 50px;">
+    <img src="funding_bodies/EFSD_Logo.png" alt="EFSD Logo" style="height: 50px;">
+    <img src="funding_bodies/SNIC_logo.png" alt="SNIC Logo" style="height: 50px;">
+    <img src="funding_bodies/ForskaUtanDjurforsok_logo.png" alt="ForskaUtanDjurforsok Logo" style="height: 50px;">
+  </div>
+
+  <hr>
+
+  <h2>Copyrights</h2>
+  <p>
+    All content and code are published under the Creative Commons Attribution-NonCommercial 4.0 International
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">
+      CC BY-NC 4.0.
+    </a>
+  </p>
+
+</body>
+</html>
