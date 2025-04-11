@@ -22,38 +22,66 @@
 <!-- Header -->
 <div class="header">
     <!-- Left: Title & logo (both wrapped in a link) -->
-    <a href="https://shiny.nicopillon.com" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+    <a href="index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
       <img src="html/image2.png" style="height: 40px;">
       <h1>skeletal-muscle</h1>
     </a>
   
     <!-- Right: Navigation -->
     <div style="display: flex; gap: 64px; flex-wrap: wrap;">
-      <a href="https://shiny.nicopillon.com">Home</a>
-      <a href="https://shiny.nicopillon.com/html/about.html">About</a>
+      <a href="index.html">Home</a>
+      <a href="html/about.html">About</a>
       <a href="mailto:nicolas.pillon@ki.se">Contact</a>
     </div>
 </div>
 
 <!-- Header 2 -->
 <div style="text-align: center; background-color: #5B768E;">
-    <img src="html/image1.png" alt="Banner image" style="max-width: 100%; height: 150px; margin: 0px;">
-    <h2 style="margin: 30px; color: white;">Welcome to our dataset repository!</h2>
+    <img src="html/icon1.png" alt="Banner image" style="max-width: 100%; height: 250px; margin: 0px;">
+    <h2 style="margin: 30px; color: white;">Welcome to our skeletal muscle dataset repository!</h2>
 </div>
 
 
     <!-- Obesity/T2D section -->
     <div class="category">
         <div class="container">
+            
+            <!-- Muscle aging -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/muscle_composition_remodelling/human_muscle_aging">
+                    <img src="0_icons/muscle_aging.webp" alt="Aging muscle">
+                    <p><b>Aging</b></p>
+                </a>
+                <p>Human skeletal muscle transcriptome throughout the lifespan and its alterations in sarcopenia.</p>
+            </div>
+
             <!-- Human obesity -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/obesity_t2d/human_muscle_transcriptomics/">
                     <img src="0_icons/obesity_t2d_human_muscle_transcriptomics.webp" alt="Human Obesity">
-                    <p><b>Human Obesity and T2D</b></p>
+                    <p><b>Obesity</b></p>
                 </a>
                 <p>Transcriptomics analysis of skeletal muscle in men and women with overweight, obesity or type 2 diabetes.</p>
             </div>
-            
+
+            <!-- MetaMEx dataset -->
+            <div class="dataset">
+                <a href="http://metamex.eu" target="_blank">
+                    <img src="0_icons/MetaMEx.webp" alt="MetaMEx" title="Explore MetaMEx">
+                    <p><b>Exercise</b></p>
+                </a>
+                    <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity (MetaMEx).</p>
+            </div>
+
+            <!-- Fiber type profiling -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/muscle_composition_remodelling/fiber_type_profiling">
+                    <img src="0_icons/fiber_type_profile.webp" alt="Human Clamp">
+                    <p><b>Fiber Type</b></p>
+                </a>
+                <p>Profiling of the proteome and transcriptome of human skeletal muscle type I and type II fibers.</p>
+            </div>
+
             <!-- Mouse high fat diet -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/obesity_t2d/mouse_hfd_tissues_transcriptomics">
@@ -80,23 +108,7 @@
                 </a>
                 <p>Transcriptomic response of skeletal myotubes exposed to the saturated fatty acid palmitate in vitro.</p>
             </div>
-            
-        </div>
-    </div>
-    
-    <!-- Muscle composition section -->
-    <div class="category">
-        <div class="container">
-
-            <!-- Muscle aging -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/muscle_composition_remodelling/human_muscle_aging">
-                    <img src="0_icons/muscle_aging.webp" alt="Aging muscle">
-                    <p><b>Aging Muscle</b></p>
-                </a>
-                <p>Human skeletal muscle transcriptome throughout the lifespan and its alterations in sarcopenia.</p>
-            </div>
-                        
+                                    
             <!-- Muscle models -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/modules/muscle_models/">
@@ -104,15 +116,6 @@
                     <p><b>Muscle Models</b></p>
                 </a>
                 <p>Transcriptome of C2C12, L6 and human primary myotubes compared to skeletal muscle tissue.</p>
-            </div>
-            
-            <!-- Fiber type profiling -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/muscle_composition_remodelling/fiber_type_profiling">
-                    <img src="0_icons/fiber_type_profile.webp" alt="Human Clamp">
-                    <p><b>Fiber Type Profiling</b></p>
-                </a>
-                <p>Profiling of the proteome and transcriptome of human skeletal muscle type I and type II fibers.</p>
             </div>
             
             <!-- Myotube heterogeneity -->
@@ -123,20 +126,6 @@
                 </a>
                 <p>Transcriptome of primary skeletal myotubes processed at different times with various methods.</p>
             </div>
-            
-        </div>
-    </div>
- 
-    <hr>
-    
-    
-    <!-- Inflammation section -->
-    <div class="category">
-        <div style="text-align: center">
-            <h3>Inflammation, Immunometabolism & Metabolic Inflammation</h3>
-        </div>
-        
-        <div class="container">
 
             <!-- Macrophage polarization -->
             <div class="dataset">
@@ -155,29 +144,7 @@
                 </a>
                 <p>Transcriptomic profile of immune cells isolated from human adipose tissue by flow cytometry.</p>
             </div>
-        </div>
-    </div>
 
-    <hr>
-    
-   
-    <!-- Exercise Section -->
-    <div class="category">
-        <div style="text-align: center">
-            <h3>Exercise & Inactivity</h3>
-        </div>
-        
-        <div class="container">
-        
-            <!-- MetaMEx dataset -->
-            <div class="dataset">
-                <a href="http://metamex.eu" target="_blank">
-                    <img src="0_icons/MetaMEx.webp" alt="MetaMEx" title="Explore MetaMEx">
-                    <p><b>MetaMEx</b></p>
-                </a>
-                    <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity in mice and humans.</p>
-            </div>
-            
             <!-- Mouse Exercise -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/exercise/mouse_exercise_tissues_transcriptomics">
@@ -196,16 +163,6 @@
                     <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
             </div>
             
-            <!-- Muscle scRNAseq -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/muscle_scRNAseq_Lovric/">
-                    <img src="0_icons/muscle_scRNAseq_Lovric.webp" alt="Muscle scRNAseq">
-                    <p><b>Single-cell RNAseq</b></p>
-                </a>
-                    <p>Exercise response in skeletal muscle analyzed by single-cell RNAseq from Lovrić et al, 2022.</p>
-            </div>
-            
-
         </div>
     </div>
 
@@ -221,7 +178,16 @@
         </div>
         
         <div class="container">
-        
+
+            <!-- Muscle scRNAseq -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/exercise/muscle_scRNAseq_Lovric/">
+                    <img src="0_icons/muscle_scRNAseq_Lovric.webp" alt="Muscle scRNAseq">
+                    <p><b>Single-cell RNAseq</b></p>
+                </a>
+                    <p>Exercise response in skeletal muscle analyzed by single-cell RNAseq from Lovrić et al, 2022.</p>
+            </div>
+
             <!-- Clamp -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/obesity_t2d/human_muscle_clamp">

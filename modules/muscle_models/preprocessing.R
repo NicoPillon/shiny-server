@@ -5,25 +5,100 @@ setwd(dirname(getActiveDocumentContext()$path))
 # Collect source data for shiny app 
 #
 ##########################################################################################################
-muscle  <- saveRDS(readRDS("../../R_databases/Muscle_Models_Profiling/Data_Processed/GENENAME_norm.Rds"),
-                   file="data/Muscle_Models_Profiling_data.Rds")
+library(readxl)
+library(feather)
+library(tidyverse)
+
+# list of datasets included
+dataset <- read_xlsx("../../../R_databases/muscle_composition_remodelling/muscle_models/Datasets.xlsx")
+dataset <- dataset[,c("GEO", "Sample", "Species", "Source", "Plateform")]
+write_feather(dataset, "data/dataset.feather")
+
+# Load the data
+datamatrix <- readRDS("../../../R_databases/muscle_composition_remodelling/muscle_models/Data_Processed/GENENAME_norm.Rds")
+datamatrix <- datamatrix[!grepl("HEK", colnames(datamatrix))]
+datamatrix <- datamatrix[!grepl("HeLa", colnames(datamatrix))]
+write_feather(datamatrix, "data/datamatrix.feather")
+
+# gene names
+gene_names <- rownames(datamatrix)
+saveRDS(gene_names, "data/gene_names.Rds")
+
+# make samples
+samples_list <- str_split_fixed(colnames(datamatrix), "_|\\.", 4) %>%
+  data.frame()
+colnames(samples_list) <- c("Platform", "cell_tissue", "geo_accession")
+samples_list <- data.frame(sample = colnames(datamatrix),
+                           samples_list)
+
+# list of samples
+samples_list <- samples_list %>%
+  select(sample, cell_tissue, geo_accession) %>%
+  mutate(
+    species = case_when(
+      grepl("Human", sample, ignore.case = TRUE) ~ "Human",
+      grepl("Mouse", sample, ignore.case = TRUE) ~ "Mouse",
+      grepl("Rat", sample, ignore.case = TRUE) ~ "Rat",
+      TRUE ~ "Other"
+    ),
+    cell_type = case_when(
+      grepl("Tissue", sample, ignore.case = TRUE) ~ "Tissue",
+      TRUE ~ "Cell"
+    )
+  )
+
+# Define a colorblind-friendly palette (Okabe-Ito)
+okabe_ito <- c(
+  "#E69F00",     # #E69F00
+  "#56B4E9",    # #56B4E9
+  "#009E73"# #009E73
+)
+
+# Unique species
+unique_species <- unique(samples_list$species)
+
+# Assign colors
+samples_list$species_colors <- setNames(okabe_ito[seq_along(unique_species)], unique_species)
+
+saveRDS(samples_list, "data/samples_list.Rds")
 
 
 
-muscle  <- readRDS("../../R_databases/Muscle_Models_Profiling/Data_Processed/GENENAME_norm.Rds")
-muscle <- cbind(muscle[grepl('HumanCell', colnames(muscle))],
-                muscle[grepl('MouseC2C12', colnames(muscle))],
-                muscle[grepl('RatL6', colnames(muscle))],
-                muscle[grepl('HumanTissue', colnames(muscle))],
-                muscle[grepl('MouseTissue', colnames(muscle))],
-                muscle[grepl('RatTissue', colnames(muscle))])
-colnames(muscle)
-min(muscle, na.rm=T)
-max(muscle, na.rm=T)
+# Select relevant columns
+muscle <- datamatrix %>%
+  select(matches('HumanCell|MouseC2C12|RatL6|HumanTissue|MouseTissue|RatTissue'))
 
-#list of gene names as RDS
-list_genes <- rownames(muscle)
-saveRDS(list_genes, file="data/Muscle_Models_Profiling_genelist.Rds")
+# Create a tibble with gene names as a column
+res <- muscle %>%
+  rownames_to_column("Gene") %>%
+  pivot_longer(-Gene, names_to = "Sample", values_to = "y") %>%
+  mutate(
+    x = case_when(
+      str_detect(Sample, "HumanCell")    ~ "A1",
+      str_detect(Sample, "MouseC2C12")   ~ "A2",
+      str_detect(Sample, "RatL6")        ~ "A3",
+      str_detect(Sample, "HumanTissue")  ~ "A4",
+      str_detect(Sample, "MouseTissue")  ~ "A5",
+      str_detect(Sample, "RatTissue")    ~ "A6",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  select(x, y, Gene)
+
+# Example: filter for one gene
+res %>% filter(Gene == "SLC2A4")
+
+
+
+
+datamatrix <- readRDS("../../../R_databases/muscle_composition_remodelling/muscle_models/Data_Processed/GENENAME_norm.Rds")
+
+muscle <- cbind(datamatrix[grepl('HumanCell', colnames(datamatrix))],
+                datamatrix[grepl('MouseC2C12', colnames(datamatrix))],
+                datamatrix[grepl('RatL6', colnames(datamatrix))],
+                datamatrix[grepl('HumanTissue', colnames(datamatrix))],
+                datamatrix[grepl('MouseTissue', colnames(datamatrix))],
+                datamatrix[grepl('RatTissue', colnames(datamatrix))])
 
 
 #Make a list of data for ggplot
