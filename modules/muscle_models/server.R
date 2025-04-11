@@ -124,7 +124,8 @@ server <- function(input, output, session) {
     return(plotHeatmap$gtable)
   })
   
-  #Dataset tables
+  #-----------------------------------------------------------------
+  # Dataset tables
   output$datasets <- renderDataTable(options=list(signif = 3),{
     DT::datatable(
       human_references, 
@@ -139,5 +140,23 @@ server <- function(input, output, session) {
       )
     )
   })
+  
+  #-----------------------------------------------------------------
+  # Download button
+  output$downloadGeneData <- downloadHandler(
+    filename = function() {
+      paste0("gene_expression_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      df <- selectedGeneData()
+      df <- data.frame(samples_list,
+                       t(df))
+      df$sample <- NULL
+      df$species_colors <- NULL
+      if (!is.null(df)) {
+        write.csv(df, file, row.names = TRUE)
+      }
+    }
+  )
   
 }

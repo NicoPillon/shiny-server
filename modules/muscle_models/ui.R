@@ -28,7 +28,8 @@ ui <- fluidPage(# Google analytics
                                         selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
                                         actionButton("updatePlot", "Refresh plot", icon("refresh")),
                                         tags$hr(),
-                                                                   ),
+                                        downloadButton("downloadGeneData", "Download Data")
+                                        ),
                            mainPanel(width = 10, style="padding:0% 4% 1% 4%;",
                                      fluidRow(style="color:black;background-color:white;",
                                               column(5, align="left",
