@@ -21,3 +21,9 @@ library(arrow)
 gene_list <- readRDS("data/gene_list.Rds")
 sample_list <- readRDS("data/sample_list.Rds")
 references <- read_feather("data/dataset.feather")
+
+
+asd <- references <- read_feather("data/datamatrix.feather")
+qwe <- references <- read_feather("data/datamatrix.feather")
+zxc <- references <- read_feather("data/datamatrix.feather")
+ert <- references <- read_feather("data/datamatrix.feather")
