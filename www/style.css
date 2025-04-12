@@ -1,0 +1,149 @@
+/* Minimal CSS reset */
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: auto;
+  width: 100%;
+  margin: 0px;
+  background-color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh; /* optional */
+  display: flex;
+  flex-direction: column;
+}
+
+body > .category {
+  flex: 1;
+}
+
+
+/* Override Bootstrap's .container-fluid max-width */
+.container-fluid {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.category {
+  flex: 1; /* This makes the content area expand and push the footer down */
+}
+
+.container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* header */
+.header {
+  line-height: 1.2;
+  background-color: #5B768E;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 32px;
+  flex-wrap: wrap;
+  margin : 0px;
+}
+
+.header h1 {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+  line-height: 1 !important;
+}
+
+/* footer */
+.footer {
+  line-height: 1.2;
+  background-color: #5B768E;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1% 1% 2% 1%;
+  flex-wrap: wrap;
+}
+
+.author-column {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px;
+}
+
+/* containers */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dataset {
+  width: 200px;
+  margin: 15px;
+  text-align: center;
+}
+
+.dataset img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* ----- Adjust links ----- */
+
+/* Normal link state (unvisited) */
+a {
+  color: #FFA07A;
+  text-decoration: none;
+}
+
+/* Hover state */
+a:hover {
+  color: #FF6347;
+  text-decoration: underline;
+}
+
+/* Visited state */
+a:visited {
+  color: #FFA07A;
+}
+
+/* Active state */
+a:active {
+  color: #FF4500;
+}
+
+/* Tick boxed in R shiny */
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: #bd1a0e;
+}
+
+/* iframe */
+/* Remove flex from main-content */
+.main-content {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Adjust iframe style */
+.main-content iframe {
+  width: 100%;
+  min-height: 1200px; /* or a better estimate based on app height */
+  padding: 0 0rem; /* ⬅️ Add horizontal padding (left & right) */
+  border: none;
+  display: block;
+}

@@ -6,14 +6,11 @@
 
 ui <- fluidPage(
   # Google analytics
-  tags$head(includeScript("../../google-analytics.html")),
+  tags$head(includeScript("../../www/google-analytics.html")),
   
   # CSS for style
-  tags$head(includeCSS("../../html/custom_css.css")),
-  
-  # HTML header
-  fluidRow(includeHTML("../../html/header.html")),
-  
+  tags$head(includeCSS("../../www/style.css")),
+
   # title ribbon
   fluidRow(
     style = "color:black; padding:0% 2% 0% 2%; text-align:left;",
@@ -71,8 +68,6 @@ ui <- fluidPage(
            a("Cross-species transcriptomic integration reveals conserved metabolic signatures in skeletal muscle.",
              href="https://doi.org/10.1234/fictjournal.01234.2025", target="_blank", style="color:#5B768E"),
            "Fictional Journal of Integrative Biology. 2025 Apr;12(2):101-117."
-  ),
+  )
   
-  # HTML footer
-  fluidRow(includeHTML("../../html/footer.html"))
 )
