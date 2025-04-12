@@ -30,9 +30,9 @@ ui <- fluidPage(# Google analytics
              mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                        fluidRow(style="color:black;background-color:white;",
                                 column(5, align="left",
-                                       plotOutput("geneHeatmap", height="700px") %>% withSpinner(color="#5B768E")),
+                                       plotOutput("geneHeatmap", height="700px") %>% withSpinner(color="#5B768E", type = 8)),
                                 column(7, align="left",
-                                       plotOutput("geneBoxplot", height="700px") %>% withSpinner(color="#5B768E"))
+                                       plotOutput("geneBoxplot", height="700px") %>% withSpinner(color="#5B768E", type = 8))
                        )
              )
              
