@@ -27,10 +27,19 @@
     .then(data => document.getElementById('header-placeholder').innerHTML = data);
 </script>
 
-<!-- Main content with iframe -->
-  <div class="main-content">
-    <iframe src="https://shiny.nicopillon.com/modules/muscle_models/"></iframe>
+<!-- Main content with iframe and loader -->
+<div class="main-content">
+  <div class="iframe-loader" id="iframe-loader">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
+
+  <iframe 
+    title="0 Template App"
+    src="https://shiny.nicopillon.com/modules/muscle_models/"
+    onload="document.getElementById('iframe-loader').style.display='none';"
+  ></iframe>
+</div>
 
 <!-- Include shared footer -->
 <div id="footer-placeholder"></div>
