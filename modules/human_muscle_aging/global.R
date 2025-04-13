@@ -4,17 +4,17 @@
 #
 #----------------------------------------------------------------------
 
-# Load libraries
+# Load data and libraries
+library(feather)
 library(shinycssloaders)
-library(stringr)
-library(DT)
-library(plyr)
+library(tidyverse)
 library(ggplot2)
 library(ggpubr)
-library(cowplot)
-library(dplyr)
-library(feather)
 library(ggforce)
+library(cowplot)
+library(DT)
+library(matrixStats)
+library(pheatmap)
 library(arrow)
 
 # function to format p values

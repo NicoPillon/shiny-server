@@ -28,16 +28,34 @@
     .then(data => document.getElementById('header-placeholder').innerHTML = data);
 </script>
 
-<!-- Custom Header for this page -->
-<div style="text-align: center; background-color: #5B768E;">
-    <img src="www/img/image_front.png" alt="Banner image" style="max-width: 100%; height: 250px; margin: 0px;">
-    <h2 style="margin: 30px; color: white;">Welcome to our skeletal muscle dataset repository!</h2>
-</div>
+<!-- Custom Header with Background Image -->
+<div style="position: relative; text-align: center; height: 200px; background-image: url('/www/img/pourquie_bw.jpg'); background-size: cover; background-position: center;">
 
+    <!-- Colored transparent overlay -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #5B768E; opacity: 0.4; z-index: 1;"></div>
+
+    <!-- Text content on top -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                display: flex; flex-direction: column; justify-content: center; align-items: center; 
+                z-index: 2;">
+        <h1 style="margin: 0; color: white;">Skeletal Muscle Dataset Repository</h1>
+        <p style="margin: 0; color: white;">Explore each app to visualize skeletal muscle biological responses!</p>
+    </div>
+    
+</div>
 
     <!-- Apps ready to use -->
     <div class="category">
         <div class="container">
+            
+            <!-- MetaMEx dataset -->
+            <div class="dataset">
+                <a href="https://metamex.eu/app/metamex" target="_blank">
+                    <img src="www/img/snippet/MetaMEx.webp" alt="MetaMEx" title="Explore MetaMEx">
+                    <p><b>Exercise</b></p>
+                </a>
+                    <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity (MetaMEx).</p>
+            </div>
             
             <!-- Muscle models -->
             <div class="dataset">
@@ -46,15 +64,6 @@
                     <p><b>Muscle Models</b></p>
                 </a>
                 <p>Transcriptome of C2C12, L6 and human primary myotubes compared to skeletal muscle tissue.</p>
-            </div>
-            
-            <!-- MetaMEx dataset -->
-            <div class="dataset">
-                <a href="https://metamex.eu/app/metamex">
-                    <img src="www/img/snippet/MetaMEx.webp" alt="MetaMEx" title="Explore MetaMEx">
-                    <p><b>Exercise</b></p>
-                </a>
-                    <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity (MetaMEx).</p>
             </div>
             
             <!-- Human Muscle aging -->
@@ -75,16 +84,41 @@
                 <p>Transcriptomics analysis of skeletal muscle in men and women with overweight, obesity or type 2 diabetes.</p>
             </div>
 
-           <!-- Fiber type profiling -->
+        </div>
+    </div>
+
+    <hr>
+    
+    <!-- Work in progress -->
+    <div class="category">
+        <div style="text-align: center;color: red;justify-content:center;padding: 1%">
+            <i class="fas fa-exclamation-triangle" style="color: #FFA500; font-size: 20px;">
+                APPS UNDER CONSTRUCTION</i>
+            <i class="fas fa-exclamation-triangle" style="color: #FFA500; font-size: 20px;"></i> <br><br>
+            <em>Feedback welcome. Contact me if you encounter any issues!</em>
+        </div>
+        
+        <div class="container">
+
+            <!-- Test App -->
             <div class="dataset">
-                <a href="modules/fiber_type.html">
-                    <img src="www/img/snippet/fiber_type_profile.webp" alt="Human Clamp">
-                    <p><b>Fiber Type</b></p>
+                <a href="modules/0_template_app.html">
+                    <img src="www/img/snippet/0_template_app.png " alt="Muscle scRNAseq">
+                    <p><b>Template App</b></p>
                 </a>
-                <p>Profiling of the proteome and transcriptome of human skeletal muscle type I and type II fibers.</p>
+                    <p>A template providing minimal R and HTML structure for integrating new apps into the repository.</p>
             </div>
 
-            <!-- Mouse high fat diet -->
+           <!-- Fiber type profiling -->
+           <div class="dataset">
+            <a href="modules/fiber_type.html">
+                <img src="www/img/snippet/fiber_type_profile.webp" alt="Human Clamp">
+                <p><b>Fiber Type</b></p>
+            </a>
+            <p>Profiling of the proteome and transcriptome of human skeletal muscle type I and type II fibers.</p>
+        </div>
+        
+        <!-- Mouse high fat diet -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/obesity_t2d/mouse_hfd_tissues_transcriptomics">
                     <img src="www/img/snippet/mouse_hfd_tissues_transcriptomics.webp" alt="Mouse Obesity">
@@ -154,31 +188,6 @@
                     <p><b>Global VO2max</b></p>
                 </a>
                     <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
-            </div>
-            
-        </div>
-    </div>
-
-    <hr>
-    
-    <!-- Work in progress -->
-    <div class="category">
-        <div style="text-align: center;color: red;justify-content:center;padding: 1%">
-            <i class="fas fa-exclamation-triangle" style="color: #FFA500; font-size: 20px;">
-                APPS UNDER CONSTRUCTION</i>
-            <i class="fas fa-exclamation-triangle" style="color: #FFA500; font-size: 20px;"></i> <br><br>
-            <em>Feedback welcome. Contact me if you encounter any issues!</em>
-        </div>
-        
-        <div class="container">
-
-            <!-- Test App -->
-            <div class="dataset">
-                <a href="modules/0_template_app.html">
-                    <img src="www/img/snippet/0_template_app.png " alt="Muscle scRNAseq">
-                    <p><b>Template App</b></p>
-                </a>
-                    <p>A template providing minimal R and HTML structure for integrating new apps into the repository.</p>
             </div>
 
             <!-- Muscle scRNAseq -->
