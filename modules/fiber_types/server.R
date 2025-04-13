@@ -7,7 +7,7 @@
 server <- function(input, output, session) {
   
   updateSelectizeInput(session, 'inputGeneSymbol', 
-                       choices=genelist, 
+                       choices=gene_list_all, 
                        server=TRUE, 
                        selected=c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2"), 
                        options=NULL)
@@ -38,7 +38,8 @@ server <- function(input, output, session) {
     })
     
     # Combine into single data frame
-    selected_row <- do.call(rbind, selected_list)
+    selected_row <- do.call(rbind, selected_list) %>%
+      data.frame()
     rownames(selected_row) <- genename
     
     return(selected_row)
@@ -68,7 +69,8 @@ server <- function(input, output, session) {
     })
     
     # Combine into single data frame
-    selected_row <- do.call(rbind, selected_list)
+    selected_row <- do.call(rbind, selected_list) %>%
+      data.frame()
     rownames(selected_row) <- genename
     
     return(selected_row)
@@ -78,22 +80,23 @@ server <- function(input, output, session) {
   #-----------------------------------------------------------------
   # Boxplot - transcriptome
   plotDataGene <- eventReactive(input$updatePlot, {
-    genename <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
-      
-    plotdata <- data.frame(metadata_transcriptome, 
-                           t(selected_row))
-    
-    plotdata <- data.frame(metadata_transcriptome, 
-                           genedata = t(selectedGeneData()))
 
+    plotdata <- data.frame(metadata_transcriptome, 
+                           t(selectedGeneData()))
+    
     # exclude mixed fibers
     plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
     
     # Extract and reshape data for plotting
-    plotdata <- pivot_longer(plotdata, cols = all_of(genename), names_to = "gene", values_to = "data")
+    plotdata <- pivot_longer(plotdata, 
+                             cols = genename, 
+                             names_to = "gene", 
+                             values_to = "data")
+    
     plotdata$FiberType <- factor(plotdata$FiberType,
-                                 levels = c("Type I", "Mixed Type I/II", "Type IIA", "Mixed Type IIA/IIX", "Type IIX"))
+                                 levels = c("Type I", "Mixed Type I/II", 
+                                            "Type IIA", "Mixed Type IIA/IIX", "Type IIX"))
     
     # Plot
     ggplot(plotdata, aes(x = gene, y = data, fill = FiberType)) +
@@ -108,28 +111,29 @@ server <- function(input, output, session) {
   })
   
   output$GenePlot <- renderPlot({
-    plotData()
+    plotDataGene()
   })
   
   #-----------------------------------------------------------------
   # Boxplot - proteome
   plotDataProtein <- eventReactive(input$updatePlot, {
-    genename <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
-    
+ 
     plotdata <- data.frame(metadata_proteome, 
-                           t(selected_row))
-    
-    plotdata <- data.frame(metadata_proteome, 
-                           genedata = t(selectedGeneData()))
+                           t(selectedProteinData()))
     
     # exclude mixed fibers
     plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
     
     # Extract and reshape data for plotting
-    plotdata <- pivot_longer(plotdata, cols = all_of(genename), names_to = "gene", values_to = "data")
+    plotdata <- pivot_longer(plotdata, 
+                             cols = genename, 
+                             names_to = "gene", 
+                             values_to = "data")
+    
     plotdata$FiberType <- factor(plotdata$FiberType,
-                                 levels = c("Type I", "Mixed Type I/II", "Type IIA", "Mixed Type IIA/IIX", "Type IIX"))
+                                 levels = c("Type I", "Mixed Type I/II", 
+                                            "Type IIA", "Mixed Type IIA/IIX", "Type IIX"))
     
     # Plot
     ggplot(plotdata, aes(x = gene, y = data, fill = FiberType)) +
@@ -144,7 +148,7 @@ server <- function(input, output, session) {
   })
   
   output$ProteinPlot <- renderPlot({
-    plotData()
+    plotDataProtein()
   })
   
   

@@ -32,7 +32,8 @@ ui <- fluidPage(
                           downloadButton("downloadGeneData", "Download Data")
              ),
              mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
-                       plotOutput("MainPlot", height="800px") %>% withSpinner(color="#5b768e", type = 8)
+                       plotOutput("GenePlot", height="400px") %>% withSpinner(color="#5b768e", type = 8),
+                       plotOutput("ProteinPlot", height="400px") %>% withSpinner(color="#5b768e", type = 8)
              )
            )
   ),

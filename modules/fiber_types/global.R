@@ -28,3 +28,5 @@ gene_list_proteome <- gene_to_file_proteome$SYMBOL
 
 gene_to_file_transcriptome <- readRDS("data/gene_list_transcriptome.Rds")
 gene_list_transcriptome <- gene_to_file_transcriptome$SYMBOL
+
+gene_list_all <- union(gene_list_proteome, gene_list_transcriptome)
