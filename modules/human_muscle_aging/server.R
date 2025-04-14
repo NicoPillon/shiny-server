@@ -56,7 +56,7 @@ server <- function(input, output, session) {
     cowplot::plot_grid(
       ggplot(plotdata, aes(x=age, y=genedata)) +
         geom_jitter(aes(color = diagnosis, shape = diagnosis), 
-                    width = 5, size = 3, alpha = 0.25)  + 
+                    width = 5, size = 3, alpha = 0.5)  + 
         geom_smooth(method = "lm", color = "black", se = FALSE) +
         theme_bw(16) +  
         theme(legend.position = "none") +
@@ -64,7 +64,7 @@ server <- function(input, output, session) {
         labs(x="Age, years",
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
-        scale_color_manual(values = c("blue", "darkred")) +
+        scale_color_manual(values = c("#5B768E", "#bd1a0e")) +
         scale_y_continuous(expand = expansion(mult = c(0, .15))) +
         stat_cor(size = 4, 
                  vjust = -1, 
@@ -96,7 +96,7 @@ server <- function(input, output, session) {
   
   ##################################################################################################################
   #Dataset tables
-  output$datasets <- renderDataTable(options=list(signif = 3),{
+  output$references <- renderDataTable(options=list(signif = 3),{
     DT::datatable(
       references, 
       escape = FALSE, 

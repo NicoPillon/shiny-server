@@ -58,7 +58,7 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------------------------
   # Dataset tables
-  output$datasets <- renderDataTable(options=list(signif = 3),{
+  output$references <- renderDataTable(options=list(signif = 3),{
     DT::datatable(
       references, 
       escape = FALSE, 

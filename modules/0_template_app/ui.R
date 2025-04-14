@@ -14,8 +14,8 @@ ui <- fluidPage(
   # title ribbon
   fluidRow(
     style = "color:black; padding:0% 2% 0% 2%; text-align:left;",
-    h3("Cross-Species Analysis of Skeletal Muscle Models Reveals Conserved and Divergent Transcriptional Programs"),
-    h5("Last update 1978-03-28"),
+    h3("This could be your own app hosted on the portal"),
+    h5("Last update XXXX-YY-ZZ"),
     tags$hr()
   ),
   
@@ -27,7 +27,7 @@ ui <- fluidPage(
                           actionButton("updatePlot", "Refresh plot", icon("refresh")),
                           tags$hr(),
                           tags$b("Statistics:"),
-                          em("Spearman correlation and Wilcoxon ranked signed test comparing ages to the middle group. The p values are not adjusted for multiple testing comparisons."),
+                          em("Describe briefly what statsistics were used in your plots."),
                           tags$hr(),
                           downloadButton("downloadGeneData", "Download Data")
              ),
@@ -53,11 +53,11 @@ ui <- fluidPage(
     p("In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa.")
   ),
   
-  # Table with datasets
+  # Table with references
   fluidRow(style="color:black;background-color:white;padding:0% 2% 0% 2%;",
            tags$hr(),
            h3("Datasets Included in the Analysis"),
-           dataTableOutput("datasets")
+           dataTableOutput("references")
   ),
   
   # Citation
@@ -65,9 +65,9 @@ ui <- fluidPage(
            tags$hr(),
            h3("Citation"),
            "Doe JA, Nguyen TM, Patel RK, Svensson L, Okafor U, Nakamura Y, Rossi A, Zhang H, López F, Larsson M.",
-           a("Cross-species transcriptomic integration reveals conserved metabolic signatures in skeletal muscle.",
+           a("Your publication showing how the data was used.",
              href="https://doi.org/10.1234/fictjournal.01234.2025", target="_blank", style="color:#5B768E"),
-           "Fictional Journal of Integrative Biology. 2025 Apr;12(2):101-117."
+           "Fictional Journal of Skeletal Biology. 2025 Apr;12(2):101-117."
   )
   
 )

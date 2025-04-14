@@ -19,7 +19,7 @@ library(arrow)
 
 
 # metadata
-metadata_proteome <- readRDS("data/metadata_proteome.Rds")
+metadata_proteome <- readRDS("data/metadata_proteome.Rds")[,1:3]
 metadata_transcriptome <- readRDS("data/metadata_transcriptome.Rds")
 
 # List of genes

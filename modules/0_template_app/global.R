@@ -23,7 +23,7 @@ sample_list <- readRDS("data/sample_list.Rds")
 references <- read_feather("data/dataset.feather")
 
 
-asd <- references <- read_feather("data/datamatrix.feather")
-qwe <- references <- read_feather("data/datamatrix.feather")
-zxc <- references <- read_feather("data/datamatrix.feather")
-ert <- references <- read_feather("data/datamatrix.feather")
+asd <- read_feather("data/datamatrix.feather")
+qwe <- read_feather("data/datamatrix.feather")
+zxc <- read_feather("data/datamatrix.feather")
+ert <- read_feather("data/datamatrix.feather")

@@ -27,9 +27,9 @@ saveRDS(sample_list, file = "data/sample_list.Rds")
 
 # Make table with more datasets
 references <- tibble(
-  Dataset = paste0("Dataset", 1:100),
-  Species = rep(c("Human", "Mouse", "Rat"), length.out = 100),
-  Platform = paste0("Platform_", sample(1:5, 100, replace = TRUE))
+  Dataset = paste0("Dataset", 1:20),
+  Species = rep(c("Human", "Mouse", "Rat"), length.out = 20),
+  Platform = paste0("Platform_", sample(1:5, 20, replace = TRUE))
 )
 write_feather(references, "data/dataset.feather")
 

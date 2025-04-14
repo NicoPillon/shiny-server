@@ -16,64 +16,88 @@ server <- function(input, output, session) {
   # REACTIVE: load only selected gene(s) from dataset
   selectedGeneData <- reactive({
     req(input$inputGeneSymbol)
-    
-    # Parse gene names
-    genename <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
     
     # Match gene to file and row info
     file_row <- gene_to_file_transcriptome[gene_to_file_transcriptome$SYMBOL %in% genename, ]
-    req(nrow(file_row) > 0)
     
-    # Split by file (each group is a set of rows from one file)
+    # Split by file
     split_rows <- split(file_row, file_row$file)
     
-    # Read and collect rows from each file
+    # Load available data
     selected_list <- lapply(split_rows, function(rows) {
       path <- file.path("data", unique(rows$file))
       df <- arrow::read_feather(path)
-      selected <- df[rows$row, ]
-      rownames(selected) <- rows$SYMBOL
-      selected
+      
+      selected <- df[rows$row, , drop = FALSE] %>%
+        data.frame()
+      
+      # Ensure rownames are matched properly
+      rownames(selected) <- rows$SYMBOL[order(rows$row)]
+      selected <- selected[match(rows$SYMBOL, rownames(selected)), , drop = FALSE]
+      
+      return(selected)
     })
     
-    # Combine into single data frame
-    selected_row <- do.call(rbind, selected_list) %>%
-      data.frame()
-    rownames(selected_row) <- genename
+    # Combine all available rows
+    selected_row <- do.call(rbind, selected_list)
+    rownames(selected_row) <- gsub(".*.feather\\.", "", rownames(selected_row))
     
-    return(selected_row)
+    # Add missing genes as NA
+    missing_genes <- setdiff(genename, rownames(selected_row))
+    if (length(missing_genes) > 0) {
+      missing_df <- matrix(NA, nrow = length(missing_genes), ncol = ncol(selected_row))
+      rownames(missing_df) <- missing_genes
+      colnames(missing_df) <- colnames(selected_row)
+      selected_row <- rbind(selected_row, missing_df)
+    }
+    
+    selected_row <- selected_row[genename, , drop = FALSE]  # preserve original input order
+    data.frame(selected_row)
   })
   
+  #-----------------------------------------------------------------
+  # REACTIVE: load only selected gene(s) from dataset  
   selectedProteinData <- reactive({
     req(input$inputGeneSymbol)
-    
-    # Parse gene names
-    genename <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
     
     # Match gene to file and row info
     file_row <- gene_to_file_proteome[gene_to_file_proteome$SYMBOL %in% genename, ]
-    req(nrow(file_row) > 0)
     
-    # Split by file (each group is a set of rows from one file)
+    # Split by file
     split_rows <- split(file_row, file_row$file)
     
-    # Read and collect rows from each file
+    # Load available data
     selected_list <- lapply(split_rows, function(rows) {
       path <- file.path("data", unique(rows$file))
       df <- arrow::read_feather(path)
-      selected <- df[rows$row, ]
-      rownames(selected) <- rows$SYMBOL
-      selected
+      
+      selected <- df[rows$row, , drop = FALSE] %>%
+        data.frame()
+      
+      # Ensure rownames are matched properly
+      rownames(selected) <- rows$SYMBOL[order(rows$row)]
+      selected <- selected[match(rows$SYMBOL, rownames(selected)), , drop = FALSE]
+      
+      return(selected)
     })
     
-    # Combine into single data frame
-    selected_row <- do.call(rbind, selected_list) %>%
-      data.frame()
-    rownames(selected_row) <- genename
+    # Combine all available rows
+    selected_row <- do.call(rbind, selected_list)
+    rownames(selected_row) <- gsub(".*.feather\\.", "", rownames(selected_row))
     
-    return(selected_row)
+    # Add missing genes as NA
+    missing_genes <- setdiff(genename, rownames(selected_row))
+    if (length(missing_genes) > 0) {
+      missing_df <- matrix(NA, nrow = length(missing_genes), ncol = ncol(selected_row))
+      rownames(missing_df) <- missing_genes
+      colnames(missing_df) <- colnames(selected_row)
+      selected_row <- rbind(selected_row, missing_df)
+    }
+    
+    selected_row <- selected_row[genename, , drop = FALSE]  # preserve original input order
+    data.frame(selected_row)
   })
   
   
@@ -82,8 +106,10 @@ server <- function(input, output, session) {
   plotDataGene <- eventReactive(input$updatePlot, {
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
 
-    plotdata <- data.frame(metadata_transcriptome, 
-                           t(selectedGeneData()))
+    gene_data <- as.data.frame(t(selectedGeneData()))
+    colnames(gene_data) <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+    
+    plotdata <- cbind(metadata_transcriptome, gene_data)
     
     # exclude mixed fibers
     plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
@@ -119,8 +145,10 @@ server <- function(input, output, session) {
   plotDataProtein <- eventReactive(input$updatePlot, {
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
  
-    plotdata <- data.frame(metadata_proteome, 
-                           t(selectedProteinData()))
+    protein_data <- as.data.frame(t(selectedProteinData()))
+    colnames(protein_data) <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+    
+    plotdata <- cbind(metadata_proteome, protein_data)
     
     # exclude mixed fibers
     plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]

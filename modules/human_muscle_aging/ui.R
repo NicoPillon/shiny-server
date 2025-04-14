@@ -59,7 +59,7 @@ ui <- fluidPage(
   fluidRow(style="color:black;background-color:white;padding:0% 2% 0% 2%;",
            tags$hr(),
            h3("Datasets Included in the Analysis"),
-           dataTableOutput("datasets")
+           dataTableOutput("references")
   ),
   
   # Citation

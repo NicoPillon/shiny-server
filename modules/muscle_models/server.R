@@ -7,7 +7,7 @@
 server <- function(input, output, session) {
   
   updateSelectizeInput(session, 'inputGeneSymbol', 
-                       choices=human_genelist, 
+                       choices=genelist, 
                        server=TRUE, 
                        selected=c("FN1", "SPP1", "MYL4", "MYH7", "ATP2A1", "MYL3"), 
                        options=NULL)
@@ -19,7 +19,7 @@ server <- function(input, output, session) {
     genename <- toupper(input$inputGeneSymbol)
     
     # Match gene names
-    matched_ids <- which(human_genelist %in% genename)
+    matched_ids <- which(genelist %in% genename)
     
     if (length(matched_ids) == 0) {
       showNotification("No genes matched the database.", type = "error")
@@ -29,7 +29,7 @@ server <- function(input, output, session) {
     # Load only the required genes (rows)
     df <- arrow::read_feather("data/datamatrix.feather", as_data_frame = FALSE)[matched_ids, ] %>%
       as.data.frame()
-    rownames(df) <- human_genelist[matched_ids]
+    rownames(df) <- genelist[matched_ids]
     
     return(df)
   })
@@ -128,7 +128,7 @@ server <- function(input, output, session) {
   # Dataset tables
   output$datasets <- renderDataTable(options=list(signif = 3),{
     DT::datatable(
-      human_references, 
+      references, 
       escape = FALSE, 
       rownames = FALSE,
       options = list(

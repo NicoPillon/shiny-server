@@ -18,6 +18,6 @@ library(pheatmap)
 library(arrow)
 
 # Load static reference data
-human_genelist <- readRDS("data/gene_names.Rds")
+genelist <- readRDS("data/gene_names.Rds")
 samples_list <- readRDS("data/samples_list.Rds")
-human_references <- read_feather("data/dataset.feather")
+references <- read_feather("data/dataset.feather")
