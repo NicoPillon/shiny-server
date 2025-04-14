@@ -103,20 +103,22 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------------------------
   #Dataset tables
-  output$references <- renderDataTable(options=list(signif = 3),{
-    DT::datatable(
-      references, 
-      escape = FALSE, 
-      rownames = FALSE,
-      options = list(
-        columnDefs = list(
-          list(className = 'dt-center', targets = 1),  # Align column to the center
-          list(className = 'dt-center', targets = 2)  # Align column to the center
-          # Add more lines for additional columns if needed
-        )
+output$references <- renderDataTable({
+  DT::datatable(
+    references, 
+    escape = FALSE, 
+    rownames = FALSE,
+    options = list(
+      scrollX = FALSE,
+      autoWidth = TRUE,
+      pageLength = 10,
+      columnDefs = list(
+        list(className = 'dt-center', targets = 1),
+        list(className = 'dt-center', targets = 2)
       )
     )
-  })
+  )
+})
   
   #-----------------------------------------------------------------
   # Download button
