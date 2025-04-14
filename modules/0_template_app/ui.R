@@ -71,14 +71,18 @@ ui <- fluidPage(
   ),
 
   # Resizing script for iframes
-  tags$script(HTML("
-    function sendHeight() {
+  tags$head(
+    tags$script(HTML("
+    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
       const height = document.documentElement.scrollHeight;
       parent.postMessage({ frameHeight: height }, '*');
-    }
+    });
 
-    window.addEventListener('load', sendHeight);
-    window.addEventListener('resize', sendHeight);
+    window.addEventListener('resize', function() {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
   "))
+  )
   
 )

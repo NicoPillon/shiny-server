@@ -6,6 +6,10 @@
 
 server <- function(input, output, session) {
   
+  session$onFlushed(function() {
+    session$sendCustomMessage("resizeFrame", list())
+  }, once = FALSE)
+
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=gene_list, 
                        server=TRUE, 
