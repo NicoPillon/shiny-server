@@ -36,7 +36,8 @@ ui <- fluidPage(
                           
              ),
              mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
-                       plotOutput("genePlotAging", height="600px") %>% withSpinner(color="#5B768E", type = 8)
+                       plotOutput("geneBoxPlotAging", height="500px") %>% withSpinner(color="#5B768E", type = 8),
+                       plotOutput("geneCorrelationPlotAging", height="700px") %>% withSpinner(color="#5B768E", type = 8)
              )
            ),
            

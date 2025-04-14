@@ -106,7 +106,8 @@ server <- function(input, output, session) {
         geom_point(aes(color = diagnosis, shape = diagnosis), size = 3, alpha = 0.5)  + 
         geom_smooth(method = "lm", color = "black", se = FALSE) +
         theme_bw(16) +  
-        theme(legend.position = "right") +
+      theme(legend.position = "right", 
+            legend.title = element_blank()) +
         facet_wrap(.~sex, ncol = 1) +
         labs(x="BMI, kg/m2",
              y="mRNA expression, log2") +

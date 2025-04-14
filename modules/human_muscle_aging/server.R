@@ -42,62 +42,76 @@ server <- function(input, output, session) {
     return(selected_row)
   })
   
-  #-----------------------------------------------------------------
-  # Boxplot
-  output$genePlotAging <- renderPlot({
-    
-    plotdata <- data.frame(metadata, 
-                           genedata = as.numeric(selectedGeneData()))
-    
-    #filter according to selected categories
-    plotdata <- dplyr::filter(plotdata,
-                              diagnosis %in% input$diagnosis_sarcopenia)
-    
-    
-    # label with n size
-    plotdata$sex <- gsub("^Male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "Male",])), plotdata$sex)
-    plotdata$sex <- gsub("^Female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "Female",])), plotdata$sex)
-    
-    cowplot::plot_grid(
-      ggplot(plotdata, aes(x=age, y=genedata)) +
-        geom_jitter(aes(color = diagnosis, shape = diagnosis), 
-                    width = 5, size = 3, alpha = 0.5)  + 
-        geom_smooth(method = "lm", color = "black", se = FALSE) +
-        theme_bw(16) +  
-        theme(legend.position = "none") +
-        facet_wrap(.~sex, ncol = 1) +
-        labs(x="Age, years",
-             y="mRNA expression, log2") +
-        scale_shape_manual(values=rep(c(15,16,17), 20)) +
-        scale_color_manual(values = c("#5B768E", "#bd1a0e")) +
-        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
-        stat_cor(size = 4, 
-                 vjust = -1, 
-                 label.x = 20),
+    #-----------------------------------------------------------------
+    # Boxplot
+    output$geneBoxPlotAging <- renderPlot({
+      
+      plotdata <- data.frame(metadata, 
+                             genedata = as.numeric(selectedGeneData()))
+      
+      #filter according to selected categories
+      plotdata <- dplyr::filter(plotdata,
+                                diagnosis %in% input$diagnosis_sarcopenia)
+      
+      
+      # label with n size
+      plotdata$sex <- gsub("^Male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "Male",])), plotdata$sex)
+      plotdata$sex <- gsub("^Female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "Female",])), plotdata$sex)
       
       ggplot(plotdata, aes(x=age_group, y=genedata)) +
-        geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
-        geom_sina(aes(color = diagnosis, shape = diagnosis), 
-                  size = 1.5, position = position_dodge(0), alpha = 0.25) +
-        theme_bw(16) + 
+          geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
+          geom_sina(aes(color = diagnosis, shape = diagnosis), 
+                    size = 1.5, position = position_dodge(0), alpha = 0.25) +
+          theme_bw(16) + 
+          theme(legend.position = "right", 
+                legend.title = element_blank()) +
+          facet_wrap(.~sex, ncol = 2) +
+          labs(x="Age group",
+               y="mRNA expression, log2") +
+          scale_shape_manual(values=rep(c(15,16,17), 20)) +
+          scale_color_manual(values = c("#5B768E", "#bd1a0e")) +
+          scale_y_continuous(expand = expansion(mult = c(0, .15))) +
+          stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
+                             ref.group = "40-60",
+                             parse = TRUE,
+                             size = 4, 
+                             vjust = -1)
+    })
+    
+    #-----------------------------------------------------------------
+    # Correlation
+    output$geneCorrelationPlotAging <- renderPlot({
+      
+      plotdata <- data.frame(metadata, 
+                             genedata = as.numeric(selectedGeneData()))
+      
+      #filter according to selected categories
+      plotdata <- dplyr::filter(plotdata,
+                                diagnosis %in% input$diagnosis_sarcopenia)
+      
+      
+      # label with n size
+      plotdata$sex <- gsub("^Male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "Male",])), plotdata$sex)
+      plotdata$sex <- gsub("^Female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "Female",])), plotdata$sex)
+      
+      ggplot(plotdata, aes(x=age, y=genedata)) +
+          geom_jitter(aes(color = diagnosis, shape = diagnosis), 
+                      width = 5, size = 3, alpha = 0.5)  + 
+          geom_smooth(method = "lm", color = "black", se = FALSE) +
+          theme_bw(16) +  
         theme(legend.position = "right", 
               legend.title = element_blank()) +
-        facet_wrap(.~sex, ncol = 1) +
-        labs(x="Age group",
-             y="mRNA expression, log2") +
-        scale_shape_manual(values=rep(c(15,16,17), 20)) +
-        scale_color_manual(values = c("#5B768E", "#bd1a0e")) +
-        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
-        stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                           ref.group = "40-60",
-                           parse = TRUE,
-                           size = 4, 
-                           vjust = -1),
-      ncol = 2
-    )
-    
-    
-  }, env = environment())
+          facet_wrap(.~sex, ncol = 1) +
+          labs(x="Age, years",
+               y="mRNA expression, log2") +
+          scale_shape_manual(values=rep(c(15,16,17), 20)) +
+          scale_color_manual(values = c("#5B768E", "#bd1a0e")) +
+          scale_y_continuous(expand = expansion(mult = c(0, .15))) +
+          stat_cor(size = 4, 
+                   vjust = -1, 
+                   label.x = 20)
+      
+  })
   
   ##################################################################################################################
   #Dataset tables
