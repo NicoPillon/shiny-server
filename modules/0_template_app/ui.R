@@ -68,7 +68,7 @@ ui <- fluidPage(
            a("Your publication showing how the data was used.",
              href="https://doi.org/10.1234/fictjournal.01234.2025", target="_blank", style="color:#5B768E"),
            "Fictional Journal of Skeletal Biology. 2025 Apr;12(2):101-117."
-  )
+  ),
 
   # Resizing script for iframes
   tags$script(HTML("
