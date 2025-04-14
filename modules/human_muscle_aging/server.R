@@ -81,7 +81,7 @@ server <- function(input, output, session) {
         labs(x="Age group",
              y="mRNA expression, log2") +
         scale_shape_manual(values=rep(c(15,16,17), 20)) +
-        scale_color_manual(values = c("blue", "darkred")) +
+        scale_color_manual(values = c("#5B768E", "#bd1a0e")) +
         scale_y_continuous(expand = expansion(mult = c(0, .15))) +
         stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
                            ref.group = "40-60",

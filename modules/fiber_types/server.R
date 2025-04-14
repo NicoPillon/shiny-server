@@ -142,7 +142,7 @@ server <- function(input, output, session) {
       theme_bw(base_size = 16) + 
       labs(x = NULL, 
            y = "Relative expression, log2", 
-           subtitle = "proteome") +
+           subtitle = "Proteome") +
       scale_y_continuous(expand = c(0, 4)) +
       scale_fill_manual(values = c("Type I" = "#8B0000", "Type IIA" = "#F5DEB3", "Type IIX"= "#D3D3D3", "Mixed" = "#A0522D"))
   })
@@ -150,11 +150,6 @@ server <- function(input, output, session) {
   output$ProteinPlot <- renderPlot({
     plotDataProtein()
   })
-  
-  
-  
-  
-  
   
   
   ##################################################################################################################

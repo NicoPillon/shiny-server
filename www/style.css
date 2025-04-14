@@ -156,13 +156,14 @@ input[type='radio'] {
   top: 0;
   left: 0;
   width: 100%;
-  height: 1200px; /* Match your iframe height */
+  height: 1000px; /* Match your iframe height */
   background-color: white;
   z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Remove vertical centering */
+  padding-top: 4rem; /* Increased spacing from the top */
   color: #5B768E;
   font-size: 1.2rem;
 }
