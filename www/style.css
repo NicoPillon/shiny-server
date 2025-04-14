@@ -14,7 +14,7 @@ html, body {
   min-height: 100vh; /* optional */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 body > .category {
