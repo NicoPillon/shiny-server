@@ -40,7 +40,9 @@ ui <- fluidPage(
                           
              ),
              mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
-                       plotOutput("genePlotObesity", height="600px") %>% withSpinner(color="#5B768E", type = 8)
+                       plotOutput("boxplot", height="500px") %>% withSpinner(color="#5B768E", type = 8),
+                       tags$hr(),
+                       plotOutput("correlationPlot", height="800px") %>% withSpinner(color="#5B768E", type = 8)
                        )
              )
            ),

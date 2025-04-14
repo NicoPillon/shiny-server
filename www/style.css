@@ -184,3 +184,25 @@ input[type='radio'] {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Style for all sliderInputs */
+/* Bar and handle color */
+.irs-bar, .irs-bar-edge {
+  background: #bd1a0e !important;
+  border-color: #bd1a0e !important;
+}
+.irs-slider {
+  background: #bd1a0e !important;
+  color: red;
+  border: none !important;
+}
+
+/* For range sliders (two values) */
+.irs-from,
+.irs-to {
+  background-color: #bd1a0e !important;
+  color: white !important;
+  font-weight: bold;
+  border: none;
+}
+

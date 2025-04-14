@@ -44,7 +44,47 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------------------------
   # Boxplot
-  output$genePlotObesity <- renderPlot({
+  output$boxplot <- renderPlot({
+
+    plotdata <- data.frame(metadata, 
+                           genedata = as.numeric(selectedGeneData()))
+    
+    plotdata$bmi_category <- factor(plotdata$bmi_category, 
+                                    levels=c("Lean", "Overweight", "Obesity"))
+    
+    #filter according to selected categories
+    plotdata <- dplyr::filter(plotdata,
+                              diagnosis %in% input$diagnosis_diabetes ,
+                              age >= input$age[1] & age <= input$age[2])
+    
+    # label with n size
+    plotdata$sex <- gsub("^male", paste0("Male, n = ", nrow(plotdata[plotdata$sex == "male",])), plotdata$sex)
+    plotdata$sex <- gsub("^female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "female",])), plotdata$sex)
+    
+    # plot
+    ggplot(plotdata, aes(x=bmi_category, y=genedata)) +  
+        geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
+        geom_sina(aes(color = diagnosis, shape = diagnosis), 
+                  size = 1.5, position = position_dodge(0), alpha = 0.25) +
+        theme_bw(16) + 
+        theme(legend.position = "right",
+              legend.title = element_blank()) +
+        facet_wrap(.~sex, ncol = 2) +
+        labs(x="BMI category",
+             y="mRNA expression, log2") +
+        scale_shape_manual(values=rep(c(15,16,17), 20)) +
+        scale_color_manual(values = c("#5B768E", "orange", "darkred")) +
+        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
+        stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
+                           ref.group = "Lean",
+                           parse = TRUE,
+                           size = 4, 
+                           vjust = -1)
+  })
+ 
+  #----------------------------------------------------------------- 
+  # Correlation
+  output$correlationPlot <- renderPlot({
     
     plotdata <- data.frame(metadata, 
                            genedata = as.numeric(selectedGeneData()))
@@ -62,12 +102,11 @@ server <- function(input, output, session) {
     plotdata$sex <- gsub("^female", paste0("Female, n = ", nrow(plotdata[plotdata$sex == "female",])), plotdata$sex)
     
     # plot
-    cowplot::plot_grid(
-      ggplot(plotdata, aes(x=bmi, y=genedata)) +  
+    ggplot(plotdata, aes(x=bmi, y=genedata)) +  
         geom_point(aes(color = diagnosis, shape = diagnosis), size = 3, alpha = 0.5)  + 
         geom_smooth(method = "lm", color = "black", se = FALSE) +
         theme_bw(16) +  
-        theme(legend.position = "none") +
+        theme(legend.position = "right") +
         facet_wrap(.~sex, ncol = 1) +
         labs(x="BMI, kg/m2",
              y="mRNA expression, log2") +
@@ -76,28 +115,7 @@ server <- function(input, output, session) {
         scale_y_continuous(expand = expansion(mult = c(0, .15))) +
         stat_cor(size = 4, 
                  vjust = -1, 
-                 label.x = 20),
-
-      ggplot(plotdata, aes(x=bmi_category, y=genedata)) +  
-        geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
-        geom_sina(aes(color = diagnosis, shape = diagnosis), 
-                  size = 1.5, position = position_dodge(0), alpha = 0.25) +
-        theme_bw(16) + 
-        theme(legend.position = "right",
-              legend.title = element_blank()) +
-        facet_wrap(.~sex, ncol = 1) +
-        labs(x="BMI category",
-             y="mRNA expression, log2") +
-        scale_shape_manual(values=rep(c(15,16,17), 20)) +
-        scale_color_manual(values = c("#5B768E", "orange", "darkred")) +
-        scale_y_continuous(expand = expansion(mult = c(0, .15))) +
-        stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                           ref.group = "Lean",
-                           parse = TRUE,
-                           size = 4, 
-                           vjust = -1),
-      ncol = 2
-    )
+                 label.x = 20)
     
   })
   
