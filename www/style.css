@@ -1,48 +1,61 @@
-/* Minimal CSS reset */
+/* -------------------------------------------
+   1. GLOBAL RESET & BASIC LAYOUT SETTINGS
+--------------------------------------------*/
+
+/* Basic reset for consistent spacing and box sizing */
 * {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
 }
 
+/* Set full width, ensure minimum height for full viewport, use flex layout for body */
 html, body {
   height: auto;
   width: 100%;
   margin: 0px;
   background-color: white;
   font-family: Arial, sans-serif;
-  min-height: 100vh; /* optional */
+  min-height: 100vh; /* Ensures body always fills viewport */
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
 }
 
+/* Ensure main content fills available space */
 body > .category {
   flex: 1;
 }
 
-
-/* Override Bootstrap's .container-fluid max-width */
+/* Prevent Bootstrap's .container-fluid from constraining width */
 .container-fluid {
   width: 100% !important;
   max-width: 100% !important;
 }
 
-.category {
-  flex: 1; /* This makes the content area expand and push the footer down */
-}
-
+/* Prevent Bootstrap's .container from limiting width */
 .container {
   max-width: 100% !important;
   width: 100% !important;
 }
 
+/* Set consistent spacing above/below horizontal rules */
 hr {
   margin-top: 10px;
   margin-bottom: 10px;
 }
 
-/* header */
+
+/* -------------------------------------------
+   2. PAGE STRUCTURE STYLING
+--------------------------------------------*/
+
+/* Main content section (used to push footer down) */
+.category {
+  flex: 1;
+}
+
+/* Header styling: small font, colored background, flex layout */
 .header {
   line-height: 1.2;
   background-color: #5B768E;
@@ -56,6 +69,7 @@ hr {
   margin : 0px;
 }
 
+/* Header title text adjustments */
 .header h1 {
   margin: 0 !important;
   padding: 0 !important;
@@ -64,7 +78,7 @@ hr {
   line-height: 1 !important;
 }
 
-/* footer */
+/* Footer styling: colored background, multiple columns, flexible wrap */
 .footer {
   line-height: 1.2;
   background-color: #5B768E;
@@ -77,99 +91,124 @@ hr {
   flex-wrap: wrap;
 }
 
+/* Each footer column */
 .author-column {
   flex: 1;
   min-width: 250px;
   padding: 10px;
 }
 
-/* containers */
+
+/* -------------------------------------------
+   3. CONTENT BLOCKS & DATASET CARDS
+--------------------------------------------*/
+
+/* Container for content blocks (e.g., dataset cards) */
 .container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
+/* Dataset card block */
 .dataset {
   width: 200px;
   margin: 15px;
   text-align: center;
 }
 
+/* Dataset card image styling */
 .dataset img {
   width: 100%;
   height: auto;
   border-radius: 10px;
 }
 
-/* ----- Adjust links ----- */
 
-/* Normal link state (unvisited) */
+/* -------------------------------------------
+   4. LINKS STYLING (Normal / Hover / Visited / Active)
+--------------------------------------------*/
+
+/* Default link appearance */
 a {
   color: #FFA07A;
   text-decoration: none;
 }
 
-/* Hover state */
+/* Hover effect for links */
 a:hover {
   color: #FF6347;
   text-decoration: underline;
 }
 
-/* Visited state */
+/* Visited links retain original color */
 a:visited {
   color: #FFA07A;
 }
 
-/* Active state */
+/* Link click (active) color */
 a:active {
   color: #FF4500;
 }
 
-/* Tick boxed in R shiny */
+
+/* -------------------------------------------
+   5. FORM ELEMENTS - TICKBOXES & RADIO BUTTONS
+--------------------------------------------*/
+
+/* Use dark red (#bd1a0e) as accent color for checkboxes and radio buttons */
 input[type='checkbox'],
 input[type='radio'] {
   accent-color: #bd1a0e;
 }
 
-/* iframe */
-/* Remove flex from main-content */
+
+
+/* -------------------------------------------
+   6. MAIN CONTENT EMBEDDED APP (IFRAME)
+--------------------------------------------*/
+
+/* Disable flex layout for iframe wrapper */
 .main-content {
   display: block;
   width: 100%;
   margin: 0 auto;
-  position: relative; /* <-- Important for iframe-loader to be contained */
+  position: relative; /* Important for positioning loading spinner */
 }
 
-/* Adjust iframe style */
+/* Embedded iframe (e.g., Shiny app): full width, no border, vertical spacing */
 .main-content iframe {
   width: 100%;
-  min-height: 1200px; /* or a better estimate based on app height */
-  padding: 0 0rem; /* ⬅️ Add horizontal padding (left & right) */
+  min-height: 1200px; /* Adjust depending on app height */
+  padding: 0 0rem;
   border: none;
   display: block;
 }
 
 
-/* Loader wrapper covers iframe area */
+/* -------------------------------------------
+   7. IFRAME LOADER WITH SPINNER
+--------------------------------------------*/
+
+/* Covers iframe while loading, displays spinner and message */
 .iframe-loader {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 1000px; /* Match your iframe height */
+  height: 800px; /* Should match iframe height */
   background-color: white;
   z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Remove vertical centering */
-  padding-top: 4rem; /* Increased spacing from the top */
+  justify-content: flex-start;
+  padding-top: 4rem;
   color: #5B768E;
   font-size: 1.2rem;
 }
 
-/* Simple spinner */
+/* CSS animation for circular spinner */
 .spinner {
   border: 5px solid #f3f3f3;
   border-top: 5px solid #5B768E;
@@ -180,24 +219,31 @@ input[type='radio'] {
   margin-bottom: 1rem;
 }
 
+/* Define spinning animation */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-/* Style for all sliderInputs */
-/* Bar and handle color */
+
+/* -------------------------------------------
+   8. SLIDER INPUTS (irs - Ion.RangeSlider classes)
+--------------------------------------------*/
+
+/* Customize slider bar and edge color */
 .irs-bar, .irs-bar-edge {
   background: #bd1a0e !important;
   border-color: #bd1a0e !important;
 }
+
+/* Customize slider handle */
 .irs-slider {
   background: #bd1a0e !important;
   color: red;
   border: none !important;
 }
 
-/* For range sliders (two values) */
+/* Style for "from" and "to" handles in range sliders */
 .irs-from,
 .irs-to {
   background-color: #bd1a0e !important;
@@ -205,4 +251,3 @@ input[type='radio'] {
   font-weight: bold;
   border: none;
 }
-
