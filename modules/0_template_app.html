@@ -19,6 +19,7 @@
 
 <body>
 
+  
 <!-- Header -->
 <div id="header-placeholder"></div>
 <script>
@@ -26,6 +27,7 @@
     .then(response => response.text())
     .then(data => document.getElementById('header-placeholder').innerHTML = data);
 </script>
+
 
 <!-- Main content with iframe and loader -->
 <div class="main-content">
@@ -35,11 +37,28 @@
   </div>
 
   <iframe 
+    id="dynamic-iframe"
     title="0 Template App"
     src="https://shiny.nicopillon.com/modules/0_template_app/"
+    style="width: 100%; border: none;"
     onload="document.getElementById('iframe-loader').style.display='none';"
   ></iframe>
 </div>
+
+
+<!-- Script to receive height from iframe and adjust iframe size -->
+<script>
+  window.addEventListener("message", function(event) {
+    // Optional: restrict to your domain
+    // if (event.origin !== "https://shiny.nicopillon.com") return;
+
+    if (event.data && event.data.frameHeight) {
+      const iframe = document.getElementById("dynamic-iframe");
+      iframe.style.height = event.data.frameHeight + "px";
+    }
+  });
+</script>
+
 
 <!-- Footer -->
 <div id="footer-placeholder"></div>

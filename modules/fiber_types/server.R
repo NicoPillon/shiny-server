@@ -166,7 +166,7 @@ server <- function(input, output, session) {
     # Plot
     ggplot(plotdata, aes(x = gene, y = data, fill = FiberType)) +
       geom_boxplot(position = position_dodge(0.8), outlier.size = 0) +
-      geom_sina(size = 0.5, position = position_dodge(0.8), alpha = 0.5) +
+      geom_sina(size = 0.5, position = position_dodge(0.8), alpha = 0.2) +
       theme_bw(base_size = 16) + 
       labs(x = NULL, 
            y = "Relative expression, log2", 

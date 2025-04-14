@@ -69,5 +69,16 @@ ui <- fluidPage(
              href="https://doi.org/10.1234/fictjournal.01234.2025", target="_blank", style="color:#5B768E"),
            "Fictional Journal of Skeletal Biology. 2025 Apr;12(2):101-117."
   )
+
+  # Resizing script for iframes
+  tags$script(HTML("
+    function sendHeight() {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    }
+
+    window.addEventListener('load', sendHeight);
+    window.addEventListener('resize', sendHeight);
+  "))
   
 )
