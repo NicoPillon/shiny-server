@@ -68,6 +68,21 @@ ui <- fluidPage(# Google analytics
            a("Comparative profiling of skeletal muscle models reveals heterogeneity of transcriptome and metabolism.",
              href="https://doi.org/10.1152/ajpcell.00540.2019", target="_blank", style="color:#5B768E"),
            "Am J Physiol Cell Physiol. 2020 Mar 1;318(3):C615-C626."
+  ),
+
+  # Code to send height to resizing iframe
+  tags$head(
+    tags$script(HTML("
+    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+
+    window.addEventListener('resize', function() {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+  "))
   )
   
 )

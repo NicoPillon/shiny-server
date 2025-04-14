@@ -70,7 +70,7 @@ ui <- fluidPage(
            "Fictional Journal of Skeletal Biology. 2025 Apr;12(2):101-117."
   ),
 
-  # Resizing script for iframes
+  # Code to send height to resizing iframe
   tags$head(
     tags$script(HTML("
     Shiny.addCustomMessageHandler('resizeFrame', function(message) {

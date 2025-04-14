@@ -18,7 +18,6 @@
 </head>
 
 <body>
-
   
 <!-- Header -->
 <div id="header-placeholder"></div>
@@ -27,7 +26,6 @@
     .then(response => response.text())
     .then(data => document.getElementById('header-placeholder').innerHTML = data);
 </script>
-
 
 <!-- Main content with iframe and loader -->
 <div class="main-content">
@@ -45,7 +43,6 @@
   ></iframe>
 </div>
 
-
 <!-- Script to receive height from iframe and adjust iframe size -->
 <script>
   window.addEventListener("message", function(event) {
@@ -58,7 +55,6 @@
     }
   });
 </script>
-
 
 <!-- Footer -->
 <div id="footer-placeholder"></div>

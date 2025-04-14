@@ -67,5 +67,21 @@ ui <- fluidPage(
            tags$hr(),
            h3("Citation"),
            "Unpublished data."
+  ),
+
+  # Code to send height to resizing iframe
+  tags$head(
+    tags$script(HTML("
+    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+
+    window.addEventListener('resize', function() {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+  "))
   )
+  
 )

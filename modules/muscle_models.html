@@ -35,11 +35,26 @@
   </div>
 
   <iframe 
+    id="dynamic-iframe"
     title="Muscle Models"
     src="https://shiny.nicopillon.com/modules/muscle_models/"
+    style="width: 99%; border: none;"
     onload="document.getElementById('iframe-loader').style.display='none';"
   ></iframe>
 </div>
+
+<!-- Script to receive height from iframe and adjust iframe size -->
+<script>
+  window.addEventListener("message", function(event) {
+    // Optional: restrict to your domain
+    // if (event.origin !== "https://shiny.nicopillon.com") return;
+
+    if (event.data && event.data.frameHeight) {
+      const iframe = document.getElementById("dynamic-iframe");
+      iframe.style.height = event.data.frameHeight + "px";
+    }
+  });
+</script>
 
 <!-- Include shared footer -->
 <div id="footer-placeholder"></div>

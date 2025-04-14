@@ -5,7 +5,12 @@
 #--------------------------------------------------------------------------------------------------------
 
 server <- function(input, output, session) {
-  
+
+  # Code to send the height of the app to adjust iframe
+  session$onFlushed(function() {
+    session$sendCustomMessage("resizeFrame", list())
+  }, once = FALSE)
+    
   updateSelectizeInput(session, 'inputGeneSymbol', 
                        choices=genelist, 
                        server=TRUE, 

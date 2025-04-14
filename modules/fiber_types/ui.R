@@ -107,6 +107,21 @@ ui <- fluidPage(
         " PNAS Nexus. 2022 Jun 11;1(3):pgac086."
       )
     )
+  ),
+
+  # Code to send height to resizing iframe
+  tags$head(
+    tags$script(HTML("
+    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+
+    window.addEventListener('resize', function() {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+  "))
   )
-  
+    
 )
