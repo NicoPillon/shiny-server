@@ -50,81 +50,64 @@ server <- function(input, output) {
   
   observeEvent(input$do, {
     
-    VennPlot_function <- function(){
+    VennPlot_function <- function() {
       MainField <- isolate(input$input_MainField)
-      SubFieldA <- isolate(input$input_SubFieldA)
-      SubFieldB <- isolate(input$input_SubFieldB)
-      SubFieldC <- isolate(input$input_SubFieldC)
+      SubFields <- list(A = isolate(input$input_SubFieldA),
+                        B = isolate(input$input_SubFieldB),
+                        C = isolate(input$input_SubFieldC))
+      SubFields <- SubFields[SubFields != ""] # remove empty fields
+      field_names <- names(SubFields)
       
-      withProgress(message = 'Collecting data from PubMed', value = 1, max=10, {
-        #all publications on pubmed
-        count_AllResearch <- 31821468 #EUtilsSummary("all[sb]", type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
+      withProgress(message = 'Collecting data from PubMed', value = 1, max = length(SubFields)^2 + 2, {
+        
+        count_AllResearch <- 31821468
         incProgress(1)
         
         count_MainField <- EUtilsSummary(MainField, type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
         incProgress(1)
         
-        count_SubFieldA <- EUtilsSummary(paste(MainField, SubFieldA, sep=" AND "), type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
-        incProgress(1)
+        combo_counts <- list()
+        for (field in field_names) {
+          query <- paste(MainField, SubFields[[field]], sep = " AND ")
+          combo_counts[[field]] <- EUtilsSummary(query, type="esearch", db="pubmed")@count
+          incProgress(1)
+        }
         
-        count_SubFieldB <- EUtilsSummary(paste(MainField, SubFieldB, sep=" AND "), type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
-        incProgress(1)
+        if (length(field_names) >= 2) {
+          combn_pairs <- combn(field_names, 2, simplify = FALSE)
+          for (pair in combn_pairs) {
+            query <- paste(MainField, SubFields[[pair[1]]], SubFields[[pair[2]]], sep = " AND ")
+            combo_counts[[paste(pair, collapse = "")]] <- EUtilsSummary(query, type="esearch", db="pubmed")@count
+            incProgress(1)
+          }
+        }
         
-        count_SubFieldAB <- EUtilsSummary(paste(MainField, SubFieldA, SubFieldB, sep=" AND "), type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
-        incProgress(1)
+        if (length(field_names) == 3) {
+          query <- paste(MainField, SubFields$A, SubFields$B, SubFields$C, sep = " AND ")
+          combo_counts[["ABC"]] <- EUtilsSummary(query, type="esearch", db="pubmed")@count
+          incProgress(1)
+        }
         
-        count_SubFieldC <- EUtilsSummary(paste(MainField, SubFieldC, sep=" AND "), type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
-        incProgress(1)
+        # Convert to Venn diagram counts (artificial scaling for better layout)
+        euler_input <- c(`Total` = (count_AllResearch)^(1/1.2),
+                         `Total&Main` = (count_MainField)^(1/1.2))
         
-        count_SubFieldAC <- EUtilsSummary(paste(MainField, SubFieldA, SubFieldC, sep=" AND "), type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
-        incProgress(1)
+        for (key in names(combo_counts)) {
+          label <- paste("Total&Main", paste(strsplit(key, "")[[1]], collapse = "&"), sep = "&")
+          euler_input[[label]] <- (combo_counts[[key]])^(1/1.2)
+        }
         
-        count_SubFieldBC <- EUtilsSummary(paste(MainField, SubFieldB, SubFieldC, sep=" AND "), type="esearch", db="pubmed")@count
-        Sys.sleep(0.2) 
-        incProgress(1)
+        percent_of_total <- if ("ABC" %in% names(combo_counts)) combo_counts$ABC * 100 / count_AllResearch else NA
         
-        count_SubFieldABC <- EUtilsSummary(paste(MainField, SubFieldA, SubFieldB, SubFieldC, sep=" AND "), type="esearch", db="pubmed")@count
-        incProgress(1)
-        
-        percent_of_total <- count_SubFieldABC*100 / count_AllResearch
-        
-        VennDiag <- euler(c("Total" = (count_AllResearch)^(1/1.2),
-                            "Total&Main" = (count_MainField)^(1/1.2),
-                            "Total&Main&A" = (count_SubFieldA)^(1/1.2),
-                            "Total&Main&B" = (count_SubFieldB)^(1/1.2), 
-                            "Total&Main&C" = (count_SubFieldC)^(1/1.2),
-                            "Total&Main&A&B" = (count_SubFieldAB)^(1/1.2), 
-                            "Total&Main&A&C" = (count_SubFieldAC)^(1/1.2),
-                            "Total&Main&B&C" = (count_SubFieldBC)^(1/1.2),
-                            "Total&Main&A&B&C" = (count_SubFieldABC)^(1/1.2)),
-                          shape = "ellipse")
-        Fields <- c("All publications in biology and medicine", MainField, SubFieldA, SubFieldB, SubFieldC)
-        Fields <- gsub("\\(|\\)", "", Fields)
-        Fields <- gsub('\\"', "", Fields)
-        Fields <- gsub('OR', "&", Fields)
-        Fields <- gsub(' ', "\n", Fields)
-        
-        vennplot <- plot(VennDiag, 
-                         main=paste("My field of research represents ", signif(percent_of_total, 2), "% of all publications", sep=""),
-                         alpha=0.5,
-                         edges = list(col=c("black", "#0072B2", "#E69F00", "#009E73", "black", "grey", "grey", "gray", "yellow"),
-                                      lex=1),
-                         fill=c("white", "#56B4E9", "#E69F00", "#009E73", "black", "#739f3a", "#d98c54", "#668c8d", "yellow"),
-                         labels = list(font = 1,
-                                       pos=4,
-                                       cex = c(1,1,1,1,1),
-                                       cex.main=0.5))
+        vennplot <- plot(euler(euler_input, shape = "ellipse"),
+                         main = if (!is.na(percent_of_total)) paste("Your selected field of research represents ", signif(percent_of_total, 2), "% of all publications", sep = "") else "Field intersections",
+                         alpha = 0.5,
+                         edges = list(col = "black", lex = 1),
+                         fill = RColorBrewer::brewer.pal(length(euler_input), "Set3"))
         return(vennplot)
       })
-      
     }
+    
     
     output$VennOutput <- renderPlot({
       VennPlot_function()

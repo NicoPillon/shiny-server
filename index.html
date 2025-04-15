@@ -28,16 +28,42 @@
     .then(data => document.getElementById('header-placeholder').innerHTML = data);
 </script>
 
-<!-- Custom Header with Background Image -->
-<div style="position: relative; text-align: center; height: 250px; background-image: url('/www/img/myoblasts2.jpg'); background-size: cover; background-position: center;">
-    <!-- Text content on top -->
+<!-- Custom Header with Background Image and Overlay -->
+<div style="position: relative; text-align: center; height: 280px; background-image: url('/www/img/myoblasts2.jpg'); background-size: cover; background-position: center;">
+  
+    <!-- Dark overlay for better text contrast -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                background-color: rgba(0, 0, 0, 0.25); z-index: 1;"></div>
+    
+    <!-- Text content -->
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
                 display: flex; flex-direction: column; justify-content: center; align-items: center; 
-                z-index: 2;">
-        <h1 style="margin: 0; color: white;">Skeletal Muscle Dataset Repository</h1>
-        <p style="margin: 0; color: white;">Explore each app to visualize skeletal muscle biological responses!</p>
-    </div>    
-</div>
+                z-index: 2; color: white; padding: 0 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">
+                
+      <h1 style="margin-bottom: 10px; font-size: 2.8em;">Skeletal Muscle Database</h1>
+      <p style="max-width: 500px; font-size: 1.1em;">Dive into dynamic, interactive tools to explore how skeletal muscle adapts to exercise, aging, metabolic disease, and more.</p>
+      
+      <!-- button to load a random app -->
+      <a href="#" onclick="goToRandomApp()" 
+      style="margin-top: 15px; padding: 10px 20px; background-color: #5B768E; color: white; 
+             border-radius: 6px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+      🎲 Explore a Random Dataset 🎲
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function goToRandomApp() {
+      const apps = [
+        '/modules/fiber_types.html',
+        '/modules/human_muscle_aging.html',
+        '/modules/human_muscle_obesity.html',
+        '/modules/muscle_models.html'
+      ];
+      const randomIndex = Math.floor(Math.random() * apps.length);
+      window.location.href = apps[randomIndex];
+    }
+  </script>
 
     <!-- Apps ready to use -->
     <div class="category">

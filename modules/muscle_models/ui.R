@@ -13,7 +13,7 @@ ui <- fluidPage(# Google analytics
   # title ribbon
   fluidRow(
     style = "color:black; padding:0% 2% 0% 2%; text-align:left;",
-    h3("Gene expression in mouse, rat and human skeletal muscle tissue and cells"),
+    h3("Transcriptomic profiles of mouse C2C12, rat L6 and human skeletal myotubes"),
     h5("Last update 2025-04-11"),
     tags$hr()
   ),
@@ -57,7 +57,11 @@ ui <- fluidPage(# Google analytics
   fluidRow(style="color:black;background-color:white;padding:0% 2% 0% 2%;",
            tags$hr(),
            h3("Datasets Included in the Analysis"),
-           dataTableOutput("references")
+           dataTableOutput("references"),
+           tags$p(
+             tags$b("Are we missing a relevant study? Please "),
+             a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+           )    
   ),
   
   # Citation

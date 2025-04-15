@@ -14,11 +14,11 @@ ui <- fluidPage(
   # title ribbon
   fluidRow(
     style = "color:black; padding:0% 2% 0% 2%; text-align:left;",
-    h3("Gene expression in skeletal muscle from humans with obesity and type 2 diabetes"),
+    h3("Obesity-Associated Molecular Changes in Human Skeletal Muscle"),
     h5("Last update 2025-04-11"),
     tags$hr()
   ),
-
+  
   # main page
   fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
            sidebarLayout(
@@ -43,9 +43,9 @@ ui <- fluidPage(
                        plotOutput("boxplot", height="500px") %>% withSpinner(color="#5B768E", type = 8),
                        tags$hr(),
                        plotOutput("correlationPlot", height="800px") %>% withSpinner(color="#5B768E", type = 8)
-                       )
              )
-           ),
+           )
+  ),
   
   # description of methods
   fluidRow(
@@ -64,7 +64,11 @@ ui <- fluidPage(
   fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
            tags$hr(),
            h3("Datasets Included in the Analysis"),
-           dataTableOutput("references")
+           dataTableOutput("references"),
+           tags$p(
+             tags$b("Are we missing a relevant study? Please "),
+             a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+           )    
   ),
   
   # Citation
@@ -73,7 +77,7 @@ ui <- fluidPage(
            h3("Citation"),
            "Unpublished data"
   ),
-
+  
   # Code to send height to resizing iframe
   tags$head(
     tags$script(HTML("
