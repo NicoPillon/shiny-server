@@ -37,7 +37,7 @@ ui <- fluidPage(
                  tags$a(style="font-weight: bold;",
                    href = "../human_muscle_aging.html",
                    target = "_blank",  # optional: opens in a new tab
-                   "Human Muscle Aging Module"
+                   "Muscle Aging Module"
                  ),
                  plotOutput("plot_human_muscle_aging", height = "300px") %>%
                    withSpinner(color = "#5B768E", type = 8)
@@ -46,16 +46,16 @@ ui <- fluidPage(
                  tags$a(style="font-weight: bold;",
                    href = "../human_muscle_obesity.html",
                    target = "_blank",  # optional: opens in a new tab
-                   "Human Muscle Obesity Module"
+                   "Muscle Obesity Module"
                    ),
                  plotOutput("plot_human_muscle_obesity", height = "300px") %>%
                    withSpinner(color = "#5B768E", type = 8)
              ),
-             div(class = "col-sm-12 col-md-4",
+             div(class = "col-sm-12 col-md-3",
                  tags$a(style="font-weight: bold;",
                         href = "../fiber_types.html",
                         target = "_blank",  # optional: opens in a new tab
-                        "Fiber Types Module"
+                        "Muscle Fiber Types Module"
                  ),
                  plotOutput("plot_fiber_types", height = "300px") %>%
                    withSpinner(color = "#5B768E", type = 8)

@@ -116,20 +116,22 @@ server <- function(input, output, session) {
                            genedata = as.numeric(selected_row))
 
     # plot
-    ggplot(plotdata, aes(x=age_group, y=genedata)) +
-      geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
-      geom_sina(size = 0.5, position = position_dodge(0), alpha = 0.25) +
+    ggplot(plotdata, aes(x=sex, y=genedata, fill = age_group)) +
+      geom_boxplot(position = position_dodge(0.8), 
+                   outlier.size = 0) +
+      geom_sina(position = position_dodge(0.8),
+                size = 0.5,
+                alpha = 0.25) +
       theme_bw(16) + 
-      theme(legend.position = "right", 
-            legend.title = element_blank()) +
+      theme(legend.position = "right") +
       #facet_wrap(.~sex, ncol = 2) +
-      labs(x="Age group",
-           y="mRNA expression, log2") +
+      labs(x=NULL,
+           y="mRNA expression, log2",
+           fill = "Age") +
       scale_shape_manual(values=rep(c(15,16,17), 20)) +
-      scale_color_manual(values = c("#5B768E", "#bd1a0e")) +
+      scale_fill_manual(values = c("orangered1", "orangered3", "orangered4")) +
       scale_y_continuous(expand = expansion(mult = c(0, .15))) +
       stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                         ref.group = "40-60",
                          parse = TRUE,
                          size = 4, 
                          vjust = -1)
@@ -174,20 +176,22 @@ server <- function(input, output, session) {
                                     levels=c("Lean", "Overweight", "Obesity"))
 
     # plot
-    ggplot(plotdata, aes(x=bmi_category, y=genedata)) +  
-      geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
-      geom_sina(size = 0.5, position = position_dodge(0), alpha = 0.25) +
+    ggplot(plotdata, aes(x=sex, y=genedata, fill=bmi_category)) +  
+      geom_boxplot(position = position_dodge(0.8), 
+                   outlier.size = 0) +
+      geom_sina(position = position_dodge(0.8),
+                size = 0.5,
+                alpha = 0.25) +
       theme_bw(16) + 
       theme(legend.position = "right",
             legend.title = element_blank()) +
       #facet_wrap(.~sex, ncol = 2) +
-      labs(x="BMI category",
+      labs(x=NULL,
            y="mRNA expression, log2") +
       scale_shape_manual(values=rep(c(15,16,17), 20)) +
-      scale_color_manual(values = c("#5B768E", "orange", "darkred")) +
+      scale_fill_manual(values = c("gold1", "gold3", "gold4")) +
       scale_y_continuous(expand = expansion(mult = c(0, .15))) +
       stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                         ref.group = "Lean",
                          parse = TRUE,
                          size = 4, 
                          vjust = -1)
@@ -233,16 +237,23 @@ server <- function(input, output, session) {
     plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
     
     ggplot(plotdata, aes(x = FiberType, y = genedata, fill = FiberType)) +
-      geom_boxplot(position = position_dodge(0.8), outlier.size = 0) +
-      geom_sina(size = 0.5, position = position_dodge(0.8), alpha = 0.5) +
+      geom_boxplot(position = position_dodge(0.8), 
+                   outlier.size = 0) +
+      geom_sina(position = position_dodge(0.8),
+                size = 0.5,
+                alpha = 0.25) +
       theme_bw(base_size = 16) + 
       theme(legend.position = "none") +
       labs(x = "Fiber Type", 
            y = "Relative expression, log2") +
-      scale_y_continuous(expand = c(0, 4)) +
+      scale_y_continuous(expand = expansion(mult = c(0, .15))) +
       scale_fill_manual(values = c("Type I" = "#8B0000", 
                                    "Type IIA" = "#F5DEB3", 
-                                   "Type IIX"= "#D3D3D3"))
+                                   "Type IIX"= "#D3D3D3")) +
+      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
+                         parse = TRUE,
+                         size = 4, 
+                         vjust = -1)
   })
   
   output$plot_fiber_types <- renderPlot({
