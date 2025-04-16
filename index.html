@@ -49,9 +49,26 @@
              border-radius: 6px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
       🎲 Explore a Random Dataset 🎲
       </a>
+
+<!-- Gene Search Field (Styled to Match Overlay) -->
+<div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;">
+    <input type="text" id="geneInput" placeholder="Enter gene symbol..." 
+           style="padding: 10px 15px; width: 260px; font-size: 16px; border: none; 
+                  border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); 
+                  box-shadow: 0 1px 4px rgba(0,0,0,0.3);">
+  
+    <button onclick="searchGene()" 
+            style="padding: 10px 20px; font-size: 16px; background-color: #5B768E; 
+                   color: white; border: none; border-radius: 5px; 
+                   font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+      🔍 Search
+    </button>
+  </div>
+
     </div>
   </div>
 
+  <!-- script for random app -->
   <script>
     function goToRandomApp() {
       const apps = [
@@ -63,6 +80,16 @@
       ];
       const randomIndex = Math.floor(Math.random() * apps.length);
       window.location.href = apps[randomIndex];
+    }
+  </script>
+
+  <!-- script for selected gene -->
+  <script>
+    function searchGene() {
+      var gene = document.getElementById("geneInput").value.trim();
+      if (gene !== "") {
+        window.location.href = "modules/overview.html?gene=" + encodeURIComponent(gene);
+      }
     }
   </script>
 
