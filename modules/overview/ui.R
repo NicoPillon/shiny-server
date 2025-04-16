@@ -29,6 +29,7 @@ ui <- fluidPage(
   # main page
   fluidRow(style="color:black;background-color:white;padding:0% 5% 1% 5%;",
            selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=600),
+           uiOutput("gene_warning"),
            textOutput("gene_description"),
            tags$hr(),
            fluidRow(
