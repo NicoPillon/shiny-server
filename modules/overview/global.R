@@ -18,6 +18,7 @@ library(pheatmap)
 library(arrow)
 library(httr)
 library(jsonlite)
+library(shinyjs)
 
 # function to format p values
 p_value_formatter <<- function(p) { # <<- operator forces the function into the global environment.

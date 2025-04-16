@@ -4,7 +4,16 @@
 #
 #-------------------------------------------------------------------------------------------
 
-ui <- fluidPage(# Google analytics
+ui <- fluidPage(
+  # code staggering computation
+  useShinyjs(),
+  tags$script(HTML("
+  Shiny.addCustomMessageHandler('plotRendered', function(module) {
+    Shiny.setInputValue(module + '_done', Math.random());
+  });
+")),
+  
+  # Google analytics
   tags$head(includeScript("../../www/google-analytics.html")),
   
   # CSS for style
@@ -25,7 +34,7 @@ ui <- fluidPage(# Google analytics
            fluidRow(
              style = "color:black;background-color:white;",
              div(class = "col-sm-12 col-md-4",
-                 tags$a(
+                 tags$a(style="font-weight: bold;",
                    href = "../human_muscle_aging.html",
                    target = "_blank",  # optional: opens in a new tab
                    "Human Muscle Aging Module"
@@ -34,12 +43,21 @@ ui <- fluidPage(# Google analytics
                    withSpinner(color = "#5B768E", type = 8)
              ),
              div(class = "col-sm-12 col-md-4",
-                 tags$a(
+                 tags$a(style="font-weight: bold;",
                    href = "../human_muscle_obesity.html",
                    target = "_blank",  # optional: opens in a new tab
                    "Human Muscle Obesity Module"
                    ),
                  plotOutput("plot_human_muscle_obesity", height = "300px") %>%
+                   withSpinner(color = "#5B768E", type = 8)
+             ),
+             div(class = "col-sm-12 col-md-4",
+                 tags$a(style="font-weight: bold;",
+                        href = "../fiber_types.html",
+                        target = "_blank",  # optional: opens in a new tab
+                        "Fiber Types Module"
+                 ),
+                 plotOutput("plot_fiber_types", height = "300px") %>%
                    withSpinner(color = "#5B768E", type = 8)
              ),
              tags$hr()
