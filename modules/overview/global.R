@@ -36,14 +36,3 @@ genelist2 <- readRDS("../human_muscle_aging/data/gene_list.Rds")
 genelist3 <- readRDS("../human_muscle_obesity/data/gene_list.Rds")
 gene_list <- rbind(genelist1, genelist2, genelist3)
 gene_list <- unique(gene_list$SYMBOL)
-
-
-library(rentrez)
-summary <- entrez_summary(db = "gene", id = "7012")  # NR4A3 is Entrez Gene ID 7012
-summary$title
-summary$summary
-
-library(httr)
-library(jsonlite)
-
-
