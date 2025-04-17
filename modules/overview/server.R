@@ -113,6 +113,32 @@ server <- function(input, output, session) {
     paste("Description:", desc)
   })
   
+  #----------------------------------------------------------------------------------------
+  # Gene Structure from alphafold
+  # output$structureViewer <- renderR3dmol({
+  #   # Step 1: Get UniProt ID for input gene
+  #   symbol <- input$inputGeneSymbol
+  #   ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  #   uniprot_id <- gene_map$uniprot_gn_id[gene_map$hgnc_symbol == input$inputGeneSymbol][1]
+  # 
+  #   # Step 2: Download AlphaFold PDB
+  #   pdb_path <- paste0(tempdir(), "/", uniprot_id, ".pdb")
+  #   url <- paste0("https://alphafold.ebi.ac.uk/files/AF-", uniprot_id, "-F1-model_v4.pdb")
+  #   tryCatch({
+  #     download.file(url, destfile = pdb_path, quiet = TRUE)
+  #     pdb_text <- paste(readLines(pdb_path), collapse = "\n")
+  #     
+  #     # Step 3: Display it with r3dmol
+  #     r3dmol() %>%
+  #       m_add_model(data = pdb_text, format = "pdb") %>%
+  #       m_set_style(style = m_style_cartoon(color = "spectrum")) %>%
+  #       m_zoom_to()
+  #   }, error = function(e) {
+  #     showNotification("Could not find structure.", 
+  #                      type = "error")
+  #     return(NULL)
+  #   })
+  # })
   
   #----------------------------------------------------------------------------------------
   # Module fiber_types

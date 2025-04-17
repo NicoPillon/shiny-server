@@ -32,12 +32,15 @@ ui <- fluidPage(
                   selectizeInput("inputGeneSymbol", "Gene Symbol:", 
                                  choices=NULL, multiple=F),
                   textOutput("gene_description")
-                  )
+                  ),
+           column(4,
+                  r3dmolOutput("structureViewer", height = "200px"))
            ),
   tags$hr(),
   fluidRow(style="color:black;background-color:white;padding:0% 5% 1% 5%;",
            style = "color:black;background-color:white;",
            div(class = "col-sm-12 col-md-4",
+               style = "padding-top: 10px; padding-bottom: 10px;",
                tags$a(style="font-weight: bold; font-size: 1.75rem;",
                       href = "../human_muscle_aging.html",
                       target = "_blank",  # optional: opens in a new tab
@@ -47,6 +50,7 @@ ui <- fluidPage(
                  withSpinner(color = "#5B768E", type = 8)
            ),
            div(class = "col-sm-12 col-md-4",
+               style = "padding-top: 10px; padding-bottom: 10px;",
                tags$a(style="font-weight: bold; font-size: 1.75rem;",
                       href = "../human_muscle_obesity.html",
                       target = "_blank",  # optional: opens in a new tab
@@ -56,6 +60,7 @@ ui <- fluidPage(
                  withSpinner(color = "#5B768E", type = 8)
            ),
            div(class = "col-sm-12 col-md-3",
+               style = "padding-top: 10px; padding-bottom: 10px;",
                tags$a(style="font-weight: bold; font-size: 1.75rem;",
                       href = "../fiber_types.html",
                       target = "_blank",  # optional: opens in a new tab
@@ -65,6 +70,7 @@ ui <- fluidPage(
                  withSpinner(color = "#5B768E", type = 8)
            ),
            div(class = "col-sm-12 col-md-3",
+               style = "padding-top: 10px; padding-bottom: 10px;",
                tags$a(style="font-weight: bold; font-size: 1.75rem;",
                       href = "../muscle_models.html",
                       target = "_blank",  # optional: opens in a new tab

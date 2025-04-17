@@ -19,6 +19,7 @@ library(arrow)
 library(httr)
 library(jsonlite)
 library(shinyjs)
+library(r3dmol)
 
 # function to format p values
 p_value_formatter <<- function(p) { # <<- operator forces the function into the global environment.
@@ -37,3 +38,19 @@ genelist2 <- readRDS("../human_muscle_aging/data/gene_list.Rds")
 genelist3 <- readRDS("../human_muscle_obesity/data/gene_list.Rds")
 gene_list <- rbind(genelist1, genelist2, genelist3)
 gene_list <- unique(gene_list$SYMBOL)
+
+
+
+# library(biomaRt)
+# ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+# gene_map <- getBM(
+#   attributes = c("hgnc_symbol", "uniprot_gn_id"),
+#   mart = ensembl
+# )
+# 
+# # Filter out empty IDs
+# gene_map <- gene_map[gene_map$uniprot_gn_id != "", ]
+# 
+# # Save for later use
+# saveRDS(gene_map, "gene_uniprot_map.rds")
+gene_protein_map <- readRDS("gene_uniprot_map.rds")
