@@ -17,15 +17,17 @@ server <- function(input, output, session) {
     
     if (!is.null(query$gene)) {
       selected_gene <- toupper(query$gene)  # normalize to uppercase
-      updateSelectizeInput(session, "inputGeneSymbol",
-                           choices = gene_list,
-                           selected = selected_gene,
-                           server = TRUE)
+      updateSelectizeInput(session, 'inputGeneSymbol', 
+                           choices=gene_list_all, 
+                           server=TRUE, 
+                           selected=selected_gene, 
+                           options=NULL)
     } else {
-      updateSelectizeInput(session, "inputGeneSymbol",
-                           choices = gene_list,
-                           selected = "NR4A3",  # default gene
-                           server = TRUE)
+      updateSelectizeInput(session, 'inputGeneSymbol', 
+                           choices=gene_list_all, 
+                           server=TRUE, 
+                           selected=c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2"), 
+                           options=NULL)
     }
   })
   
