@@ -326,8 +326,11 @@ server <- function(input, output, session) {
     
     
     ggplot(dat, aes(x=cell_tissue, y=y, fill=species)) + 
-      geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
-      geom_sina(aes(color = species), size = 1.5, position = position_dodge(0), alpha = 0.1) +
+      geom_boxplot(position = position_dodge(0.8), 
+                   outlier.size = 0) +
+      geom_sina(position = position_dodge(0.8),
+                size = 0.5,
+                alpha = 0.25) +
       theme_bw(16) + 
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
             legend.position = "none") +

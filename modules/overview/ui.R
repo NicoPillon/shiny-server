@@ -70,7 +70,7 @@ ui <- fluidPage(
                       target = "_blank",  # optional: opens in a new tab
                       "Muscle Models Module"
                ),
-               plotOutput("plot_muscle_models", height = "300px") %>%
+               plotOutput("plot_muscle_models", height = "400px") %>%
                  withSpinner(color = "#5B768E", type = 8)
            ),
            tags$hr()
