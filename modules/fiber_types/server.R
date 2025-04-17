@@ -7,29 +7,11 @@
 server <- function(input, output, session) {
 
   # Code to send the height of the app to adjust iframe  
-  session$onFlushed(function() {
-    session$sendCustomMessage("resizeFrame", list())
-  }, once = FALSE)
-
-  # Code to collect gene name from loading page    
-  observe({
-    query <- parseQueryString(session$clientData$url_search)
-    
-    if (!is.null(query$gene)) {
-      selected_gene <- toupper(query$gene)  # normalize to uppercase
-      updateSelectizeInput(session, 'inputGeneSymbol', 
-                           choices=gene_list_all, 
-                           server=TRUE, 
-                           selected=selected_gene, 
-                           options=NULL)
-    } else {
-      updateSelectizeInput(session, 'inputGeneSymbol', 
-                           choices=gene_list_all, 
-                           server=TRUE, 
-                           selected=c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2"), 
-                           options=NULL)
-    }
-  })
+  updateSelectizeInput(session, 'inputGeneSymbol', 
+                         choices=gene_list_all, 
+                         server=TRUE, 
+                         selected=c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2"), 
+                         options=NULL)
   
   #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s) from dataset
