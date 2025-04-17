@@ -28,43 +28,54 @@ ui <- fluidPage(
   
   # main page
   fluidRow(style="color:black;background-color:white;padding:0% 5% 1% 5%;",
-           selectizeInput("inputGeneSymbol", "Gene Symbol:", choices=NULL, multiple=F, width=600),
-           uiOutput("gene_warning"),
-           textOutput("gene_description"),
-           tags$hr(),
-           fluidRow(
-             style = "color:black;background-color:white;",
-             div(class = "col-sm-12 col-md-4",
-                 tags$a(style="font-weight: bold;",
-                   href = "../human_muscle_aging.html",
-                   target = "_blank",  # optional: opens in a new tab
-                   "Muscle Aging Module"
-                 ),
-                 plotOutput("plot_human_muscle_aging", height = "300px") %>%
-                   withSpinner(color = "#5B768E", type = 8)
-             ),
-             div(class = "col-sm-12 col-md-4",
-                 tags$a(style="font-weight: bold;",
-                   href = "../human_muscle_obesity.html",
-                   target = "_blank",  # optional: opens in a new tab
-                   "Muscle Obesity Module"
-                   ),
-                 plotOutput("plot_human_muscle_obesity", height = "300px") %>%
-                   withSpinner(color = "#5B768E", type = 8)
-             ),
-             div(class = "col-sm-12 col-md-3",
-                 tags$a(style="font-weight: bold;",
-                        href = "../fiber_types.html",
-                        target = "_blank",  # optional: opens in a new tab
-                        "Muscle Fiber Types Module"
-                 ),
-                 plotOutput("plot_fiber_types", height = "300px") %>%
-                   withSpinner(color = "#5B768E", type = 8)
-             ),
-             tags$hr()
-           )
+           column(8,
+                  selectizeInput("inputGeneSymbol", "Gene Symbol:", 
+                                 choices=NULL, multiple=F),
+                  textOutput("gene_description")
+                  )
            ),
-
+  tags$hr(),
+  fluidRow(style="color:black;background-color:white;padding:0% 5% 1% 5%;",
+           style = "color:black;background-color:white;",
+           div(class = "col-sm-12 col-md-4",
+               tags$a(style="font-weight: bold; font-size: 1.75rem;",
+                      href = "../human_muscle_aging.html",
+                      target = "_blank",  # optional: opens in a new tab
+                      "Aging Module"
+               ),
+               plotOutput("plot_human_muscle_aging", height = "300px") %>%
+                 withSpinner(color = "#5B768E", type = 8)
+           ),
+           div(class = "col-sm-12 col-md-4",
+               tags$a(style="font-weight: bold; font-size: 1.75rem;",
+                      href = "../human_muscle_obesity.html",
+                      target = "_blank",  # optional: opens in a new tab
+                      "Obesity Module"
+               ),
+               plotOutput("plot_human_muscle_obesity", height = "300px") %>%
+                 withSpinner(color = "#5B768E", type = 8)
+           ),
+           div(class = "col-sm-12 col-md-3",
+               tags$a(style="font-weight: bold; font-size: 1.75rem;",
+                      href = "../fiber_types.html",
+                      target = "_blank",  # optional: opens in a new tab
+                      "Fiber Types Module"
+               ),
+               plotOutput("plot_fiber_types", height = "300px") %>%
+                 withSpinner(color = "#5B768E", type = 8)
+           ),
+           div(class = "col-sm-12 col-md-3",
+               tags$a(style="font-weight: bold; font-size: 1.75rem;",
+                      href = "../muscle_models.html",
+                      target = "_blank",  # optional: opens in a new tab
+                      "Muscle Models Module"
+               ),
+               plotOutput("plot_muscle_models", height = "300px") %>%
+                 withSpinner(color = "#5B768E", type = 8)
+           ),
+           tags$hr()
+  ),
+  
   # Code to send height to resizing iframe
   tags$head(
     tags$script(HTML("

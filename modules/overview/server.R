@@ -113,8 +113,66 @@ server <- function(input, output, session) {
     paste("Description:", desc)
   })
   
+  
   #----------------------------------------------------------------------------------------
-  # Human muscle aging
+  # Module fiber_types
+  dat_fiber_types <- reactive({
+    req(input$inputGeneSymbol)
+    genename <- "NR4A3"
+    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+    
+    # Find which file contains the gene
+    gene_to_file <- readRDS("../fiber_types/data/gene_list_transcriptome.Rds")
+    file_row <- gene_to_file[gene_to_file$SYMBOL == genename, ]
+    req(nrow(file_row) > 0)  # stop if gene not found
+    
+    file_path <- file.path("../fiber_types/data", file_row$file)
+    
+    # Read the file and extract the gene row
+    df <- arrow::read_feather(file_path, as_data_frame = FALSE)
+    
+    gene_index <- file_row$row
+    req(length(gene_index) == 1)
+    
+    selected_row <- df[gene_index, ] %>% as.data.frame()
+    rownames(selected_row) <- genename
+    
+    metadata <- readRDS("../fiber_types/data/metadata_transcriptome.Rds")
+    plotdata <- data.frame(metadata, 
+                           genedata = as.numeric(selected_row))
+    
+    # exclude mixed fibers
+    plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
+    
+    ggplot(plotdata, aes(x = FiberType, y = genedata, fill = FiberType)) +
+      geom_boxplot(position = position_dodge(0.8), 
+                   outlier.size = 0) +
+      geom_sina(position = position_dodge(0.8),
+                size = 0.5,
+                alpha = 0.25) +
+      theme_bw(base_size = 16) + 
+      theme(legend.position = "none") +
+      labs(x = "Fiber Type", 
+           y = "Relative expression, log2") +
+      scale_y_continuous(expand = expansion(mult = c(0, .15))) +
+      scale_fill_manual(values = c("Type I" = "#8B0000", 
+                                   "Type IIA" = "#F5DEB3", 
+                                   "Type IIX"= "#D3D3D3")) +
+      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
+                         parse = TRUE,
+                         label.x.npc = "center",
+                         size = 4, 
+                         vjust = -1,
+                         hjust = 0.5)
+  })
+  
+  output$plot_fiber_types <- renderPlot({
+    dat_fiber_types()
+  })
+  
+  
+  #----------------------------------------------------------------------------------------
+  # Module human_muscle_aging
   dat_human_muscle_aging <- reactive({
     req(input$inputGeneSymbol)
     isolate({
@@ -175,8 +233,9 @@ server <- function(input, output, session) {
   ")
   })
 
+  
   #----------------------------------------------------------------------------------------
-  # Human muscle obesity
+  # Module human_muscle_obesity
   dat_human_muscle_obesity <- reactive({
     req(input$inputGeneSymbol)
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
@@ -235,58 +294,57 @@ server <- function(input, output, session) {
   ")
   })
   
+  
   #----------------------------------------------------------------------------------------
-  # Fiber types
-  dat_fiber_types <- reactive({
+  # Module muscle_models
+  dat_muscle_models <- reactive({
     req(input$inputGeneSymbol)
-    genename <- "NR4A3"
-    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+    genename <- c("NR4A3")
+    genename <- toupper(input$inputGeneSymbol)
     
-    # Find which file contains the gene
-    gene_to_file <- readRDS("../fiber_types/data/gene_list_transcriptome.Rds")
-    file_row <- gene_to_file[gene_to_file$SYMBOL == genename, ]
-    req(nrow(file_row) > 0)  # stop if gene not found
+    # Match gene names
+    genelist <- readRDS("../muscle_models/data/gene_names.Rds")
+    matched_ids <- which(genelist %in% genename)
     
-    file_path <- file.path("../fiber_types/data", file_row$file)
+    if (length(matched_ids) == 0) {
+      showNotification("No genes matched the database.", type = "error")
+      return(NULL)
+    }
     
-    # Read the file and extract the gene row
-    df <- arrow::read_feather(file_path, as_data_frame = FALSE)
+    # Load only the required genes (rows)
+    df <- arrow::read_feather("../muscle_models/data/datamatrix.feather", as_data_frame = FALSE)[matched_ids, ] %>%
+      as.data.frame()
+    rownames(df) <- genelist[matched_ids]
     
-    gene_index <- file_row$row
-    req(length(gene_index) == 1)
+    #plot
+    samples_list <- readRDS("../muscle_models/data/samples_list.Rds")
+    dat <- data.frame(samples_list,
+                      t(df))
+    dat <- pivot_longer(dat, cols = c(7:ncol(dat)),
+                        values_to = "y",
+                        names_to = "Gene")
     
-    selected_row <- df[gene_index, ] %>% as.data.frame()
-    rownames(selected_row) <- genename
     
-    metadata <- readRDS("../fiber_types/data/metadata_transcriptome.Rds")
-    plotdata <- data.frame(metadata, 
-                           genedata = as.numeric(selected_row))
-    
-    # exclude mixed fibers
-    plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
-    
-    ggplot(plotdata, aes(x = FiberType, y = genedata, fill = FiberType)) +
-      geom_boxplot(position = position_dodge(0.8), 
-                   outlier.size = 0) +
-      geom_sina(position = position_dodge(0.8),
-                size = 0.5,
-                alpha = 0.25) +
-      theme_bw(base_size = 16) + 
-      theme(legend.position = "none") +
-      labs(x = "Fiber Type", 
-           y = "Relative expression, log2") +
-      scale_y_continuous(expand = expansion(mult = c(0, .15))) +
-      scale_fill_manual(values = c("Type I" = "#8B0000", 
-                                   "Type IIA" = "#F5DEB3", 
-                                   "Type IIX"= "#D3D3D3")) +
-      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                         parse = TRUE,
-                         size = 4, 
-                         vjust = -1)
+    ggplot(dat, aes(x=cell_tissue, y=y, fill=species)) + 
+      geom_boxplot(outlier.size = 0.1, fill = "gray80", alpha = 0.5)  + 
+      geom_sina(aes(color = species), size = 1.5, position = position_dodge(0), alpha = 0.1) +
+      theme_bw(16) + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+            legend.position = "none") +
+      labs(x="",
+           y="mRNA expression, log2") +
+      scale_y_continuous(breaks = round(seq(-4, 8, by=2),1)) +
+      geom_hline(aes(yintercept=0), linetype="dashed", show.legend=F, color="gray60") +
+      scale_color_manual(values=samples_list$species_colors)
   })
   
-  output$plot_fiber_types <- renderPlot({
-    dat_fiber_types()
+  output$plot_muscle_models <- renderPlot({
+    p <- dat_muscle_models()
+    htmlwidgets::onRender(p, "
+    function(el, x) {
+      Shiny.setInputValue('plot_obesity_done', Math.random());
+    }
+  ")
   })
   
 }
