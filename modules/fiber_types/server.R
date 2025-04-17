@@ -11,11 +11,23 @@ server <- function(input, output, session) {
     session$sendCustomMessage("resizeFrame", list())
   }, once = FALSE)
 
-  updateSelectizeInput(session, 'inputGeneSymbol', 
-                       choices=gene_list_all, 
-                       server=TRUE, 
-                       selected=c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2"), 
-                       options=NULL)
+  # Code to collect gene name from loading page    
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    
+    if (!is.null(query$gene)) {
+      selected_gene <- toupper(query$gene)  # normalize to uppercase
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list,
+                           selected = selected_gene,
+                           server = TRUE)
+    } else {
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list,
+                           selected = "NR4A3",  # default gene
+                           server = TRUE)
+    }
+  })
   
   #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s) from dataset

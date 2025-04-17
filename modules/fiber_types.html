@@ -35,12 +35,18 @@
   </div>
 
   <iframe 
-    id="dynamic-iframe"
-    title="Fiber Types"
-    src="https://shiny.nicopillon.com/modules/fiber_types/"
-    style="width: 99%; border: none;"
-    onload="document.getElementById('iframe-loader').style.display='none';"
-  ></iframe>
+  id="dynamic-iframe"
+  title="Overview"
+  style="width: 99%; border: none;"
+  onload="document.getElementById('iframe-loader').style.display='none';"
+></iframe>
+
+<script>
+  // Pass query string to iframe
+  const queryString = window.location.search;
+  const iframe = document.getElementById("dynamic-iframe");
+  iframe.src = "https://shiny.nicopillon.com/modules/overview/" + queryString;
+</script>
 </div>
 
 <!-- Script to receive height from iframe and adjust iframe size -->
