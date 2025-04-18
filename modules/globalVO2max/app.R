@@ -26,7 +26,7 @@ sort(unique(studies_included$Country))
 # function for plots
 fct_nomogram <- function(dat){
   ggplot(dat, aes(x = Age, y = VO2max,
-                       color = Percentile, linetype = Percentile)) +
+                  color = Percentile, linetype = Percentile)) +
     theme_bw(16) +
     theme(panel.grid.major = element_line(color = "gray80",
                                           linewidth = 0.5,
@@ -47,119 +47,87 @@ fct_nomogram <- function(dat){
 }
 
 # Define UI ----
-ui <- fluidPage(theme = "bootstrap.css",
-                
-                # Google analytics
-                tags$head(includeScript("google-analytics.html")),
-                
-                # Custom CSS to change checkbox tick color
-                tags$style(HTML("
-                  input[type='checkbox'] {
-                    accent-color: #c93f1e; /* Change the checkbox tick color here */
-                  }
-                ")),
-                
-                # title ribbon
-                fluidRow(style="color:white;background-color:#5B768E;padding:0% 1% 1% 1%;text-align:center; display:flex; justify-content:center; align-items:center;",
-                         column(1, 
-                                style = "height:8vh; display:flex; justify-content:center; align-items:center;",
-                                tags$a(href = "https://shiny.nicopillon.com", 
-                                       icon("home", class = "fa-2x"), 
-                                       style = "color:white; text-decoration:none;")  # Ensuring icon is white and no underline
-                         ),
-                         column(10,
-                                h3("Worldwide reference values for maximal oxygen uptake"),
-                                h5("By", a("Nicolas J. Pillon", href="https://staff.ki.se/people/nicolas-pillon", 
-                                           target="_blank", style="color:#D9DADB"), 
-                                   "/ last update 2024-11-22")
-                                ),
-                         column(1,
-                         )
-                         ),
-                
-                # main page
-                fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
-                         sidebarLayout(
-                           sidebarPanel(width = 3,
-                               selectInput("sex",
-                                           label = "Sex", 
-                                           selected = "Female", 
-                                           choices = c("Female", "Male")),
-                               numericInput("age",
-                                            label = "Age (years)",
-                                            value = 32),
-                               numericInput("vo2max",
-                                            label = "VO2max (mL/min/kg)",
-                                            value = 33),
-                               checkboxGroupInput("modality",
-                                                  label = "Modality", 
-                                                  selected = c("Cycle", "Treadmill"), 
-                                                  choices = c("Cycle", "Treadmill")),
-                               checkboxGroupInput("country",
-                                           label = "Country", 
-                                           selected = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", 
-                                                        "Greece", "Japan", "Lithuania", "Netherlands", "Norway", "Spain", 
-                                                        "Sweden", "Switzerland", "United Kingdom", "United States"), 
-                                           choices = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", 
-                                                       "Greece", "Japan", "Lithuania", "Netherlands", "Norway", "Spain", 
-                                                       "Sweden", "Switzerland", "United Kingdom", "United States")),
-                               sliderInput("date", "Publication date",
-                                           min = 1990, max = 2023, value = c(1990,2023), step = 1, sep = "")
-                               ),
-                  mainPanel(width = 9,
-                            plotOutput("VO2plotMale", height = "370px", width = "500px"),
-                            plotOutput("VO2plotFemale", height = "370px", width = "500px")
-                            )
-                  )
-                  ),
+ui <- fluidPage(
+  # CSS for style
+  tags$head(includeCSS("../../www/style.css")),
+  
+  # title ribbon
+  fluidRow(
+    style = "color:black; padding:0% 2% 0% 2%; text-align:left;",
+    h3("Worldwide reference values for maximal oxygen uptake"),
+    h5("Last update 2025-04-18"),
+    tags$hr()
+  ),
 
-                tags$hr(),
-                
-                # Table with datasets
-                fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
-                         h3("Datasets Selected in the Analysis"),
-                         DT::dataTableOutput("studies_included")
-                         ),
-                
-                # Author section at the bottom
-                fluidRow(style="color:white;background-color:#5B768E;padding:2% 1% 2% 1%;display: flex; align-items: top; ",
-                         # column(2, align="right", 
-                         #        tags$img(src = "https://ki.se/profile-image/nicpil", height = "120px", width = "120px")  # Insert image here
-                         # ),
-                         column(4, align="left", 
-                                tags$b("About the author:"), tags$br(),
-                                "Nicolas J. Pillon, PhD", tags$br(),
-                                "Associate Professor, Karolinska Institutet", tags$br(),
-                                icon("globe"), a("/inflammation-and-metabolism", href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group",
-                                                 target="_blank", style="color:white"), tags$br(),
-                                icon("linkedin"), a("/nicopillon", href="https://www.linkedin.com/in/nicopillon/",
-                                                    target="_blank", style="color:white"), tags$br(),
-                                tags$br(),
-                                "Feel free to write to me with feedback or questions:", tags$br(),
-                                icon("envelope"), a("nicolas.pillon@ki.se", href="mailto:nicolas.pillon@ki.se",
-                                                    target="_blank", style="color:white"), tags$br(),
-                                
-                         ),
-                         column(4, align="center",
-                                #tags$b("© 2024 Nicolas Pillon"), tags$br(),
-                                
-                         ),
-                         column(4, align="right",
-                                tags$b("Disclaimer:"), tags$br(),
-                                em("The authors disclaim any responsibility for the use or interpretation of the data 
-                                   presented in this application. Users are solely responsible for ensuring the appropriate 
-                                   use of any data they choose to re-use."), tags$br(),
-                                tags$br(),
-                                tags$b("© 2024 Nicolas Pillon"),
-                         ),
-                )
+  # main page
+  fluidRow(style="color:black;background-color:white;padding:1% 8% 1% 8%;",
+           sidebarLayout(
+             sidebarPanel(width = 3,
+                          selectInput("sex",
+                                      label = "Sex", 
+                                      selected = "Female", 
+                                      choices = c("Female", "Male")),
+                          numericInput("age",
+                                       label = "Age (years)",
+                                       value = 32),
+                          numericInput("vo2max",
+                                       label = "VO2max (mL/min/kg)",
+                                       value = 33),
+                          checkboxGroupInput("modality",
+                                             label = "Modality", 
+                                             selected = c("Cycle", "Treadmill"), 
+                                             choices = c("Cycle", "Treadmill")),
+                          checkboxGroupInput("country",
+                                             label = "Country", 
+                                             selected = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", 
+                                                          "Greece", "Japan", "Lithuania", "Netherlands", "Norway", "Spain", 
+                                                          "Sweden", "Switzerland", "United Kingdom", "United States"), 
+                                             choices = c("Brazil", "Canada", "China", "Czechia", "Denmark", "Germany", 
+                                                         "Greece", "Japan", "Lithuania", "Netherlands", "Norway", "Spain", 
+                                                         "Sweden", "Switzerland", "United Kingdom", "United States")),
+                          sliderInput("date", "Publication date",
+                                      min = 1990, max = 2023, value = c(1990,2023), step = 1, sep = "")
+             ),
+             mainPanel(width = 9,
+                       plotOutput("VO2plotMale", height = "370px", width = "500px"),
+                       plotOutput("VO2plotFemale", height = "370px", width = "500px")
+             )
+           )
+  ),
+  
+  # # Description of methods
+  # fluidRow(
+  #   style = "color:black; background-color:white; padding:0% 2% 0% 2%;",
+  #   tags$hr(),
+  #   h3("Methods"),
+  #   p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi."),
+  #   p("Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa."),
+  #   p("Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."),
+  #   p("Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam."),
+  #   p("In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa.")
+  # ),
+  
+  # # Table with datasets
+  # fluidRow(style="color:black;background-color:white;padding:0% 2% 1% 2%;",
+  #          h3("Datasets Selected in the Analysis"),
+  #          DT::dataTableOutput("studies_included")
+  # ),
+  
+  # Citation
+  fluidRow(
+    style = "color:black;background-color:white;padding:0% 2% 2% 2%;",
+    tags$hr(),
+    h3("Citation"),
+    p("Pillon NJ, Ortiz de Zevallos J, Zierath JR, LaMonte MK, Ainsworth BE. Submitted manuscript, coming soon!")
+  )
+
 )
 
 
 # Define server logic ----
 server <- function(input, output, session) {
   
-
+  
   plotData <- reactive({
     
     # input values
@@ -180,7 +148,7 @@ server <- function(input, output, session) {
     # error messages
     validate(need(input_age, "Please provide a numeric value age"))
     validate(need(input_vo2max, "Please provide a numeric value for VO2max"))
-
+    
     # subset modality
     VO2_data <- subset(VO2_data, Modality %in% input_modality)
     
@@ -190,19 +158,19 @@ server <- function(input, output, session) {
     # subset publication year
     VO2_data <- subset(VO2_data, Publication.year %in% seq(input_date_min, input_date_max))
     VO2_data
-    })
+  })
   
+  
+  output$VO2plotMale <- renderPlot({
     
-    output$VO2plotMale <- renderPlot({
-
     # subset selected sex
     VO2_data_M <- subset(plotData(), Sex == "Male")
-
+    
     # male plot
     nomogram_M <- fct_nomogram(VO2_data_M) +
       labs(subtitle = "Male") +
       theme(legend.position = "right")
-
+    
     nomogram_M <- if(input$sex == "Male")
       nomogram_M +
       annotate("label",
@@ -216,39 +184,39 @@ server <- function(input, output, session) {
                ymin = input$vo2max, ymax = input$vo2max,
                color = "red",
                size = 0.5) else nomogram_M
-
+    
     nomogram_M
-   })
+  })
   
-    output$VO2plotFemale <- renderPlot({
-      VO2_data_F <- subset(plotData(), Sex == "Female")
-
-      # female plot
-      nomogram_F <- fct_nomogram(VO2_data_F) +
-        labs(subtitle = "Female") +
-        theme(legend.position = "right")
-      
-      nomogram_F <- if(input$sex == "Female")
-        nomogram_F +
-        annotate("label",
-                 x = input$age,
-                 y = input$vo2max -2,
-                 label = "Your VO2max",
-                 color = "red") +
-        annotate("pointrange",
-                 x = input$age,
-                 y = input$vo2max,
-                 ymin = input$vo2max, ymax = input$vo2max,
-                 color = "red",
-                 size = 0.5) else nomogram_F
-      
-      nomogram_F
-
-    })
+  output$VO2plotFemale <- renderPlot({
+    VO2_data_F <- subset(plotData(), Sex == "Female")
     
+    # female plot
+    nomogram_F <- fct_nomogram(VO2_data_F) +
+      labs(subtitle = "Female") +
+      theme(legend.position = "right")
     
+    nomogram_F <- if(input$sex == "Female")
+      nomogram_F +
+      annotate("label",
+               x = input$age,
+               y = input$vo2max -2,
+               label = "Your VO2max",
+               color = "red") +
+      annotate("pointrange",
+               x = input$age,
+               y = input$vo2max,
+               ymin = input$vo2max, ymax = input$vo2max,
+               color = "red",
+               size = 0.5) else nomogram_F
     
-      output$studies_included <- DT::renderDataTable(escape = FALSE, 
+    nomogram_F
+    
+  })
+  
+  
+  
+  output$studies_included <- DT::renderDataTable(escape = FALSE, 
                                                  rownames = FALSE, 
                                                  options=list(paging = FALSE,
                                                               dom = 't'), 
@@ -256,7 +224,7 @@ server <- function(input, output, session) {
                                                    selecTable <- plotData()
                                                    selecTable <- selecTable$PMID
                                                    selecTable <- subset(studies_included, PMID %in% selecTable)
-                                                   })
+                                                 })
   
 }
 
