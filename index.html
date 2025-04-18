@@ -29,7 +29,7 @@
 </script>
 
 <!-- Custom Header with Background Image and Overlay -->
-<div style="position: relative; text-align: center; height: 280px; background-image: url('/www/img/myoblasts2.jpg'); background-size: cover; background-position: center;">
+<div style="position: relative; text-align: center; height: 320px; background-image: url('/www/img/myoblasts2.jpg'); background-size: cover; background-position: center;">
   
     <!-- Dark overlay for better text contrast -->
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -40,7 +40,7 @@
                 display: flex; flex-direction: column; justify-content: center; align-items: center; 
                 z-index: 2; color: white; padding: 0 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">
                 
-      <h1 style="margin-bottom: 10px; font-size: 2.8em;">Skeletal Muscle Database</h1>
+      <h1 style="margin-bottom: 10px; font-size: 2.8em;">Skeletal Muscle Omics (Beta)</h1>
       <p style="max-width: 500px; font-size: 1.1em;">Dive into dynamic, interactive tools to explore how skeletal muscle adapts to exercise, aging, metabolic disease, and more.</p>
       
 <!-- Gene Search Field (Styled to Match Overlay) -->
@@ -52,7 +52,7 @@
            onkeypress="if(event.key === 'Enter') searchGene()">
     
     <button onclick="searchGene()" 
-            style="padding: 10px 20px; font-size: 16px; background-color: #5B768E; 
+            style="padding: 8px 15px; font-size: 16px; background-color: #5B768E; 
                    color: white; border: none; border-radius: 5px; 
                    font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
       🔍 Search
@@ -127,13 +127,13 @@
     <hr>
 
     <!-- Work in progress -->
-    <div class="category">
-        <div style="text-align: center;color: red;justify-content:center;padding: 1%">
-            <i class="fas fa-exclamation-triangle" style="color: #FFA500; font-size: 20px;">
-                APPS UNDER CONSTRUCTION</i>
-            <i class="fas fa-exclamation-triangle" style="color: #FFA500; font-size: 20px;"></i> <br><br>
-            <em>Feedback welcome. Contact me if you encounter any issues!</em>
-        </div>
+    <div style="text-align: center; color: red; justify-content: center; padding: 1%;">
+        <i class="fas fa-tools" style="color: #FFA500; font-size: 20px;"></i>
+        <strong style="font-size: 18px;">Work in Progress</strong>
+        <i class="fas fa-tools" style="color: #FFA500; font-size: 20px;"></i><br><br>
+        <em>This section includes experimental apps. Expect bugs and incomplete features!</em><br>
+        <em>We appreciate your feedback — please contact us with issues or suggestions.</em>
+      </div>
         
         <div class="container">
 
@@ -173,24 +173,6 @@
                 <p>Transcriptome of primary skeletal myotubes processed at different times with various methods.</p>
             </div>
 
-            <!-- Macrophage polarization -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/inflammation/macrophage_polarization/">
-                    <img src="www/img/snippet/macrophage_polarization.webp" alt="Macrophage polarization">
-                    <p><b>Polarized Macrophages</b></p>
-                </a>
-                <p>Curated transcriptome of human and mouse macrophages polarized into M1/M2 phenotypes.</p>
-            </div>
-            
-            <!-- Adipose tissue cells -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/inflammation/human_adipose_tissue_immune_populations">
-                    <img src="www/img/snippet/human_adipose_tissue_immune_populations.webp" alt="Adipose tissue cells">
-                    <p><b>Adipose Tissue Cells</b></p>
-                </a>
-                <p>Transcriptomic profile of immune cells isolated from human adipose tissue by flow cytometry.</p>
-            </div>
-
             <!-- Mouse Exercise -->
             <div class="dataset">
                 <a href="https://shiny.nicopillon.com/exercise/mouse_exercise_tissues_transcriptomics">
@@ -198,15 +180,6 @@
                     <p><b>Mouse Exercise</b></p>
                 </a>
                 <p>Transcriptomics analysis of skeletal muscle, adipose tissue and liver in mice after acute exercise.</p>
-            </div>
-
-            <!-- VO2max dataset -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/VO2max_reference_values/">
-                    <img src="www/img/snippet/VO2max_reference_values.webp" alt="VO2max Reference">
-                    <p><b>Global VO2max</b></p>
-                </a>
-                    <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
             </div>
 
             <!-- Muscle scRNAseq -->
@@ -246,11 +219,38 @@
         <div class="container">
 
             <div style="text-align: center;justify-content:center;padding: 1%">
-                <h2>The apps below are not directly related to skeletal muscle, but still about science!</h2>
+                <h2>Other data and tools</h2>
             </div>
             
             <div class="container">
                 
+            <!-- VO2max dataset -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/exercise/VO2max_reference_values/">
+                    <img src="www/img/snippet/VO2max_reference_values.webp" alt="VO2max Reference">
+                    <p><b>Global VO2max</b></p>
+                </a>
+                    <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
+            </div>
+
+            <!-- Macrophage polarization -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/inflammation/macrophage_polarization/">
+                    <img src="www/img/snippet/macrophage_polarization.webp" alt="Macrophage polarization">
+                    <p><b>Polarized Macrophages</b></p>
+                </a>
+                <p>Curated transcriptome of human and mouse macrophages polarized into M1/M2 phenotypes.</p>
+            </div>
+            
+            <!-- Adipose tissue cells -->
+            <div class="dataset">
+                <a href="https://shiny.nicopillon.com/inflammation/human_adipose_tissue_immune_populations">
+                    <img src="www/img/snippet/human_adipose_tissue_immune_populations.webp" alt="Adipose tissue cells">
+                    <p><b>Adipose Tissue Cells</b></p>
+                </a>
+                <p>Transcriptomic profile of immune cells isolated from human adipose tissue by flow cytometry.</p>
+            </div>            
+            
             <!-- Scientific Niche -->
             <div class="dataset">
                 <a href="modules/scientific_niche.html">
