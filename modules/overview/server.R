@@ -142,7 +142,7 @@ server <- function(input, output, session) {
   
   #----------------------------------------------------------------------------------------
   # Module fiber_types
-  dat_fiber_types <- reactive({
+  dat_fiber_types_RNA <- reactive({
     req(input$inputGeneSymbol)
     genename <- "NR4A3"
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
@@ -170,7 +170,7 @@ server <- function(input, output, session) {
     # exclude mixed fibers
     plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
     
-    ggplot(plotdata, aes(x = FiberType, y = genedata, fill = FiberType)) +
+    plot_RNA <- ggplot(plotdata, aes(x = FiberType, y = genedata, fill = FiberType)) +
       geom_boxplot(position = position_dodge(0.8), 
                    outlier.size = 0) +
       geom_sina(position = position_dodge(0.8),
@@ -179,7 +179,57 @@ server <- function(input, output, session) {
       theme_bw(base_size = 16) + 
       theme(legend.position = "none") +
       labs(x = "Fiber Type", 
-           y = "Relative expression, log2") +
+           y = "mRNA expression, log2") +
+      scale_y_continuous(expand = expansion(mult = c(0, .15))) +
+      scale_fill_manual(values = c("Type I" = "#8B0000", 
+                                   "Type IIA" = "#F5DEB3", 
+                                   "Type IIX"= "#D3D3D3")) +
+      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
+                         parse = TRUE,
+                         label.x.npc = "center",
+                         size = 4, 
+                         vjust = -1,
+                         hjust = 0.5)
+  })
+  
+  dat_fiber_types_Prot <- reactive({
+    req(input$inputGeneSymbol)
+    genename <- "CKM"
+    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+    
+    # Find which file contains the gene
+    gene_to_file <- readRDS("../fiber_types/data/gene_list_proteome.Rds")
+    file_row <- gene_to_file[gene_to_file$SYMBOL == genename, ]
+    req(nrow(file_row) > 0)  # stop if gene not found
+    
+    file_path <- file.path("../fiber_types/data", file_row$file)
+    
+    # Read the file and extract the gene row
+    df <- arrow::read_feather(file_path, as_data_frame = FALSE)
+    
+    gene_index <- file_row$row
+    req(length(gene_index) == 1)
+    
+    selected_row <- df[gene_index, ] %>% as.data.frame()
+    rownames(selected_row) <- genename
+    
+    metadata <- readRDS("../fiber_types/data/metadata_proteome.Rds")
+    plotdata <- data.frame(metadata, 
+                           genedata = as.numeric(selected_row))
+    
+    # exclude mixed fibers
+    plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
+    
+    plot_Prot <- ggplot(plotdata, aes(x = FiberType, y = genedata, fill = FiberType)) +
+      geom_boxplot(position = position_dodge(0.8), 
+                   outlier.size = 0) +
+      geom_sina(position = position_dodge(0.8),
+                size = 0.5,
+                alpha = 0.25) +
+      theme_bw(base_size = 16) + 
+      theme(legend.position = "none") +
+      labs(x = "Fiber Type", 
+           y = "Protein expression, log2") +
       scale_y_continuous(expand = expansion(mult = c(0, .15))) +
       scale_fill_manual(values = c("Type I" = "#8B0000", 
                                    "Type IIA" = "#F5DEB3", 
@@ -193,8 +243,29 @@ server <- function(input, output, session) {
   })
   
   output$plot_fiber_types <- renderPlot({
-    dat_fiber_types()
+    req(input$inputGeneSymbol)
+    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))[1]
+    
+    # Safe function to wrap a plot call and fallback to message if error
+    safe_plot <- function(expr, label) {
+      tryCatch(
+        expr,
+        error = function(e) {
+          ggplot() + 
+            annotate("text", x = 0.5, y = 0.5, label = paste(label, "not available"), size = 6, hjust = 0.5) +
+            theme_void()
+        }
+      )
+    }
+    
+    # Run both plot functions safely
+    plot_rna <- safe_plot(dat_fiber_types_RNA(), "RNA data")
+    plot_prot <- safe_plot(dat_fiber_types_Prot(), "Protein data")
+    
+    # Combine plots
+    cowplot::plot_grid(plot_rna, plot_prot, ncol = 2)
   })
+  
   
   
   #----------------------------------------------------------------------------------------
