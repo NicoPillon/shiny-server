@@ -11,9 +11,7 @@ library(eulerr)
 
 # Define UI ----
 ui <- fluidPage(
-  # Google analytics
-  tags$head(includeScript("../../www/google-analytics.html")),
-  
+
   # CSS for style
   tags$head(includeCSS("../../www/style.css")),
   
