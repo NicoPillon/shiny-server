@@ -1034,6 +1034,11 @@ server <- function(input, output, session) {
     overview_data <- full_join(overview_data, human_metaAnalysisData_TH)
     overview_data <- full_join(overview_data, human_metaAnalysisData_TR)
 
+    # order dataset
+    overview_data$Study <- factor(overview_data$Study, levels = c(
+      "Acute\nAerobic", "Acute\nResistance", "Acute\nHIT", "Inactivity", "Aerobic\nTraining", "Resistance\nTraining", "Combined\nTraining", "HIT\nTraining"
+    ))
+    
     # round fdr
     overview_data$fdr <- format(overview_data$fdr, scientific = TRUE, digits = 2)
     return(overview_data)
@@ -1798,7 +1803,7 @@ server <- function(input, output, session) {
       
       # Collect data from the different reactives, returning NA values if any dataset is NULL
       incProgress(1, detail="Acute exercise")
-      mouse_metaAnalysisData_AA <- create_data_frame_or_na(mouse_metaAnalysisData_AA(), "Acute\nexercise", "#E69F00")
+      mouse_metaAnalysisData_AA <- create_data_frame_or_na(mouse_metaAnalysisData_AA(), "Acute\nExercise", "#E69F00")
       incProgress(1, detail="Inactivity")
       mouse_metaAnalysisData_IN <- create_data_frame_or_na(mouse_metaAnalysisData_IN(), "Inactivity", "#CC79A7")
       incProgress(1, detail="Exercise training")
@@ -1809,6 +1814,10 @@ server <- function(input, output, session) {
       overview_data <- full_join(mouse_metaAnalysisData_AA, mouse_metaAnalysisData_IN)
       overview_data <- full_join(overview_data, mouse_metaAnalysisData_TA)
 
+      # order dataset
+      overview_data$Study <- factor(overview_data$Study, levels = c(
+        "Acute\nExercise", "Inactivity", "Exercise\nTraining"
+      ))
       
       # round fdr
       overview_data$fdr <- format(overview_data$fdr, scientific = TRUE, digits = 2)
