@@ -119,7 +119,23 @@ ui <- fluidPage(
     tags$hr(),
     h3("Citation"),
     p("Pillon NJ, Ortiz de Zevallos J, Zierath JR, LaMonte MK, Ainsworth BE. Submitted manuscript, coming soon!")
-  )
+  ),
+  
+               
+               # Code to send height to resizing iframe
+               tags$head(
+                 tags$script(HTML("
+    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+
+    window.addEventListener('resize', function() {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ frameHeight: height }, '*');
+    });
+  "))
+               )
 
 )
 

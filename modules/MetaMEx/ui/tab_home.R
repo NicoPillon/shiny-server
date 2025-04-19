@@ -1,5 +1,5 @@
 tabHome <- tabPanel("Home", 
-                    class = "bg_image",
+                    #class = "bg_image",
                     tags$br(),
                     fluidRow(style = "padding:3% 2% 3% 2%; margin:0;", align = "center",  # Removed overflow-y:auto
                              tags$div(align = "center", 
