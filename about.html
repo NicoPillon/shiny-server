@@ -19,109 +19,105 @@
 
 <body>
 
-<!-- Include shared header -->
-<div id="header-placeholder"></div>
-<script>
-  fetch('header.html')
-    .then(response => response.text())
-    .then(data => document.getElementById('header-placeholder').innerHTML = data);
-</script>
+  <!-- Include shared header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+  </script>
 
-<!-- Main Content -->
-<div class="category" style="padding: 2% 5%; max-width: 1000px; margin: auto; font-size: 1.05rem; line-height: 1.6;">
+  <!-- Page Wrapper starts here -->
+  <div class="page-wrapper">
+    <div class="main-content" style="max-width: 1000px; margin-top: 20px; font-size: 1.05rem; line-height: 1.6;">
 
-  <h2>Citation</h2>
-  <p>Please cite original source publications when using content in your research. For dataset-specific references, check the details within each module.</p>
-  <hr>
+        <h2>Citation</h2>
+        <p>Please cite original source publications when using content in your research. For dataset-specific references, check the details within each module.</p>
+        <hr>
 
-  <h2>Main publications underlying the data:</h2>
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin: 1rem;">
-    <li>
-      Pillon NJ, Gabriel BM, Dollet L, Smith JAB, Sardón Puig L, Botella J, Bishop DJ, Krook A, Zierath JR.
-      <strong>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity.</strong>
-      <em>Nat Commun.</em> 2020 Jan 24;11(1):470.
-      <a href="https://doi.org/10.1038/s41467-019-13869-w" target="_blank">https://doi.org/10.1038/s41467-019-13869-w</a>
-    </li>
-    <div style="flex-shrink: 0; margin-left: 1rem;">
-      <script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
-      <span class="__dimensions_badge_embed__" data-id="pub.1124285483" data-legend="always"></span>
+        <h2>Main publications underlying the data:</h2>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin: 1rem;">
+          <li>
+            Pillon NJ, Gabriel BM, Dollet L, Smith JAB, Sardón Puig L, Botella J, Bishop DJ, Krook A, Zierath JR.
+            <strong>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity.</strong>
+            <em>Nat Commun.</em> 2020 Jan 24;11(1):470.
+            <a href="https://doi.org/10.1038/s41467-019-13869-w" target="_blank">https://doi.org/10.1038/s41467-019-13869-w</a>
+          </li>
+          <div style="flex-shrink: 0; margin-left: 1rem;">
+            <script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
+            <span class="__dimensions_badge_embed__" data-id="pub.1124285483" data-legend="always"></span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin: 1rem;">
+          <li>
+            Abdelmoez AM, Sardón Puig L, Smith JAB, Gabriel BM, Savikj M, Dollet L, Chibalin AV, Krook A, Zierath JR, Pillon NJ.
+            <strong>Comparative profiling of skeletal muscle models reveals heterogeneity of transcriptome and metabolism.</strong>
+            <em>Am J Physiol Cell Physiol.</em> 2020 Mar 1;318(3):C615–C626.
+            <a href="https://doi.org/10.1152/ajpcell.00540.2019" target="_blank">https://doi.org/10.1152/ajpcell.00540.2019</a>
+          </li>
+          <div style="flex-shrink: 0; margin-left: 1rem;">
+            <script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
+            <span class="__dimensions_badge_embed__" data-id="pub.1123291712" data-legend="always"></span>
+          </div>
+        </div>
+
+        <hr>
+
+        <h2>Credits</h2>
+        <ul style="padding-left: 1.5rem;">
+          <li><strong>Programming:</strong> <a href="https://nicopillon.com/contact" target="_blank">Nicolas J. Pillon</a></li>
+          <li><strong>Illustration and design:</strong> <a href="https://www.linkedin.com/in/cpillonhue/?originalSubdomain=se" target="_blank">Cécile Pillon Hue</a></li>
+          <li><strong>Computation:</strong> RNA sequencing computations were supported by 
+            <a href="https://www.snic.se/" target="_blank">SNIC</a> via UPPMAX under Projects SNIC 2021/22-91 and 2021/23-126.
+          </li>
+        </ul>
+        <hr>
+
+        <h2>Funding</h2>
+        <p>This work was supported by several institutions including:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Marie Sklodowska-Curie Actions (EU Commission)</li>
+          <li>Novo Nordisk Foundation</li>
+          <li>Swedish Diabetes Foundation</li>
+          <li>European Foundation for the Study of Diabetes (EFSD)</li>
+          <li>Swedish Research Council</li>
+          <li>Strategic Research Program in Diabetes (Karolinska Institutet)</li>
+          <li>Swedish Research Council for Sport Science</li>
+          <li>Forska utan Djurforsök (Foundation for Research Without Animal Testing)</li>
+        </ul>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+          <img src="www/img/funding/Karolinska_Institutet_Logo.png" alt="KI Logo" style="height: 50px;">
+          <img src="www/img/funding/European_Commission_Logo.png" alt="EU Logo" style="height: 50px;">
+          <img src="www/img/funding/Novo_nordisk_foundation_Logo.png" alt="Novo Nordisk Logo" style="height: 50px;">
+          <img src="www/img/funding/Swedish_Research_Council_logo.png" alt="VR Logo" style="height: 50px;">
+          <img src="www/img/funding/Swedish_Research_Council_for_Sport_Science_Logo.png" alt="Sport Science Logo" style="height: 50px;">
+          <img src="www/img/funding/EFSD_Logo.png" alt="EFSD Logo" style="height: 50px;">
+          <img src="www/img/funding/SNIC_logo.png" alt="SNIC Logo" style="height: 50px;">
+          <img src="www/img/funding/ForskaUtanDjurforsok_logo.png" alt="ForskaUtanDjurforsok Logo" style="height: 50px;">
+        </div>
+
+        <hr>
+
+        <h2>Copyrights</h2>
+        <p>
+          All content and code are published under the 
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+        </p>
+
     </div>
   </div>
-  
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin: 1rem;">
-    <li>
-      Abdelmoez AM, Sardón Puig L, Smith JAB, Gabriel BM, Savikj M, Dollet L, Chibalin AV, Krook A, Zierath JR, Pillon NJ.
-      <strong>Comparative profiling of skeletal muscle models reveals heterogeneity of transcriptome and metabolism.</strong>
-      <em>Am J Physiol Cell Physiol.</em> 2020 Mar 1;318(3):C615–C626.
-       <a href="https://doi.org/10.1152/ajpcell.00540.2019" target="_blank">https://doi.org/10.1152/ajpcell.00540.2019</a>
-    </li>
-    <div style="flex-shrink: 0; margin-left: 1rem;">
-      <script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
-      <span class="__dimensions_badge_embed__" data-id="pub.1123291712" data-legend="always"></span>
-    </div>
-  </div>
+  <!-- Page Wrapper ends here -->
 
-
-
-
-  
-
-  </ul>
-  <hr>
-
-  <h2>Credits</h2>
-  <ul style="padding-left: 1.5rem;">
-    <li><strong>Programming:</strong> <a href="https://nicopillon.com/contact" target="_blank">Nicolas J. Pillon</a></li>
-    <li><strong>Illustration and design:</strong> <a href="https://www.linkedin.com/in/cpillonhue/?originalSubdomain=se" target="_blank">Cécile Pillon Hue</a></li>
-    <li><strong>Computation:</strong> RNA sequencing computations were supported by 
-      <a href="https://www.snic.se/" target="_blank">SNIC</a> via UPPMAX under Projects SNIC 2021/22-91 and 2021/23-126.
-    </li>
-  </ul>
-  <hr>
-
-  <h2>Funding</h2>
-  <p>This work was supported by several institutions including:</p>
-  <ul style="padding-left: 1.5rem;">
-    <li>Marie Sklodowska-Curie Actions (EU Commission)</li>
-    <li>Novo Nordisk Foundation</li>
-    <li>Swedish Diabetes Foundation</li>
-    <li>European Foundation for the Study of Diabetes (EFSD)</li>
-    <li>Swedish Research Council</li>
-    <li>Strategic Research Program in Diabetes (Karolinska Institutet)</li>
-    <li>Swedish Research Council for Sport Science</li>
-    <li>Forska utan Djurforsök (Foundation for Research Without Animal Testing)</li>
-  </ul>
-
-  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
-    <img src="www/img/funding/Karolinska_Institutet_Logo.png" alt="KI Logo" style="height: 50px;">
-    <img src="www/img/funding/European_Commission_Logo.png" alt="EU Logo" style="height: 50px;">
-    <img src="www/img/funding/Novo_nordisk_foundation_Logo.png" alt="Novo Nordisk Logo" style="height: 50px;">
-    <img src="www/img/funding/Swedish_Research_Council_logo.png" alt="VR Logo" style="height: 50px;">
-    <img src="www/img/funding/Swedish_Research_Council_for_Sport_Science_Logo.png" alt="Sport Science Logo" style="height: 50px;">
-    <img src="www/img/funding/EFSD_Logo.png" alt="EFSD Logo" style="height: 50px;">
-    <img src="www/img/funding/SNIC_logo.png" alt="SNIC Logo" style="height: 50px;">
-    <img src="www/img/funding/ForskaUtanDjurforsok_logo.png" alt="ForskaUtanDjurforsok Logo" style="height: 50px;">
-  </div>
-
-  <hr>
-
-  <h2>Copyrights</h2>
-  <p>
-    All content and code are published under the 
-    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
-  </p>
-</div>
-
-
-<!-- Footer -->
-<div class="index-footer" style="background-color: #5B768E; color: white; padding: 1.5rem 1rem; font-family: sans-serif;">
-  <div style="text-align: center; font-size: 0.85rem;">
-    &copy; 2025 Nicolas J. Pillon · 
-    <a href="/about.html" style="color: white;">About</a> · 
-    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" style="color: white;">CC BY-NC 4.0</a>
-  </div>
-</div>
+  <!-- Include shared footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch('/footer.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+  </script>
 
 </body>
 </html>
-

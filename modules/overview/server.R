@@ -79,12 +79,6 @@ server <- function(input, output, session) {
   #----------------------------------------------------------------------------------------
   # Gene description
   get_gene_description <- function(gene_symbol) {
-    isolate({
-      start_aging(FALSE)
-      start_obesity(FALSE)
-      start_fibers(FALSE)
-    })
-    
     req(input$inputGeneSymbol)  # Makes sure input is available
     symbol <- input$inputGeneSymbol
 

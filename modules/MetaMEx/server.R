@@ -269,7 +269,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_AA()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -362,7 +362,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_AH()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -455,7 +455,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_AR()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -549,7 +549,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_IN()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -673,7 +673,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_TA()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -764,7 +764,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_TC()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -854,7 +854,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_TH()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -945,7 +945,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- human_metaAnalysisData_TR()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -1047,35 +1047,29 @@ server <- function(input, output, session) {
     selected_gene <- input$genename_metaanalysis_human
     
     # check that data is available
-    validate(need(sum(is.na(overview_data$beta)) != length(overview_data$beta),
+    shiny::validate(need(sum(is.na(overview_data$beta)) != length(overview_data$beta),
                   "No studies found - try different selection criteria"))
     
     # prepare position for stats
     overview_data$y.position <- overview_data$ci.ub + 0.5
-    overview_data$y.position <- ifelse(is.na(overview_data$y.position),
-                                       -1,
-                                       overview_data$y.position)
+    overview_data$y.position <- ifelse(is.na(overview_data$y.position), -1, overview_data$y.position)
     
-    ggbarplot(overview_data, 
-              x = "Study", y = "beta",
-              fill = "Study"
-              ) +
-      labs(x = element_blank(),
-           y = paste0(selected_gene, "\nMeta-analysis score (logFC)")) +
-      theme_bw() + theme_ggplot +
+    # Create the plot using base ggplot2
+    ggplot(overview_data, aes(x = Study, y = beta, fill = Study)) +
+      geom_col(position = position_dodge(), width = 0.8, 
+               size = 0.2, color = "black") +                       # black border on bars
+      geom_errorbar(aes(ymin = ci.lb, ymax = ci.ub), 
+                    width = 0.2, position = position_dodge(.9)) +
       geom_hline(yintercept = 0) +
-      geom_point() +
-      geom_errorbar(aes(ymin=ci.lb, ymax=ci.ub), 
-                    width=.2,
-                    position=position_dodge(.9)) +
-      add_pvalue(overview_data, bracket.size = NA, 
-                 xmin = "Study",
-                 xmax = "Study",
-                 label = "fdr",
-                 y.position = "y.position", 
-                 label.size = 3) +
+      labs(
+        x = NULL,
+        y = paste0(selected_gene, "\nMeta-analysis score (logFC)")
+      ) +
+      theme_bw() + theme_ggplot +
       scale_y_continuous(expand = expansion(mult = c(0.1, 0.15))) +
-      scale_fill_viridis_d()
+      scale_fill_viridis_d() +
+      geom_text(aes(y = y.position, label = fdr), size = 3)
+    
     })
   
   
@@ -1321,7 +1315,7 @@ server <- function(input, output, session) {
   output$human_corrTable <- DT::renderDataTable(escape = FALSE, 
                                                  rownames = T, 
                                                  selection = "single", {
-                                                   validate(need(!is.null(human_corrData()),   
+                                                   shiny::validate(need(!is.null(human_corrData()),   
                                                                  "Start by selecting a gene in the list of official gene names"))
                                                    
                                                    human_corrData <- human_corrData()
@@ -1330,8 +1324,8 @@ server <- function(input, output, session) {
   
   # Make plot output
   output$human_corrPlot  <- renderPlot({ 
-    validate(need(!is.null(human_corrData()),     " "))
-    validate(need(input$human_corrTable_rows_selected!="",  "Click on a gene in the table to display the correlation")) 
+    shiny::validate(need(!is.null(human_corrData()),     " "))
+    shiny::validate(need(input$human_corrTable_rows_selected!="",  "Click on a gene in the table to display the correlation")) 
     
     human_corrData <- human_corrData()
 
@@ -1369,39 +1363,41 @@ server <- function(input, output, session) {
   
   # Make correlation description
   output$human_corrDescription <- renderText({
-    progress <- shiny::Progress$new()
-    on.exit(progress$close())
-    progress$set(message = "Collecting information on selected genes", value = 1)
+    req(input$human_corrTable_rows_selected)
+    symbol <- input$human_corrTable_rows_selected
     
-    validate(need(!is.null(human_corrData()),     " "))
-    validate(need(input$human_corrTable_rows_selected!="",  " ")) 
-    human_corrData <- human_corrData()
+    # Step 1: Query gene symbol
+    res <- GET(paste0("https://mygene.info/v3/query?q=", symbol, "&species=human"))
+    data <- fromJSON(content(res, "text", encoding = "UTF-8"))
     
-    #find gene selected in the table and annotate with ENTREZID
-    symbol_from_table <- "PPARGC1A"
-    symbol_from_table <- rownames(human_corrData$stats[input$human_corrTable_rows_selected,])
-    entrezid_from_table <- human_genes[human_genes$SYMBOL %in% symbol_from_table,]$ENTREZID
-    print(c(symbol_from_table, entrezid_from_table))
-    validate(need(entrezid_from_table!="",  "No information available for this gene.")) 
+    # Safety check: ensure we got hits
+    if (is.null(data$hits) || length(data$hits) == 0) {
+      return("No gene information found.")
+    }
     
-    #Find information on NCBI webpage
-    webpage <- read_html(paste("https://www.ncbi.nlm.nih.gov/gene/", entrezid_from_table, sep=''))
-    data_html <- html_nodes(webpage,'#summaryDl')
-    data_html <- html_text(data_html)
-    data_html <- str_replace_all(data_html, "[\r\n]" , "")
-    data_html <- str_replace_all(data_html, "provided by HGNC" , "")
-    if(str_detect(data_html, 'Summary')==T){
-      data_html <- gsub('.*Summary', '', data_html)
-      data_html <- gsub('\\].*', ']', data_html)
-      data_html <- trimws(data_html)
-    } else data_html <- "Cannot connect to NCBI."
+    # Try to extract entrezgene ID from first hit
+    gene_id <- data$hits[[1]][1]
+    if (is.null(gene_id)) {
+      return("Gene ID not found for this symbol.")
+    }
     
-    return(data_html)
+    # Step 2: Get full gene info
+    res2 <- GET(paste0("https://mygene.info/v3/gene/", gene_id))
+    info <- fromJSON(content(res2, "text", encoding = "UTF-8"))
+    
+    # Return summary, or fallback
+    if (!is.null(info$summary)) {
+      paste("Description:", info$summary)
+    } else {
+      "No summary available for this gene."
+    }
   })
   
+
+  
   output$human_corrGeneCardsLink <- renderUI({
-    validate(need(!is.null(human_corrData()),     " "))
-    validate(need(input$human_corrTable_rows_selected!="",  " ")) 
+    shiny::validate(need(!is.null(human_corrData()),     " "))
+    shiny::validate(need(input$human_corrTable_rows_selected!="",  " ")) 
     
     human_corrData <- human_corrData()
     
@@ -1480,7 +1476,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- mouse_metaAnalysisData_AA()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -1596,7 +1592,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- mouse_metaAnalysisData_IN()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -1712,7 +1708,7 @@ server <- function(input, output, session) {
     meta_analysis_results <- mouse_metaAnalysisData_TA()
     
     # Handle empty data case: this validates that paired_data is not null and has rows.
-    validate(
+    shiny::validate(
       need(!is.null(meta_analysis_results$paired_data) && nrow(meta_analysis_results$paired_data) > 0, 
            "No studies found - try different selection criteria")
     )
@@ -1827,35 +1823,29 @@ server <- function(input, output, session) {
     selected_gene <- input$genename_metaanalysis_human
     
     # check that data is available
-    validate(need(sum(is.na(overview_data$beta)) != length(overview_data$beta),
+    shiny::validate(need(sum(is.na(overview_data$beta)) != length(overview_data$beta),
                   "No studies found - try different selection criteria"))
     
-    # prepare position for stats
+    # Assuming `overview_data` and `selected_gene` are defined
     overview_data$y.position <- overview_data$ci.ub + 0.5
-    overview_data$y.position <- ifelse(is.na(overview_data$y.position),
-                                       -1,
-                                       overview_data$y.position)
+    overview_data$y.position <- ifelse(is.na(overview_data$y.position), -1, overview_data$y.position)
     
-    ggbarplot(overview_data, 
-              x = "Study", y = "beta",
-              fill = "Study"
-    ) +
-      labs(x = element_blank(),
-           y = paste0(selected_gene, "\nMeta-analysis score (logFC)")) +
-      theme_bw() + theme_ggplot +
+    # Create the plot using base ggplot2
+    ggplot(overview_data, aes(x = Study, y = beta, fill = Study)) +
+      geom_col(position = position_dodge(), width = 0.8, 
+               size = 0.2, color = "black") +                       # black border on bars
+      geom_errorbar(aes(ymin = ci.lb, ymax = ci.ub), 
+                    width = 0.2, position = position_dodge(.9)) +
       geom_hline(yintercept = 0) +
-      geom_point() +
-      geom_errorbar(aes(ymin=ci.lb, ymax=ci.ub), 
-                    width=.2,
-                    position=position_dodge(.9)) +
-      add_pvalue(overview_data, bracket.size = NA, 
-                 xmin = "Study",
-                 xmax = "Study",
-                 label = "fdr",
-                 y.position = "y.position", 
-                 label.size = 3) +
+      labs(
+        x = NULL,
+        y = paste0(selected_gene, "\nMeta-analysis score (logFC)")
+      ) +
+      theme_bw() + theme_ggplot + 
       scale_y_continuous(expand = expansion(mult = c(0.1, 0.15))) +
-      scale_fill_viridis_d()
+      scale_fill_viridis_d() +
+      geom_text(aes(y = y.position, label = fdr), size = 3)
+    
   })
  
   

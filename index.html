@@ -28,259 +28,143 @@
     .then(data => document.getElementById('header-placeholder').innerHTML = data);
 </script>
 
-<!-- Custom Header with Background Image and Overlay -->
+<!-- Custom Header (outside main content) -->
 <div style="position: relative; text-align: center; height: 320px; background-image: url('/www/img/myoblasts2.jpg'); background-size: cover; background-position: center;">
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+              background-color: rgba(0, 0, 0, 0.25); z-index: 1;"></div>
   
-    <!-- Dark overlay for better text contrast -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                background-color: rgba(0, 0, 0, 0.25); z-index: 1;"></div>
-    
-    <!-- Text content -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-                display: flex; flex-direction: column; justify-content: center; align-items: center; 
-                z-index: 2; color: white; padding: 0 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">
-                
-      <h1 style="margin-bottom: 10px; font-size: 2.8em;">Skeletal Muscle Omics (Beta)</h1>
-      <p style="max-width: 500px; font-size: 1.1em;">Dive into dynamic, interactive tools to explore how skeletal muscle adapts to exercise, aging, metabolic disease, and more.</p>
-      
-<!-- Gene Search Field (Styled to Match Overlay) -->
-<div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;">
-    <input type="text" id="geneInput" placeholder="Type a gene symbol to get an overview..." 
-           style="padding: 10px 15px; width: 260px; font-size: 12px; border: none; 
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+              display: flex; flex-direction: column; justify-content: center; align-items: center; 
+              z-index: 2; color: white; padding: 0 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">
+    <h1 style="margin-bottom: 10px; font-size: 2.8em;">Skeletal Muscle Omics (Beta)</h1>
+    <p style="max-width: 500px; font-size: 1.1em;">
+      Dive into dynamic, interactive tools to explore how skeletal muscle adapts to exercise, aging, metabolic disease, and more.
+    </p>
+
+    <div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;">
+      <input type="text" id="geneInput" placeholder="Type a gene symbol to get an overview..." 
+            style="padding: 10px 15px; width: 260px; font-size: 12px; border: none; 
                   border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); 
                   box-shadow: 0 1px 4px rgba(0,0,0,0.3);"
-           onkeypress="if(event.key === 'Enter') searchGene()">
-    
-    <button onclick="searchGene()" 
-            style="padding: 8px 15px; font-size: 16px; background-color: #5B768E; 
-                   color: white; border: none; border-radius: 5px; 
-                   font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
-      🔍 Search
-    </button>
-  </div>
+            onkeypress="if(event.key === 'Enter') searchGene()">
 
+      <button onclick="searchGene()" 
+              style="padding: 8px 15px; font-size: 16px; background-color: #5B768E; 
+                    color: white; border: none; border-radius: 5px; 
+                    font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+        🔍 Search
+      </button>
     </div>
   </div>
-
-  <!-- script for selected gene -->
-  <script>
-    function searchGene() {
-      var gene = document.getElementById("geneInput").value.trim();
-      if (gene !== "") {
-        window.location.href = "modules/overview.html?gene=" + encodeURIComponent(gene);
-      }
-    }
-  </script>
-
-    <!-- Apps ready to use -->
-    <div class="category">
-        <div class="container">
-            
-            <!-- MetaMEx -->
-            <div class="dataset">
-                <a href="modules/MetaMEx.html" target="_blank">
-                     <img src="www/img/snippet/MetaMEx.png" alt="MetaMEx" title="Explore MetaMEx">
-                     <p><b>Exercise</b></p>
-                </a>
-                <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity (MetaMEx).</p>
-            </div>
-            
-            <!-- Human Muscle aging -->
-            <div class="dataset">
-                <a href="modules/human_muscle_aging.html">
-                     <img src="www/img/snippet/human_muscle_aging.png" alt="Aging muscle">
-                     <p><b>Aging</b></p>
-                </a>
-                <p>Human skeletal muscle transcriptome throughout the lifespan and its alterations in sarcopenia.</p>
-            </div>
-
-            <!-- Human obesity -->
-            <div class="dataset">
-                <a href="modules/human_muscle_obesity.html">
-                     <img src="www/img/snippet/human_muscle_obesity.png" alt="Human Obesity">
-                     <p><b>Obesity</b></p>
-                </a>
-                <p>Transcriptomics analysis of skeletal muscle in men and women with overweight, obesity or type 2 diabetes.</p>
-            </div>
-
-           <!-- Fiber type profiling -->
-           <div class="dataset">
-                <a href="modules/fiber_types.html">
-                     <img src="www/img/snippet/fiber_types.png" alt="Fiber Type">
-                     <p><b>Fiber Type</b></p>
-                </a>
-            <p>Profiling of the proteome and transcriptome of human skeletal muscle type I and type II fibers.</p>
-            </div>
-            
-            <!-- Muscle models -->
-            <div class="dataset">
-                <a href="modules/muscle_models.html">
-                     <img src="www/img/snippet/muscle_models.png" alt="Muscle models">
-                     <p><b>Muscle Models</b></p>
-                </a>
-                <p>Transcriptome of C2C12, L6 and human primary myotubes compared to skeletal muscle tissue.</p>
-            </div>
-            
-            <!-- Global VO2max dataset -->
-            <div class="dataset">
-                <a href="modules/globalVO2max.html">
-                    <img src="www/img/snippet/globalVO2max.png" alt="VO2max Reference">
-                    <p><b>Global VO2max</b></p>
-                </a>
-                    <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
-            </div>
-        
-        </div>
-    </div>
-
-    <hr>
-
-    <!-- Work in progress -->
-    <div style="text-align: center; color: red; justify-content: center; padding: 1%;">
-        <i class="fas fa-tools" style="color: #FFA500; font-size: 20px;"></i>
-        <strong style="font-size: 18px;">Work in Progress</strong>
-        <i class="fas fa-tools" style="color: #FFA500; font-size: 20px;"></i><br><br>
-        <em>This section includes experimental apps. Expect bugs and incomplete features!</em><br>
-        <em>We appreciate your feedback — please contact us with issues or suggestions.</em>
-      </div>
-        
-        <div class="container">
-
-        <!-- Mouse high fat diet -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/obesity_t2d/mouse_hfd_tissues_transcriptomics">
-                    <img src="www/img/snippet/mouse_hfd_tissues_transcriptomics.webp" alt="Mouse Obesity">
-                    <p><b>Mouse High-fat Diet</b></p>
-                </a>
-                <p>Transcriptomics analysis of skeletal muscle, adipose tissue and liver in mice exposed to high-fat diet.</p>
-            </div>
-                        
-            <!-- Myoblasts vs Myotubes -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/obesity_t2d/human_myotube_myoblast_t2d/">
-                    <img src="www/img/snippet/human_myotube_myoblast_t2d.webp" alt="Diabetic Myocytes">
-                    <p><b>Diabetic Myocytes</b></p>
-                </a>
-                <p>Transcriptome of myoblasts and myotubes grown in vitro from individuals with or without type 2 diabetes.</p>
-            </div>
-            
-            <!-- Palmitate -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/obesity_t2d/myotube_palmitate">
-                    <img src="www/img/snippet/myotube_palmitate.webp" alt="Palmitate in Myotubes">
-                    <p><b>Palmitate in Myotubes</b></p>
-                </a>
-                <p>Transcriptomic response of skeletal myotubes exposed to the saturated fatty acid palmitate in vitro.</p>
-            </div>
-                                    
-            <!-- Myotube heterogeneity -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/muscle_composition_remodelling/human_myotube_heterogeneity">
-                    <img src="www/img/snippet/human_myotube_heterogeneity.webp" alt="Myotubes heterogeneity">
-                    <p><b>Myotube Heterogeneity</b></p>
-                </a>
-                <p>Transcriptome of primary skeletal myotubes processed at different times with various methods.</p>
-            </div>
-
-            <!-- Mouse Exercise -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/mouse_exercise_tissues_transcriptomics">
-                    <img src="www/img/snippet/mouse_exercise_tissues_transcriptomics.webp" alt="Mouse Exercise title="Mouse Exercise">
-                    <p><b>Mouse Exercise</b></p>
-                </a>
-                <p>Transcriptomics analysis of skeletal muscle, adipose tissue and liver in mice after acute exercise.</p>
-            </div>
-
-            <!-- Muscle scRNAseq -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/muscle_scRNAseq_Lovric/">
-                    <img src="www/img/snippet/muscle_scRNAseq_Lovric.webp" alt="Muscle scRNAseq">
-                    <p><b>Single-cell RNAseq</b></p>
-                </a>
-                    <p>Exercise response in skeletal muscle analyzed by single-cell RNAseq from Lovrić et al, 2022.</p>
-            </div>
-
-            <!-- Clamp -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/obesity_t2d/human_muscle_clamp">
-                    <img src="www/img/snippet/muscle_clamp.webp" alt="Human Clamp">
-                    <p><b>Human Clamp</b></p>
-                </a>
-                <p>Transcriptomic response of skeletal muscle response to an hyperinsulinemic euglycemic clamp.</p>
-            </div>
-            
-             <!-- Electrical Pulse Stimulation -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/exercise/myotube_EPS/">
-                    <img src="www/img/snippet/myotube_EPS.webp" alt="Electrical Pulse Stimulation">
-                    <p><b>In vitro EPS</b></p>
-                </a>
-                    <p>Transcriptomic response to electrical pulse stimulation in human primary and mouse C2C12 myotubes.</p>
-            </div>
-            
-        </div>        
-    </div>
-    
-    <hr>
-    
-    <!-- Random tools -->
-    <div class="category">
-        <div class="container">
-
-            <div style="text-align: center;justify-content:center;padding: 1%">
-                <h2>Other data and tools</h2>
-            </div>
-            
-            <div class="container">
-                
-            <!-- Macrophage polarization -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/inflammation/macrophage_polarization/">
-                    <img src="www/img/snippet/macrophage_polarization.webp" alt="Macrophage polarization">
-                    <p><b>Polarized Macrophages</b></p>
-                </a>
-                <p>Curated transcriptome of human and mouse macrophages polarized into M1/M2 phenotypes.</p>
-            </div>
-            
-            <!-- Adipose tissue cells -->
-            <div class="dataset">
-                <a href="https://shiny.nicopillon.com/inflammation/human_adipose_tissue_immune_populations">
-                    <img src="www/img/snippet/human_adipose_tissue_immune_populations.webp" alt="Adipose tissue cells">
-                    <p><b>Adipose Tissue Cells</b></p>
-                </a>
-                <p>Transcriptomic profile of immune cells isolated from human adipose tissue by flow cytometry.</p>
-            </div>            
-            
-            <!-- Scientific Niche -->
-            <div class="dataset">
-                <a href="modules/scientific_niche.html">
-                    <img src="www/img/snippet/scientific_niche.svg" alt="Scientific Niche">
-                    <p><b>Scientific Niche</b></p>
-                </a>
-           <p>This app visualizes how a specific research topic intersects with broader scientific fields.</p>
-           </div>
-
-            <!-- Test App -->
-            <div class="dataset">
-                <a href="modules/0_template_app.html">
-                    <img src="www/img/snippet/0_template_app.png " alt="Template App">
-                    <p><b>Template App</b></p>
-                </a>
-                    <p>A template providing minimal R and HTML structure for integrating new apps into the repository.</p>
-            </div>
-
-        </div>
-    </div>
-    
-    <!-- Footer -->
-<div class="index-footer" style="background-color: #5B768E; color: white; padding: 1.5rem 1rem; font-family: sans-serif;">
-    <div style="text-align: center; font-size: 0.85rem;">
-      &copy; 2025 Nicolas J. Pillon · 
-      <a href="/about.html" style="color: white;">About</a> · 
-      <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" style="color: white;">CC BY-NC 4.0</a>
-    </div>
 </div>
-  
+
+<script>
+  function searchGene() {
+    var gene = document.getElementById("geneInput").value.trim();
+    if (gene !== "") {
+      window.location.href = "modules/overview.html?gene=" + encodeURIComponent(gene);
+    }
+  }
+</script>
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+  <main class="main-content">
+
+    <!-- Featured Apps -->
+    <div class="category">
+      <div class="container">
+
+        <div class="dataset">
+          <a href="modules/MetaMEx.html">
+            <img src="www/img/snippet/MetaMEx.png" alt="MetaMEx" title="Explore MetaMEx">
+            <p><b>Exercise</b></p>
+          </a>
+          <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity (MetaMEx).</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/human_muscle_aging.html">
+            <img src="www/img/snippet/human_muscle_aging.png" alt="Aging muscle">
+            <p><b>Aging</b></p>
+          </a>
+          <p>Human skeletal muscle transcriptome throughout the lifespan and its alterations in sarcopenia.</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/human_muscle_obesity.html">
+            <img src="www/img/snippet/human_muscle_obesity.png" alt="Human Obesity">
+            <p><b>Obesity</b></p>
+          </a>
+          <p>Transcriptomics analysis of skeletal muscle in men and women with overweight, obesity or type 2 diabetes.</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/fiber_types.html">
+            <img src="www/img/snippet/fiber_types.png" alt="Fiber Type">
+            <p><b>Fiber Type</b></p>
+          </a>
+          <p>Proteome and transcriptome profiling of human skeletal muscle type I and type II fibers.</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/muscle_models.html">
+            <img src="www/img/snippet/muscle_models.png" alt="Muscle models">
+            <p><b>Muscle Models</b></p>
+          </a>
+          <p>Transcriptome of C2C12, L6 and human primary myotubes compared to skeletal muscle tissue.</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/globalVO2max.html">
+            <img src="www/img/snippet/globalVO2max.png" alt="VO2max Reference">
+            <p><b>Global VO2max</b></p>
+          </a>
+          <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Other sections -->
+    <div class="category">
+      <div class="container">
+
+        <div class="dataset" style="text-align: center;">
+          <a href="other-tools.html" style="text-decoration: none; color: inherit;">
+            <div style="font-size: 40px; margin-bottom: 10px; color: #5B768E;">
+              <i class="fas fa-toolbox"></i>
+            </div>
+            <p><b>Other Tools</b></p>
+          </a>
+          <p>Miscellaneous apps and datasets that don't fit in the main categories but offer unique insights.</p>
+        </div>
+
+        <div class="dataset" style="text-align: center;">
+          <a href="work-in-progress.html" style="text-decoration: none; color: inherit;">
+            <div style="font-size: 40px; margin-bottom: 10px; color: #5B768E;">
+              <i class="fas fa-tools"></i>
+            </div>
+            <p><b>Work in Progress</b></p>
+          </a>
+          <p>Experimental apps and prototypes under development. Expect bugs — your feedback helps!</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Shared footer -->
+<div id="footer-placeholder"></div>
+<script>
+  fetch('/footer.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+</script>
+
 </body>
 </html>
-

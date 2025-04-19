@@ -22,23 +22,6 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Ensure main content fills available space */
-body > .category {
-  flex: 1;
-}
-
-/* Prevent Bootstrap's .container-fluid from constraining width */
-.container-fluid {
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-/* Prevent Bootstrap's .container from limiting width */
-.container {
-  max-width: 100% !important;
-  width: 100% !important;
-}
-
 /* Set consistent spacing above/below horizontal rules */
 hr {
   margin-top: 10px;
@@ -51,8 +34,9 @@ hr {
 --------------------------------------------*/
 
 /* Main content section (used to push footer down) */
-.category {
-  flex: 1;
+.main-content {
+  flex-grow: 1;
+  padding: 0%;
 }
 
 /* Header styling: small font, colored background, flex layout */
@@ -98,16 +82,36 @@ hr {
   padding: 10px;
 }
 
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0%;
+}
+
+.page-wrapper > *:last-child {
+  flex: 1;
+}
 
 /* -------------------------------------------
    3. CONTENT BLOCKS & DATASET CARDS
 --------------------------------------------*/
 
-/* Container for content blocks (e.g., dataset cards) */
+/* Prevent Bootstrap's .container from limiting width */
 .container {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 1%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+/* Prevent Bootstrap's .container-fluid from constraining width */
+.container-fluid {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 1%;
 }
 
 /* Dataset card block */

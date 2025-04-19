@@ -27,7 +27,7 @@
   </script>
 
   <!-- Main Content -->
-  <div class="category" style="padding: 2% 5%; max-width: 800px; margin: auto; font-size: 1.05rem; line-height: 1.6;">
+  <div class="main-content" style="max-width: 800px; margin-top: 20px; font-size: 1.05rem; line-height: 1.6;">
     <h2>Contact</h2>
     <p>This website and Shiny application infrastructure are developed and are maintained by Nicolas Pillon. 
       If you have questions, ideas, feedback, or want to collaborate, feel free to get in touch!</p>
@@ -50,14 +50,13 @@
     
   </div>
 
-<!-- Footer -->
-<div class="index-footer" style="background-color: #5B768E; color: white; padding: 1.5rem 1rem; font-family: sans-serif;">
-  <div style="text-align: center; font-size: 0.85rem;">
-    &copy; 2025 Nicolas J. Pillon · 
-    <a href="/about.html" style="color: white;">About</a> · 
-    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" style="color: white;">CC BY-NC 4.0</a>
-  </div>
-</div>
+<!-- Include shared footer -->
+<div id="footer-placeholder"></div>
+<script>
+  fetch('/footer.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+</script>
 
 </body>
 </html>

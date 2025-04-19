@@ -1,25 +1,17 @@
 options(shiny.sanitize.errors=F) # sanitize errors
 
 # libraries
+library(tidyverse)
+library(feather)
 library(shinyjs)
 library(shinycssloaders)
 library(rmarkdown)
 
-library(ggplot2)
-library(gplots)
-library(ggpubr)
-library(ggprism)
-library(ggfortify)
-
-library(dplyr)
-library(DT)
-library(stringr)
-library(scales)
-library(rvest)
-library(feather)
-
 library(forestplot)
 library(metafor)
+
+library(httr)
+library(jsonlite)
 
 # functions for server
 source("server/data_loading.R")
