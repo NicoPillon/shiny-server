@@ -76,6 +76,16 @@ ui <- fluidPage(
                plotOutput("plot_muscle_models", height = "400px") %>%
                  withSpinner(color = "#5B768E", type = 8)
            ),
+           div(class = "col-sm-12 col-md-3",
+               style = "padding-top: 10px; padding-bottom: 10px;",
+               tags$a(style="font-weight: bold; font-size: 1.75rem;",
+                      href = "../MetaMEx.html",
+                      target = "_blank",  # optional: opens in a new tab
+                      "MetaMEx Module"
+               ),
+               plotOutput("plot_metamex", height = "400px") %>%
+                 withSpinner(color = "#5B768E", type = 8)
+           ),
            tags$hr()
   ),
   

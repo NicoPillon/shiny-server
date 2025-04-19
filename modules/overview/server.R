@@ -171,8 +171,9 @@ server <- function(input, output, session) {
                 size = 0.5,
                 alpha = 0.25) +
       theme_bw(base_size = 16) + 
-      theme(legend.position = "none") +
-      labs(x = "Fiber Type", 
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position = "none") +
+      labs(x = element_blank(),
            y = "mRNA expression, log2") +
       scale_y_continuous(expand = expansion(mult = c(0, .15))) +
       scale_fill_manual(values = c("Type I" = "#8B0000", 
@@ -221,9 +222,10 @@ server <- function(input, output, session) {
                 size = 0.5,
                 alpha = 0.25) +
       theme_bw(base_size = 16) + 
-      theme(legend.position = "none") +
-      labs(x = "Fiber Type", 
-           y = "Protein expression, log2") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position = "none") +
+      labs(x = element_blank(),
+           y = "mRNA expression, log2") +
       scale_y_continuous(expand = expansion(mult = c(0, .15))) +
       scale_fill_manual(values = c("Type I" = "#8B0000", 
                                    "Type IIA" = "#F5DEB3", 
@@ -246,7 +248,7 @@ server <- function(input, output, session) {
         expr,
         error = function(e) {
           ggplot() + 
-            annotate("text", x = 0.5, y = 0.5, label = paste(label, "not available"), size = 6, hjust = 0.5) +
+            annotate("text", x = 0.5, y = 0.5, label = paste(label, "\nnot available"), size = 6, hjust = 0.5) +
             theme_void()
         }
       )
@@ -387,6 +389,57 @@ server <- function(input, output, session) {
   
   
   #----------------------------------------------------------------------------------------
+  # Module human_muscle_obesity
+  dat_metamex_human <- reactive({
+    req(input$inputGeneSymbol)
+    gene_symbol <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+    
+    # Collect data
+    gene_symbol <- "NR4A3"
+    limma_list <- MetaMEx_human
+    plot_data <- lapply(names(limma_list), function(condition) {
+      res <- limma_list[[condition]]
+      if (gene_symbol %in% rownames(res)) {
+        gene_row <- res[gene_symbol, ]
+        data.frame(
+          Condition = condition,
+          logFC = gene_row$logFC,
+          CI.Lower = gene_row$CI.L,
+          CI.Upper = gene_row$CI.R,
+          P.Value = gene_row$P.Value
+        )
+      } else {
+        data.frame(
+          Condition = condition,
+          logFC = NA,
+          CI.Lower = NA,
+          CI.Upper = NA,
+          P.Value = NA
+        )
+      }
+    }) %>% bind_rows()
+    
+    # Plot
+    ggplot(plot_data, aes(x = Condition, y = logFC, fill = Condition)) +
+      geom_bar(stat = "identity", na.rm = TRUE, linewidth = 0.2, color = "black") +
+      geom_errorbar(aes(ymin = CI.Lower, ymax = CI.Upper), width = 0.2, na.rm = TRUE) +
+      geom_hline(yintercept = 0) +
+      theme_bw(16) + theme(legend.position = "none") +
+      labs(
+        y = "log2 Fold Change (±95% CI)",
+        x = element_blank()
+      ) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      scale_fill_viridis_d()
+  })
+  
+  output$plot_metamex <- renderPlot({
+    p <- dat_metamex_human()
+    print(p)
+  })
+  
+  
+  #----------------------------------------------------------------------------------------
   # Module muscle_models
   dat_muscle_models <- reactive({
     req(input$inputGeneSymbol)
@@ -423,7 +476,7 @@ server <- function(input, output, session) {
                 size = 0.5,
                 alpha = 0.25) +
       theme_bw(16) + 
-      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
             legend.position = "none") +
       labs(x="",
            y="mRNA expression, log2") +

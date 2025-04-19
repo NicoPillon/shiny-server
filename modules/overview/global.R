@@ -54,3 +54,12 @@ gene_list <- unique(gene_list$SYMBOL)
 # # Save for later use
 # saveRDS(gene_map, "gene_uniprot_map.rds")
 gene_protein_map <- readRDS("gene_uniprot_map.rds")
+
+
+#----------------------------------------------------------------------------------------------
+# MetaMEx overview
+#----------------------------------------------------------------------------------------------
+#MetaMEx_human <- readRDS("../../../Project_MetaMEx/limma/limma_results.Rds")
+#saveRDS(MetaMEx_human, "MetaMEx_human_limma_results.Rds")
+# load all data - Human
+MetaMEx_human <- readRDS("MetaMEx_human_limma_results.Rds")
