@@ -1,0 +1,3 @@
+Collection of shiny apps by the team [Inflammation & Metabolism](https://ki.se/fyfa/inflammation-and-metabolism-group){target="_blank"} at Karolinska Institutet.
+
+We regularly download and process public data for our various projects related to skeletal muscle adaptation to exercise, metabolic diseases and inflammation. This server provides access to all the data in the form of shiny apps to easily interrogate the different datasets. Any folder containing a shiny app in the folder *shiny-server* is served automatically at [shiny.nicopillon.com](https://shiny.nicopillon.com)

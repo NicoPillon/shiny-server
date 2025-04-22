@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RQ1ZSE9VVR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RQ1ZSE9VVR');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact</title>
+  <link rel="stylesheet" href="www/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch('/header.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+  </script>
+
+  <!-- Main Content -->
+  <div class="main-content" style="max-width: 800px; margin-top: 20px; font-size: 1.05rem; line-height: 1.6;">
+    <h2>Contact</h2>
+    <p>This website and Shiny application infrastructure are developed and are maintained by <a href="mailto:nicolas.pillon@ki.se">Nicolas Pillon</a>. 
+      If you have questions, ideas, feedback, or want to collaborate, feel free to get in touch!</p>
+      
+    <br>
+
+    <p>
+      <strong>Nicolas J. Pillon, PhD</strong><br>
+      Associate Professor<br>
+      Karolinska Institutet<br>
+      Department of Physiology and Pharmacology<br>
+      Stockholm, Sweden
+    </p>
+
+    <p>
+      <i class="fas fa-envelope"></i> <a href="mailto:nicolas.pillon@ki.se">nicolas.pillon@ki.se</a><br>
+      <i class="fas fa-globe"></i> <a href="https://ki.se/en/research/research-areas-centres-and-networks/research-groups/inflammation-and-metabolism-nicolas-pillons-research-group" target="_blank">Research Group</a><br>
+      <i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/nicopillon/" target="_blank">LinkedIn</a>
+    </p>
+    
+  </div>
+
+<!-- Include shared footer -->
+<div id="footer-placeholder"></div>
+<script>
+  fetch('/footer.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RQ1ZSE9VVR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RQ1ZSE9VVR');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index</title>
+  <link rel="stylesheet" href="www/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="icon" href="/www/favicon.svg" type="image/svg+xml">
+</head>
+
+<body>
+
+<!-- Include shared header -->
+<div id="header-placeholder"></div>
+<script>
+  fetch('/header.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('header-placeholder').innerHTML = data);
+</script>
+
+<!-- Custom Header (outside main content) -->
+<div style="position: relative; text-align: center; height: 320px; background-image: url('/www/img/myoblasts2.jpg'); background-size: cover; background-position: center;">
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+              background-color: rgba(0, 0, 0, 0.25); z-index: 1;"></div>
+  
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+              display: flex; flex-direction: column; justify-content: center; align-items: center; 
+              z-index: 2; color: white; padding: 0 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">
+    <h1 style="margin-bottom: 10px; font-size: 2.8em;">Skeletal Muscle Omics (Beta)</h1>
+    <p style="max-width: 500px;">
+      Dive into interactive tools to explore how skeletal muscle adapts to exercise, aging, metabolic disease, and more.
+    </p>
+
+    <div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;">
+      <input type="text" id="geneInput" placeholder="Type a gene symbol to get an overview..." 
+            style="padding: 10px 15px; width: 260px; font-size: 12px; border: none; 
+                  border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); 
+                  box-shadow: 0 1px 4px rgba(0,0,0,0.3);"
+            onkeypress="if(event.key === 'Enter') searchGene()">
+
+      <button onclick="searchGene()" 
+              style="padding: 8px 15px; font-size: 16px; background-color: #5B768E; 
+                    color: white; border: none; border-radius: 5px; 
+                    font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+              <p><i class="fa-solid fa-magnifying-glass"></i> Search</p>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function searchGene() {
+    var gene = document.getElementById("geneInput").value.trim();
+    if (gene !== "") {
+      window.location.href = "modules/overview.html?gene=" + encodeURIComponent(gene);
+    }
+  }
+</script>
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+  <main class="main-content">
+
+    <!-- Featured Apps -->
+    <div class="category">
+      <div class="container">
+
+        <div class="dataset">
+          <a href="modules/human_muscle_obesity.html">
+            <img src="www/img/snippet/human_muscle_obesity.png" alt="Human Obesity">
+            <h2>Obesity</h2>
+          </a>
+          <p>Transcriptomics analysis of skeletal muscle in men and women with overweight, obesity or type 2 diabetes.</p>
+        </div>
+        
+        <div class="dataset">
+          <a href="modules/human_muscle_myotube_sex.html">
+            <img src="www/img/snippet/human_muscle_myotube_sex.png" alt="Human Sex">
+            <h2>Sex</h2>
+          </a>
+          <p>Transcriptomics analysis of skeletal muscle tissue and cells in men and women.</p>
+        </div>
+        
+        <div class="dataset">
+          <a href="modules/MetaMEx.html">
+            <img src="www/img/snippet/MetaMEx.png" alt="MetaMEx" title="Explore MetaMEx">
+            <h2>Exercise</h2>
+          </a>
+          <p>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity (MetaMEx).</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/human_muscle_aging.html">
+            <img src="www/img/snippet/human_muscle_aging.png" alt="Aging muscle">
+            <h2>Aging</h2>
+          </a>
+          <p>Human skeletal muscle transcriptome throughout the lifespan and its alterations in sarcopenia.</p>
+        </div>
+
+
+
+      </div>
+    </div>
+    
+    <!-- Featured Apps -->
+    <div class="category">
+      <div class="container">
+        
+        <div class="dataset">
+          <a href="modules/fiber_types.html">
+            <img src="www/img/snippet/fiber_types.png" alt="Fiber Type">
+            <h2>Fiber Type</h2>
+          </a>
+          <p>Proteome and transcriptome profiling of human skeletal muscle type I and type II fibers.</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/muscle_models.html">
+            <img src="www/img/snippet/muscle_models.png" alt="Muscle models">
+            <h2>Muscle Models</h2>
+          </a>
+          <p>Transcriptome of C2C12, L6 and human primary myotubes compared to skeletal muscle tissue.</p>
+        </div>
+
+        <div class="dataset">
+          <a href="modules/singleCellRNAseq.html">
+            <img src="www/img/snippet/singleCellRNAseq.png" alt="Single Cell RNAseq">
+            <h2>Single Cell RNAseq</h2>
+          </a>
+          <p>Single Cell RNAseq of skeletal muscle.</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- Other sections -->
+    <div class="category">
+      <div class="container">
+
+        <div class="dataset">
+          <a href="other-tools.html">
+            <img src="www/img/snippet/0_template_app.png" alt="VO2max Reference">
+            <h2>Other Tools</h2>
+          </a>
+          <p>Miscellaneous apps and datasets that don't fit in the main categories but offer unique insights.</p>
+        </div>
+
+        <div class="dataset">
+          <a href="work-in-progress.html">
+            <img src="www/img/snippet/work_in_progress.png" alt="VO2max Reference">
+            <h2>Work in Progress</h2>
+          </a>
+          <p>Experimental apps and prototypes under development. Expect bugs — your feedback helps!</p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Call to action - Contribute -->
+<div class="category">
+  <div class="container" style="gap: 2rem;">
+
+    <!-- Left: Tools & Integrations -->
+    <div style="flex: 1 1 400px; min-width: 300px;">
+      <h2>Tools & Integrations</h2>
+      <p>
+        Exploring muscle omics often involves leveraging external resources. We've assembled a collection of helpful databases and utilities to streamline your experience. You're just a click away from valuable add-ons.
+      </p>
+    </div>
+
+    <!-- Right: Community -->
+    <div style="flex: 1 1 400px; min-width: 300px;">
+      <h2>The Muscle Community</h2>
+      <p>
+        This project is rooted in the collaborative spirit of the scientific community. We recognize the tremendous contributions of researchers worldwide who have laid the foundation for understanding muscle biology. Our goal is to support ongoing discovery by keeping this platform open, evolving, and useful.
+      </p>
+      <br>
+      <p>
+        We are always open to ideas, partnerships, and improvements. If you have feedback or suggestions, don't hesitate to <a href="mailto:nicolas.pillon@ki.se">reach out</a>!
+      </p>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Shared footer -->
+<div id="footer-placeholder"></div>
+<script>
+  fetch('/footer.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+</script>
+
+</body>
+</html>

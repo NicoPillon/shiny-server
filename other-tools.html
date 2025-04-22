@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Other Data & Tools</title>
+  <link rel="stylesheet" href="www/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body>
+
+  <!-- Include shared header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+  </script>
+
+  <!-- Page Wrapper starts here -->
+  <div class="page-wrapper">
+    <main class="main-content">
+      <div style="text-align: center; justify-content: center; padding: 1%;">
+        <em>This section includes other types of apps.</em><br>
+        <em>Related to skeletal muscle or not. Potentially of interest!</em>
+      </div>
+
+      <div class="container">
+
+        <!-- Global VO2max -->
+        <div class="dataset">
+          <a href="modules/globalVO2max.html">
+            <img src="www/img/snippet/globalVO2max.png" alt="VO2max Reference">
+            <h2>Global VO2max</h2>
+          </a>
+          <p>Worldwide reference values for maximal oxygen uptake in 20 to 80 years old men and women.</p>
+        </div>
+        
+        <!-- Scientific Niche -->
+        <div class="dataset">
+          <a href="modules/scientific_niche.html">
+            <img src="www/img/snippet/scientific_niche.png" alt="Scientific Niche">
+            <h2>Scientific Niche</h2>
+          </a>
+          <p>This app visualizes how a specific research topic intersects with broader scientific fields.</p>
+        </div>
+
+        <!-- Macrophage polarization -->
+        <div class="dataset">
+          <a href="modules/macrophage_polarization.html">
+            <img src="www/img/snippet/macrophage_polarisation.png" alt="Macrophage polarization">
+            <h2>Polarized Macrophages</h2>
+          </a>
+          <p>Curated transcriptome of human and mouse macrophages polarized into M1/M2 phenotypes.</p>
+        </div>
+
+        <!-- Palmitate -->
+        <div class="dataset">
+          <a href="modules/myotube_palmitate.html">
+            <img src="www/img/snippet/myotube_palmitate.png" alt="Palmitate in Myotubes">
+            <h2>Palmitate in Myotubes</h2>
+          </a>
+          <p>Transcriptomic response of skeletal myotubes exposed to the saturated fatty acid palmitate in vitro.</p>
+        </div>
+      
+      </div>
+    </main>
+  </div>
+  <!-- Page Wrapper ends here -->
+
+  <!-- Include shared footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch('/footer.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work in Progress</title>
+  <link rel="stylesheet" href="www/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Include shared header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch('/header.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+  </script>
+
+  <!-- Page Wrapper starts here -->
+  <div class="page-wrapper">
+    <main class="main-content">
+
+      <div style="text-align: center; color: red; justify-content: center; padding: 1%;">
+        <i class="fas fa-tools" style="color: #FFA500; font-size: 20px;"></i>
+        <strong style="font-size: 18px;">Work in Progress</strong>
+        <i class="fas fa-tools" style="color: #FFA500; font-size: 20px;"></i><br><br>
+        <em>This section includes experimental apps. Expect bugs and incomplete features!</em><br>
+        <em>We appreciate your feedback — please contact us with issues or suggestions.</em>
+      </div>
+
+      <div class="container">
+
+        <!-- Test App -->
+        <div class="dataset">
+          <a href="modules/0_template_app.html">
+            <img src="www/img/snippet/0_template_app.png" alt="Template App">
+            <h2>Template App</h2>
+          </a>
+          <p>A template providing minimal R and HTML structure for integrating new apps into the repository.</p>
+        </div>
+
+        <!-- Mouse high fat diet -->
+        <div class="dataset">
+          <a href="https://shiny.nicopillon.com/obesity_t2d/mouse_hfd_tissues_transcriptomics">
+            <img src="www/img/snippet/work_in_progress.png" alt="Mouse Obesity">
+            <h2>Mouse High-fat Diet</h2>
+          </a>
+          <p>Transcriptomics analysis of skeletal muscle, adipose tissue and liver in mice exposed to high-fat diet.</p>
+        </div>
+
+        <!-- Myoblasts vs Myotubes -->
+        <div class="dataset">
+          <a href="https://shiny.nicopillon.com/obesity_t2d/human_myotube_myoblast_t2d/">
+            <img src="www/img/snippet/work_in_progress.png" alt="Diabetic Myocytes">
+            <h2>Diabetic Myocytes</h2>
+          </a>
+          <p>Transcriptome of myoblasts and myotubes grown in vitro from individuals with or without type 2 diabetes.</p>
+        </div>
+
+        <!-- Myotube heterogeneity -->
+        <div class="dataset">
+          <a href="https://shiny.nicopillon.com/muscle_composition_remodelling/human_myotube_heterogeneity">
+            <img src="www/img/snippet/work_in_progress.png" alt="Myotubes heterogeneity">
+            <h2>Myotube Heterogeneity</h2>
+          </a>
+          <p>Transcriptome of primary skeletal myotubes processed at different times with various methods.</p>
+        </div>
+
+        <!-- Mouse Exercise -->
+        <div class="dataset">
+          <a href="https://shiny.nicopillon.com/exercise/mouse_exercise_tissues_transcriptomics">
+            <img src="www/img/snippet/work_in_progress.png" alt="Mouse Exercise">
+            <h2>Mouse Exercise</h2>
+          </a>
+          <p>Transcriptomics analysis of skeletal muscle, adipose tissue and liver in mice after acute exercise.</p>
+        </div>
+
+        <!-- Muscle scRNAseq -->
+        <div class="dataset">
+          <a href="https://shiny.nicopillon.com/exercise/muscle_scRNAseq_Lovric/">
+            <img src="www/img/snippet/work_in_progress.png" alt="Muscle scRNAseq">
+            <h2>Single-cell RNAseq</h2>
+          </a>
+          <p>Exercise response in skeletal muscle analyzed by single-cell RNAseq from Lovrić et al, 2022.</p>
+        </div>
+
+        <!-- Clamp -->
+        <div class="dataset">
+          <a href="https://shiny.nicopillon.com/obesity_t2d/human_muscle_clamp">
+            <img src="www/img/snippet/work_in_progress.png" alt="Human Clamp">
+            <h2>Human Clamp</h2>
+          </a>
+          <p>Transcriptomic response of skeletal muscle response to an hyperinsulinemic euglycemic clamp.</p>
+        </div>
+
+        <!-- Electrical Pulse Stimulation -->
+        <div class="dataset">
+          <a href="https://shiny.nicopillon.com/exercise/myotube_EPS/">
+            <img src="www/img/snippet/work_in_progress.png" alt="Electrical Pulse Stimulation">
+            <h2>In vitro EPS</h2>
+          </a>
+          <p>Transcriptomic response to electrical pulse stimulation in human primary and mouse C2C12 myotubes.</p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <!-- Page Wrapper ends here -->
+
+  <!-- Include shared footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch('/footer.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+  </script>
+
+</body>
+</html>

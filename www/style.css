@@ -1,0 +1,282 @@
+/* -------------------------------------------
+   1. GLOBAL RESET & BASIC LAYOUT SETTINGS
+--------------------------------------------*/
+
+/* Basic reset for consistent spacing and box sizing */
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+/* Set full width, ensure minimum height for full viewport, use flex layout for body */
+html, body {
+  height: auto;
+  width: 100%;
+  margin: 0px;
+  background-color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh; /* Ensures body always fills viewport */
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Set consistent spacing above/below horizontal rules */
+hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
+/* -------------------------------------------
+   2. PAGE STRUCTURE STYLING
+--------------------------------------------*/
+
+/* Main content section (used to push footer down) */
+.main-content {
+  flex-grow: 1;
+  padding: 0%;
+}
+
+/* Header styling: small font, colored background, flex layout */
+.header {
+  line-height: 1.2;
+  background-color: #5B768E;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 32px;
+  flex-wrap: wrap;
+  margin : 0px;
+}
+
+/* Header title text adjustments */
+.header h1 {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+  line-height: 1 !important;
+}
+
+/* Footer styling: colored background, multiple columns, flexible wrap */
+.footer {
+  line-height: 1.2;
+  background-color: #5B768E;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5% 1% 0.5% 1%;
+  flex-wrap: wrap;
+}
+
+/* Each footer column */
+.author-column {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px;
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0%;
+}
+
+.page-wrapper > *:last-child {
+  flex: 1;
+}
+
+/* Center the progress panel near the top */
+#shiny-notification-panel {
+  position: fixed !important;
+  top: 20rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 9999 !important;
+  width: 60%;
+  text-align: center;
+}
+
+/* Style the notification box itself */
+.shiny-notification {
+  width: 100%;
+  opacity: 1 !important;                /* remove transparency */
+}
+
+/* Style the actual progress bar inside the box */
+.progress-bar {
+  background-color: #FF6347 !important; /* tomato orange */
+}
+
+/* -------------------------------------------
+   3. CONTENT BLOCKS & DATASET CARDS
+--------------------------------------------*/
+
+.category {
+  padding: 1%;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
+}
+
+/* Prevent Bootstrap's .container from limiting width */
+.container {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 1%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Prevent Bootstrap's .container-fluid from constraining width */
+.container-fluid {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 1%;
+}
+
+/* Dataset card block */
+.dataset {
+  width: 200px;
+  margin: 20px;
+  text-align: center;
+}
+
+/* Dataset card image styling */
+.dataset img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+
+/* -------------------------------------------
+   4. LINKS STYLING (Normal / Hover / Visited / Active)
+--------------------------------------------*/
+
+/* Default link appearance */
+a {
+  color: #FFA07A;
+  text-decoration: none;
+}
+
+/* Hover effect for links */
+a:hover {
+  color: #FF6347;
+  text-decoration: underline;
+}
+
+/* Visited links retain original color */
+a:visited {
+  color: #FFA07A;
+}
+
+/* Link click (active) color */
+a:active {
+  color: #FF4500;
+}
+
+
+/* -------------------------------------------
+   5. FORM ELEMENTS - TICKBOXES & RADIO BUTTONS
+--------------------------------------------*/
+
+/* Use dark red (#bd1a0e) as accent color for checkboxes and radio buttons */
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: #bd1a0e;
+}
+
+/* Customize slider bar and edge color */
+.irs-bar, .irs-bar-edge {
+  background: #bd1a0e !important;
+  border-color: #bd1a0e !important;
+}
+
+/* Customize slider handle */
+.irs-slider {
+  background: #bd1a0e !important;
+  color: red;
+  border: none !important;
+}
+
+/* Style for "from" and "to" handles in range sliders */
+.irs-from,
+.irs-to {
+  background-color: #bd1a0e !important;
+  color: white !important;
+  font-weight: bold;
+  border: none;
+}
+
+
+/* -------------------------------------------
+   6. MAIN CONTENT EMBEDDED APP (IFRAME)
+--------------------------------------------*/
+
+/* Disable flex layout for iframe wrapper */
+.main-content {
+  display: block;
+  width: 100%;
+  padding: 0%;
+  margin: 0 auto;
+  position: relative; /* Important for positioning loading spinner */
+}
+
+/* Embedded iframe (e.g., Shiny app): full width, no border, vertical spacing */
+.main-content iframe {
+  width: 100%;
+  min-height: 1200px; /* Adjust depending on app height */
+  padding: 0%;
+  border: none;
+  display: block;
+}
+
+
+/* -------------------------------------------
+   7. IFRAME LOADER WITH SPINNER
+--------------------------------------------*/
+
+/* Covers iframe while loading, displays spinner and message */
+.iframe-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 800px; /* Should match iframe height */
+  background-color: white;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 4rem;
+  color: #5B768E;
+  font-size: 1.2rem;
+}
+
+/* CSS animation for circular spinner */
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5B768E;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+/* Define spinning animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
