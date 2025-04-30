@@ -118,6 +118,38 @@ hr {
 }
 
 /* -------------------------------------------
+   Nav bars
+--------------------------------------------*/
+/* Tab header links */
+.nav-tabs > li > a {
+  background-color: red;   /* inactive tab background */
+  color: red;                 /* inactive tab text */
+  border: 1px solid #ddd;
+  border-radius: 4px 4px 0 0;
+  margin-right: 2px;
+}
+
+/* Hover effect */
+.nav-tabs > li > a:hover {
+  background-color: #e9e9e9;
+  border-color: #aaa #aaa #ddd;
+}
+
+/* Active tab */
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  background-color: red;
+  color: #000;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+}
+
+
+
+
+
+/* -------------------------------------------
    3. CONTENT BLOCKS & DATASET CARDS
 --------------------------------------------*/
 

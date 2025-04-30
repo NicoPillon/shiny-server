@@ -1,0 +1,42 @@
+ui.R
+server.R
+
+annexes/ (contains code and images for the acknoledgement tutorial pages)
+ - funding_bodies/ (logos for funding bodies, png files)
+ - tutorial/ (images for the tutorial page, svg files)
+ - acknowledgments.md (document to make the acknowledgment tab)
+ - tutorial.md (document to make the tutorial page)
+
+annotation/ (contains all the meta-data files)
+ - human_genes.Rds
+ - human_input_categories.Rds
+ - human_metadata.Rds
+ - human_references.Rds
+
+data/
+ - human_matrix.feather
+ - human_timelineStats_acute.feather
+ - human_timelineStats_inactivity.feather
+ - mouse_matrix.feather
+
+server/
+ - data_loading
+ - functions_human
+ - function_mouse
+
+ui/ (each file corresponds to one tab in the app structure)
+ - tab_
+ - tab_
+ - tab_
+ - tab_
+ - tab_
+ - tab_
+ - tab_
+ - tab_
+
+www/ (contains images used in the loading page)
+
+
+In general, the naming should follow the rule : species_type_subtype
+
+Data structure

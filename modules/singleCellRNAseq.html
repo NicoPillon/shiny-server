@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RQ1ZSE9VVR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-RQ1ZSE9VVR');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Single Cell RNAseq</title>
+  <link rel="stylesheet" href="../www/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Include shared header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch('/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+      });
+  </script>
+
+  <!-- Page Wrapper starts here -->
+  <div class="page-wrapper">
+
+    <div class="category">
+
+      <p style="text-align: center; font-style: italic; max-width: 700px; margin: 0 auto;">
+        Several online tools for single-cell datasets in human and mouse skeletal muscle have been previously published. Check them out below.
+      </p>
+
+      <div class="container" style="max-width: 1100px; margin: auto;">
+        <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center;">
+
+          <!-- Card 1 -->
+          <div style="flex: 1 1 250px; max-width: 330px; border: 1px solid #ddd; border-radius: 12px; padding: 1.5rem; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3>Human Skeletal Muscle Aging Atlas</h3>
+              <a href="https://www.nature.com/articles/s43587-024-00613-3" target="_blank">Kedlian et al. Nature Aging (2024)</a>
+            </div>
+            <div>
+              Tool: <a href="https://www.muscleageingcellatlas.org/" target="_blank">muscleageingcellatlas.org</a>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div style="flex: 1 1 250px; max-width: 330px; border: 1px solid #ddd; border-radius: 12px; padding: 1.5rem; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3>HLMA: Human Muscle Ageing Cell Atlas</h3>
+              <a href="https://www.nature.com/articles/s41586-024-07348-6" target="_blank">Lai et al. Nature (2024)</a>
+            </div>
+            <div>
+              Tool: <a href="https://db.cngb.org/cdcp/hlma/" target="_blank">db.cngb.org/cdcp/hlma/</a>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div style="flex: 1 1 250px; max-width: 330px; border: 1px solid #ddd; border-radius: 12px; padding: 1.5rem; background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3>The Single-Cell Muscle Project (scMuscle)</h3>
+              <a href="https://www.nature.com/articles/s42003-021-02810-x" target="_blank">McKellar et al. Commun Biol. (2021)</a>
+            </div>
+            <div>
+              Tool: <a href="http://scmuscle.bme.cornell.edu/" target="_blank">scmuscle.bme.cornell.edu</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <p style="text-align: center; font-style: italic; max-width: 700px; margin: 0 auto;">
+        We are working on providing an integrated view of those datasets. Stay tuned!
+      </p>
+
+    </div> <!-- End of .category -->
+
+  </div> <!-- End of .page-wrapper -->
+
+  <!-- Include shared footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch('/footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
+  </script>
+</body>
+</html>
