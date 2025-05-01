@@ -2,26 +2,16 @@ options(shiny.sanitize.errors=F) # sanitize errors
 
 fluidPage(title="MetaMEx",
           useShinyjs(),
-          style="padding:0 0 0 0",
+          style="padding:0%",
+
+          # CSS for style
+          tags$head(includeCSS("../../www/style.css")),
+          
+          #include google analytics & adjust progress bar position
+          tags$head(includeHTML("google-analytics.html")),
+          
           navbarPage(title="MetaMEx",  id="inTabset",
-                     
-                     #add css theme
-                     theme="metamex_style.css", 
-                     
-                     #include google analytics & adjust progress bar position
-                     header=tags$head(includeHTML("google-analytics.html"),
-                                      tags$style(HTML(".shiny-notification { height: 50px;
-                                                                           width: 800px;
-                                                                           position:fixed;
-                                                                           top: calc(50% - 50px);
-                                                                           left: calc(50% - 400px); }")),
-                                      tags$style(HTML(".checkbox { font-size: 90%;}")),
-                                      tags$style(HTML(".checkbox-inline { margin-left: 0px;
-                                                                        margin-right: 10px;  }
-                                                     .checkbox-inline+.checkbox-inline { margin-left: 0px;
-                                                                                         margin-right: 10px; } "))
-                     ),
-                     
+          
                      ########################################################################################        
                      tabHome,
                      

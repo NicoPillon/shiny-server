@@ -28,8 +28,16 @@ p_value_formatter <<- function(p) { # <<- operator forces the function into the 
   })
 }
 
-#load metadata
-gene_to_file <- readRDS("data/gene_list.Rds")
-gene_list <- gene_to_file$SYMBOL
+#load lists to locate files
+gene_to_file <- readRDS("data/list_gene.Rds")
+metabolite_to_file <- readRDS("data/list_metabolite.Rds")
+
+target_to_file <- rbind(gene_to_file,
+                        metabolite_to_file)
+target_list <- c(target_to_file$TARGET)
+
+# metadata
 metadata <- readRDS("data/metadata.Rds")
+
+# references
 references <- readRDS("data/references.Rds")

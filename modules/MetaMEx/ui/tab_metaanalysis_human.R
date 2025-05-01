@@ -1,7 +1,18 @@
 tabMetaanalysis_human <- tabPanel("Human", value="panelAppHuman", 
                                   
+                                  tags$script(HTML("
+  $('a[data-value=\"panelAppAcute\"]').on('shown.bs.tab', function (e) {
+    $('#human_acute_biopsy').data('ionRangeSlider').reset();
+  });
+")),
+                                  tags$script(HTML("
+  $('a[data-value=\"panelAppAcute\"]').on('shown.bs.tab', function (e) {
+    $('#human_acute_biopsy').data('ionRangeSlider').update();
+  });
+")),
+                                  
                                   # Row introduction ####################################################################################
-                                  fluidRow(style="background-color: #5b768e;margin:-18px -15px 0px -15px;padding:0.5% 1.5% 0% 1.3%",
+                                  fluidRow(style="background-color: #5b768e;margin:-18px -15px 0px -15px;padding:0.5% 1.5% 0% 1.3%", # need to offset the margins
                                            h5(style="color:white","Use the meta-analysis to obtain an overview of the mRNA expression of your gene of interest in all available exercise and inactivity studies."
                                            ),
                                            selectizeInput("genename_metaanalysis_human", label=NULL, 
@@ -79,11 +90,6 @@ tabMetaanalysis_human <- tabPanel("Human", value="panelAppHuman",
                                                                                 sliderInput("human_acute_biopsy", tags$b("Time after exercise (h)"),
                                                                                             min = 0, max = 100, value = c(0,4), step = 1, sep = ""),
                                                                                 tags$br(),
-                                                                                # checkboxGroupInput("human_acute_biopsy", tags$b("Time after exercise"),
-                                                                                #                    choices=human_input[['acute_biopsy_choice']],
-                                                                                #                    selected=human_input[['acute_biopsy_choice']][1:6]),
-                                                                                # checkboxInput('human_acute_biopsy_allnone', 'All/None', value=T)
-                                                                                # tags$br(),
                                                                                 checkboxGroupInput("human_exercise_type", tags$b("Exercise type"),
                                                                                                    choices=human_input[['exercise_type_choice']],
                                                                                                    selected=human_input[['exercise_type_choice']]),
@@ -122,12 +128,6 @@ tabMetaanalysis_human <- tabPanel("Human", value="panelAppHuman",
                                                                                 sliderInput("human_inactivity_duration", tags$b("Duration (days)"),
                                                                                             min = 0, max = 100, value = c(0,100), step = 1, sep = ""),
                                                                                 tags$br(),
-                                                                                # checkboxGroupInput("human_inactivity_duration", 
-                                                                                #                    tags$b("Duration"), 
-                                                                                #                    choices=human_input[['inactivity_duration_choice']],
-                                                                                #                    selected=human_input[['inactivity_duration_choice']]),
-                                                                                # checkboxInput('human_inactivity_duration_allnone', 'All/None', value=T),
-                                                                                # tags$br(),
                                                                                 checkboxGroupInput("human_inactivity_protocol", 
                                                                                                    tags$b("Protocol"), 
                                                                                                    choices=human_input[['inactivity_protocol_choice']],
