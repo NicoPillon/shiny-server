@@ -3,7 +3,7 @@ options(shiny.sanitize.errors=F) # sanitize errors
 fluidPage(title="MetaMEx",
           useShinyjs(),
           style="padding:0%",
-
+          
           # CSS for style
           tags$head(includeCSS("../../www/style.css")),
           
@@ -11,7 +11,7 @@ fluidPage(title="MetaMEx",
           tags$head(includeHTML("google-analytics.html")),
           
           navbarPage(title="MetaMEx",  id="inTabset",
-          
+                     
                      ########################################################################################        
                      tabHome,
                      
@@ -28,11 +28,10 @@ fluidPage(title="MetaMEx",
                      tabDownloads,
                      
                      ########################################################################################        
-                     tabPanel("Help", value="Tutorial",
+                     tabPanel("About", value="Tutorial",
                               tags$script(src = "myscript.js"),
                               fluidRow(style="background-color: #5b768e;margin:-18px -15px 0px -15px;
                                              padding:0.5% 1.5% 1% 1.3%",
-                                       h2(style="color:white", "Welcome to MetaMEx"),
                                        h5(style="color:white", "The online database of skeletal muscle 
                                                 transcriptomic response to exercise and inactivity. On this website, 
                                                 you will be able to explore how specific genes respond to acute exercise, 
@@ -41,7 +40,27 @@ fluidPage(title="MetaMEx",
                                        ),
                               ),
                               fluidRow(style="padding:2% 5% 10% 5%",
-                                       includeMarkdown("annexes/tutorial.md"))
+                                       h3("FAQ"),
+                                       includeMarkdown("annexes/tutorial.md"),
+                                       tags$hr(),
+                                       h3("Citation"),
+                                       HTML('
+  <div style="margin: 0rem;">
+    <div>
+      Pillon NJ, Gabriel BM, Dollet L, Smith JAB, Sardón Puig L, Botella J, Bishop DJ, Krook A, Zierath JR.
+      <strong>Transcriptomic profiling of skeletal muscle adaptations to exercise and inactivity.</strong>
+      <em>Nat Commun.</em> 2020 Jan 24;11(1):470.
+      <a href="https://doi.org/10.1038/s41467-019-13869-w" target="_blank">https://doi.org/10.1038/s41467-019-13869-w</a>
+    </div>
+    <div style="margin-top: 0.5rem;">
+      <script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
+      <span class="__dimensions_badge_embed__" data-id="pub.1124285483" data-legend="always"></span>
+    </div>
+  </div>
+')
+                              )
+                              
+                              
                      )
           ),
           

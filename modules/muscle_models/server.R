@@ -131,17 +131,20 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------------------------
   # Dataset tables
-  output$references <- renderDataTable(options=list(signif = 3),{
+  output$references <- renderDataTable({
     DT::datatable(
       references, 
       escape = FALSE, 
       rownames = FALSE,
       options = list(
         columnDefs = list(
-          list(className = 'dt-center', targets = 1),  # Align column to the center
-          list(className = 'dt-center', targets = 2)  # Align column to the center
-          # Add more lines for additional columns if needed
-        )
+          list(className = 'dt-center', targets = 1),  # Center column 1
+          list(className = 'dt-center', targets = 2)   # Center column 2
+        ),
+        searching = FALSE,   # Disable search bar
+        paging = FALSE,      # Disable pagination
+        info = FALSE,        # Hide "Showing X of Y entries"
+        dom = 't'            # Only display table body
       )
     )
   })
