@@ -334,8 +334,8 @@ server <- function(input, output, session) {
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
     
     # Find which file contains the gene
-    gene_to_file <- readRDS("../human_muscle_obesity/data/gene_list.Rds")
-    file_row <- gene_to_file[gene_to_file$SYMBOL == genename, ]
+    gene_to_file <- readRDS("../human_muscle_obesity/data/list_gene.Rds")
+    file_row <- gene_to_file[gene_to_file$TARGET == genename, ]
     req(nrow(file_row) > 0)  # stop if gene not found
     
     file_path <- file.path("../human_muscle_obesity/data", file_row$file)
@@ -347,17 +347,19 @@ server <- function(input, output, session) {
     req(length(gene_index) == 1)
     
     selected_row <- df[gene_index, ] %>% as.data.frame()
-    rownames(selected_row) <- genename
+    selected_row <- data.frame(sample_id = colnames(selected_row),
+                               data = t(selected_row))
     
     metadata <- readRDS("../human_muscle_obesity/data/metadata.Rds")
-    plotdata <- data.frame(metadata, 
-                           genedata = as.numeric(selected_row))
     
+    plotdata <- right_join(metadata, 
+                           selected_row)
+
     plotdata$bmi_category <- factor(plotdata$bmi_category, 
                                     levels=c("Lean", "Overweight", "Obesity"))
 
     # plot
-    ggplot(plotdata, aes(x=sex, y=genedata, fill=bmi_category)) +  
+    ggplot(plotdata, aes(x=sex, y=data, fill=bmi_category)) +  
       geom_boxplot(position = position_dodge(0.8), 
                    outlier.size = 0) +
       geom_sina(position = position_dodge(0.8),

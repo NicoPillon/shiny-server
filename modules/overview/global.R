@@ -35,8 +35,8 @@ p_value_formatter <<- function(p) { # <<- operator forces the function into the 
 # Load static reference data
 genelist1 <- readRDS("../fiber_types/data/gene_list_transcriptome.Rds")
 genelist2 <- readRDS("../human_muscle_aging/data/gene_list.Rds")
-genelist3 <- readRDS("../human_muscle_obesity/data/gene_list.Rds")
-gene_list <- rbind(genelist1, genelist2, genelist3)
+genelist3 <- readRDS("../human_muscle_obesity/data/list_gene.Rds")
+gene_list <- rbind(genelist1, genelist2)
 gene_list <- unique(gene_list$SYMBOL)
 
 
