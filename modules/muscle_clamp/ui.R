@@ -38,7 +38,7 @@ ui <- fluidPage(title="MuscleClamp",
                                             
                                ),
                                mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
-                                         plotOutput("geneBoxplot", height="500px") %>% withSpinner(color="#5B768E", type = 8))
+                                         plotOutput("geneBoxplot", height="700px") %>% withSpinner(color="#5B768E", type = 8))
                                )
                            ),
 
