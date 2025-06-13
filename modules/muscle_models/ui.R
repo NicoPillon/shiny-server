@@ -30,27 +30,9 @@ ui <- fluidPage(title="MuscleModels",
                                       ),
 
                            ),
-                           
-                           tabPanel("Datasets",
-                                    tags$p(
-                                      tags$b("Are we missing a relevant study? Please "),
-                                      a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
-                                    ),    
-                                    dataTableOutput("references")
-                           ),
-                           
+
                            # description of methods
-                           tabPanel("About",
-                                    h3("Methods"),
-                                    p("To compare gene expression across human, mouse, and rat skeletal muscle and myotube models, we performed a systematic integration and normalization of publicly available microarray datasets from multiple Affymetrix platforms. Raw CEL files were downloaded from the Gene Expression Omnibus (GEO) and organized by platform (e.g., GPL81, GPL570, GPL6244), with metadata indicating species and sample type (e.g., primary human muscle, L6 myotubes, C2C12 myotubes)."),
-                                    
-                                    p("For each platform, raw intensity values were background corrected and normalized using the Robust Multi-array Average (RMA) algorithm via the oligo R package. Probes were then mapped to Ensembl gene identifiers using platform-specific annotation packages (e.g., pd.hg.u133.plus.2) and supplemented with annotations retrieved from Ensembl via the biomaRt R package. A master annotation table was constructed for all platforms to standardize probe-to-gene mappings across arrays. Probe-level expression values were aggregated to the Ensembl gene level by computing the mean expression per gene."),
-                                    
-                                    p("To enable cross-species comparisons, we identified one-to-one orthologs between human, mouse, and rat using Ensembl. Gene-level ortholog annotations were retrieved using biomaRt, with priority given to Ensembl gene IDs. When ortholog mappings were unavailable at the Ensembl level, gene symbols were used to complete the mapping. Genes corresponding to pseudogenes, non-coding RNAs, ribosomal proteins, and poorly annotated loci (e.g., “LOC”, “RIK”, “MIR”) were excluded from the analysis. The final ortholog table included only protein-coding genes with reliable annotation in at least two species."),
-                                    
-                                    p("Expression data from all platforms were merged by gene symbol using the curated ortholog annotation table. To minimize technical variability, we excluded genes with more than 50% missing data across all samples. The resulting expression matrix was normalized across arrays using quantile normalization (normalizeBetweenArrays function from the limma package). No batch correction was applied across platforms to avoid artificially removing genuine biological differences between species, acknowledging the inherent trade-off between batch effect mitigation and preservation of species-specific signal."),
-                                    
-                                    tags$hr(),
+                           tabPanel("Description",
                                     h3("Citation"),
                                     HTML('
   <div style="margin: 0rem;">
@@ -65,7 +47,26 @@ ui <- fluidPage(title="MuscleModels",
       <span class="__dimensions_badge_embed__" data-id="pub.1123291712" data-legend="always"></span>
     </div>
   </div>
-')
+'),
+                                    tags$hr(),
+                                    
+                                    h3("Methods"),
+                                    p("To compare gene expression across human, mouse, and rat skeletal muscle and myotube models, we performed a systematic integration and normalization of publicly available microarray datasets from multiple Affymetrix platforms. Raw CEL files were downloaded from the Gene Expression Omnibus (GEO) and organized by platform (e.g., GPL81, GPL570, GPL6244), with metadata indicating species and sample type (e.g., primary human muscle, L6 myotubes, C2C12 myotubes)."),
+                                    
+                                    p("For each platform, raw intensity values were background corrected and normalized using the Robust Multi-array Average (RMA) algorithm via the oligo R package. Probes were then mapped to Ensembl gene identifiers using platform-specific annotation packages (e.g., pd.hg.u133.plus.2) and supplemented with annotations retrieved from Ensembl via the biomaRt R package. A master annotation table was constructed for all platforms to standardize probe-to-gene mappings across arrays. Probe-level expression values were aggregated to the Ensembl gene level by computing the mean expression per gene."),
+                                    
+                                    p("To enable cross-species comparisons, we identified one-to-one orthologs between human, mouse, and rat using Ensembl. Gene-level ortholog annotations were retrieved using biomaRt, with priority given to Ensembl gene IDs. When ortholog mappings were unavailable at the Ensembl level, gene symbols were used to complete the mapping. Genes corresponding to pseudogenes, non-coding RNAs, ribosomal proteins, and poorly annotated loci (e.g., “LOC”, “RIK”, “MIR”) were excluded from the analysis. The final ortholog table included only protein-coding genes with reliable annotation in at least two species."),
+                                    
+                                    p("Expression data from all platforms were merged by gene symbol using the curated ortholog annotation table. To minimize technical variability, we excluded genes with more than 50% missing data across all samples. The resulting expression matrix was normalized across arrays using quantile normalization (normalizeBetweenArrays function from the limma package). No batch correction was applied across platforms to avoid artificially removing genuine biological differences between species, acknowledging the inherent trade-off between batch effect mitigation and preservation of species-specific signal."),
+                                    
+                                    tags$hr(),
+
+                                    h3("Datasets"),
+                                    tags$p(
+                                      tags$b("Are we missing a relevant study? Please "),
+                                      a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+                                    ),    
+                                    dataTableOutput("references")
                                     
                            ),
                            

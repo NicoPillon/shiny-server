@@ -6,12 +6,30 @@ setwd(dirname(getActiveDocumentContext()$path))
 #
 ##########################################################################################################
 library(readxl)
+library(feather)
+library(tidyverse)
 
-# data
-saveRDS(readRDS("../../R_databases/Myotube_Palmitate/Myotube_Palmitate_norm.Rds"),
-        file="data/data.Rds")
+#--------------------------------------------------------------------------------------------------
+# MATRIX
+#--------------------------------------------------------------------------------------------------
+datamatrix <- readRDS("../../rawdata/myotube_palmitate/data_out/datamatrix.Rds")
+write_feather(datamatrix, "data/datamatrix.feather")
+
+#--------------------------------------------------------------------------------------------------
+# METADATA
+#--------------------------------------------------------------------------------------------------
+gene_list <- readRDS("../../rawdata/myotube_palmitate/data_out/gene_list.Rds")
+saveRDS(gene_list, "data/list_gene.Rds")
+
+#--------------------------------------------------------------------------------------------------
+# METADATA
+#--------------------------------------------------------------------------------------------------
+metadata <- readRDS("../../rawdata/myotube_palmitate/data_out/metadata.Rds")
+saveRDS(metadata, file="data/metadata.Rds")
 
 
-#stats
-saveRDS(readRDS("../../R_databases/Myotube_Palmitate/Myotube_Palmitate_stats.Rds"),
-        file="data/stats.Rds")
+#--------------------------------------------------------------------------------------------------
+# REFERENCES
+#--------------------------------------------------------------------------------------------------
+references <- readRDS("../../rawdata/myotube_palmitate/data_out/references.Rds")
+saveRDS(references, "data/references.Rds")
