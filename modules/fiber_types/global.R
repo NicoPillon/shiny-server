@@ -16,7 +16,7 @@ library(DT)
 library(matrixStats)
 library(pheatmap)
 library(arrow)
-
+library(openxlsx)
 
 # metadata
 metadata_proteome <- readRDS("data/metadata_proteome.Rds")[,1:3]
@@ -30,3 +30,17 @@ gene_to_file_transcriptome <- readRDS("data/gene_list_transcriptome.Rds")
 gene_list_transcriptome <- gene_to_file_transcriptome$SYMBOL
 
 gene_list_all <- union(gene_list_proteome, gene_list_transcriptome)
+
+references <- readRDS("data/references.Rds")
+
+
+# function to format p values
+p_value_formatter <<- function(p) { # <<- operator forces the function into the global environment.
+  sapply(p, function(x) {
+    if (x < 0.001) {
+      return("italic(p) < 0.001")
+    } else {
+      return(sprintf("italic(p) == %.3f", x))
+    }
+  })
+}

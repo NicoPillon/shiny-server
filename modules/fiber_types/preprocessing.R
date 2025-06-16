@@ -17,11 +17,11 @@ library(tidyverse)
 # PROTEOME
 #---------------------------------------------------------------------------
 # metadata
-metadata_proteome <- readRDS("../../../R_databases/muscle_composition_remodelling/fiber_type_profiling/proteome_metadata.Rds")
-saveRDS(metadata_proteome, "data/metadata_proteome.Rds")
+metadata_proteome <- readRDS("../../rawdata/fiber_types/data_out/proteome_metadata.Rds")
+saveRDS(metadata_proteome[,c(1,2,13)], "data/metadata_proteome.Rds")
 
 # load data, split and save as feather files
-data_proteome <- readRDS("../../../R_databases/muscle_composition_remodelling/fiber_type_profiling/proteome_matrix.Rds") %>%
+data_proteome <- readRDS("../../rawdata/fiber_types/data_out/proteome_matrix.Rds") %>%
   data.frame()
 n_genes <- nrow(data_proteome)
 chunk_size <- ceiling(n_genes / 1)
@@ -48,11 +48,11 @@ saveRDS(gene_list, "data/gene_list_proteome.Rds")
 # TRANSCRIPTOME
 #---------------------------------------------------------------------------
 # metadata
-metadata_transcriptome <- readRDS("../../../R_databases/muscle_composition_remodelling/fiber_type_profiling/transcriptome_metadata.Rds")
-saveRDS(metadata_transcriptome, "data/metadata_transcriptome.Rds")
+metadata_transcriptome <- readRDS("../../rawdata/fiber_types/data_out/transcriptome_metadata.Rds")
+saveRDS(metadata_transcriptome[,c(1:8,19)], "data/metadata_transcriptome.Rds")
 
 # load data, split and save as feather files
-data_transcriptome <- readRDS("../../../R_databases/muscle_composition_remodelling/fiber_type_profiling/transcriptome_matrix.Rds") %>%
+data_transcriptome <- readRDS("../../rawdata/fiber_types/data_out/transcriptome_matrix.Rds") %>%
   data.frame()
 n_genes <- nrow(data_transcriptome)
 chunk_size <- ceiling(n_genes / 5)
@@ -73,3 +73,11 @@ gene_list <- do.call(rbind, lapply(seq_along(splits), function(i) {
   )
 }))
 saveRDS(gene_list, "data/gene_list_transcriptome.Rds")
+
+
+
+#---------------------------------------------------------------------------
+# References
+#---------------------------------------------------------------------------
+references <- read_xlsx("../../rawdata/fiber_types/references.xlsx")
+saveRDS(references, "data/references.Rds")
