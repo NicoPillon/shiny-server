@@ -109,7 +109,6 @@ server <- function(input, output, session) {
   plotDataGene <- eventReactive(input$updatePlot, {
     genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
 
-    gene_data <- t(selected_row)
     gene_data <- as.data.frame(t(selectedGeneData()))
     colnames(gene_data) <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
     
