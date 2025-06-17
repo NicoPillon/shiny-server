@@ -189,8 +189,14 @@ server <- function(input, output, session) {
         searching = FALSE,   # Disable search bar
         paging = FALSE,      # Disable pagination
         info = FALSE,        # Hide "Showing X of Y entries"
-        ordering = FALSE,     # Disable column sorting
-        dom = 't'            # Only display table body
+        ordering = FALSE,    # Disable column sorting
+        dom = 't',           # Only display table body
+        columnDefs = list(
+          list(
+            targets = 1:(ncol(dat)-1),  # center columns 2 onward (indexing starts at 0)
+            className = 'dt-center'
+          )
+        )
       )
     )
   })
@@ -207,10 +213,17 @@ server <- function(input, output, session) {
         searching = FALSE,   # Disable search bar
         paging = FALSE,      # Disable pagination
         info = FALSE,        # Hide "Showing X of Y entries"
-        ordering = FALSE,     # Disable column sorting
-        dom = 't'            # Only display table body
+        ordering = FALSE,    # Disable column sorting
+        dom = 't',           # Only display table body
+        columnDefs = list(
+          list(
+            targets = 1:(ncol(dat)-1),  # center columns 2 onward (indexing starts at 0)
+            className = 'dt-center'
+          )
+        )
       )
-      )
+    )
+    
   })
   
 
