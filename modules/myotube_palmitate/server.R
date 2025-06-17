@@ -12,31 +12,54 @@ server <- function(input, output, session) {
   }, once = FALSE)
     
   updateSelectizeInput(session, 'inputGeneSymbol', 
-                       choices=genelist$human_SYMBOL, 
+                       choices=gene_list$TARGET, 
                        server=TRUE, 
                        selected=c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"), 
                        options=NULL)
   
+  #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s)
   selectedGeneData <- reactive({
     req(input$inputGeneSymbol)
     genename <- c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2")
     genename <- toupper(input$inputGeneSymbol)
     
-    # Match gene names
-    matched_ids <- which(genelist$human_SYMBOL %in% genename)
+    # Match gene to file and row info
+    file_row <- gene_list[gene_list$TARGET %in% genename, ]
     
-    if (length(matched_ids) == 0) {
-      showNotification("No genes matched the database.", type = "error")
-      return(NULL)
+    # Split by file
+    split_rows <- split(file_row, file_row$file)
+    
+    # Load available data
+    selected_list <- lapply(split_rows, function(rows) {
+      path <- file.path("data", unique(rows$file))
+      df <- arrow::read_feather(path)
+      
+      selected <- df[rows$row, , drop = FALSE] %>%
+        data.frame()
+      
+      # Ensure rownames are matched properly
+      rownames(selected) <- rows$TARGET[order(rows$row)]
+      selected <- selected[match(rows$TARGET, rownames(selected)), , drop = FALSE]
+      
+      return(selected)
+    })
+    
+    # Combine all available rows
+    selected_row <- do.call(rbind, selected_list)
+    rownames(selected_row) <- gsub(".*.feather\\.", "", rownames(selected_row))
+    
+    # Add missing genes as NA
+    missing_genes <- setdiff(genename, rownames(selected_row))
+    if (length(missing_genes) > 0) {
+      missing_df <- matrix(NA, nrow = length(missing_genes), ncol = ncol(selected_row))
+      rownames(missing_df) <- missing_genes
+      colnames(missing_df) <- colnames(selected_row)
+      selected_row <- rbind(selected_row, missing_df)
     }
     
-    # Load only the required genes (rows)
-    df <- arrow::read_feather("data/datamatrix.feather", as_data_frame = FALSE)[matched_ids, ] %>%
-      as.data.frame()
-    rownames(df) <- genelist$human_SYMBOL[matched_ids]
-    
-    return(df)
+    selected_row <- selected_row[genename, , drop = FALSE]  # preserve original input order
+    data.frame(selected_row)
   })
   
   #-----------------------------------------------------------------
@@ -118,12 +141,14 @@ server <- function(input, output, session) {
       summarise(
         mean_control = round(mean(data[treatment == "control"], na.rm = TRUE), 2),
         sd_control = round(sd(data[treatment == "control"], na.rm = TRUE), 2),
+        n_control = sum(treatment == "control" & !is.na(data)),
         mean_palmitate = round(mean(data[treatment == "palmitate"], na.rm = TRUE), 2),
         sd_palmitate = round(sd(data[treatment == "palmitate"], na.rm = TRUE), 2),
+        n_palmitate = sum(treatment == "palmitate" & !is.na(data)),
         logFoldChange = mean_palmitate - mean_control,
         FoldChange = round(2^logFoldChange, 2),
         p_value = tryCatch(wilcox.test(data ~ treatment, data = cur_data())$p.value, error = function(e) NA),
-        FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(genelist)),
+        FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_list)),
         .groups = 'drop'
       ) %>%
       mutate(
@@ -135,14 +160,19 @@ server <- function(input, output, session) {
         ),
         p_value = format(p_value, scientific = TRUE, digits = 2),
         FDR = format(FDR, scientific = TRUE, digits = 2)
-      ) %>%
-      data.frame(row.names = 1)
+      ) 
+    
+    # Convert Gene column into rownames (safe even if one row)
+    stats_result <- stats_result %>% 
+      as.data.frame() %>%
+      tibble::column_to_rownames("Gene")
     
     stats_result <- data.frame(Statistics = colnames(stats_result),
                                                      t(stats_result))
     stats_result$Statistics <- gsub("_", " ", stats_result$Statistics)
     stats_result$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result$Statistics)
     stats_result$Statistics <- gsub("FoldChange", "Fold-change", stats_result$Statistics)
+    stats_result
     
     return(stats_result)
   })
