@@ -78,16 +78,89 @@ server <- function(input, output, session) {
            title=element_blank()) +
       scale_shape_manual(values=rep(c(15,16,17), 20)) +
       scale_fill_manual(values = c("#5B768E", "#bd1a0e")) +
-      scale_y_continuous(expand = expansion(mult = c(0.05, .15))) +
-      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                         parse = TRUE,
-                         size = 4, 
-                         vjust = -1)
+      scale_y_continuous(expand = expansion(mult = c(0.05, .15)))
     
   })
   
   output$geneBoxplot <- renderPlot({
     plotDataBox()
+  })
+  
+  #-----------------------------------------------------------------
+  # Statistics table
+  
+  # Reactive: compute Wilcoxon test
+  statisticsData <- eventReactive(input$updatePlot, {
+    df <- selectedGeneData()
+    
+    # Merge metadata with gene expression
+    dat <- data.frame(metadata, t(df))
+    
+    dat <- pivot_longer(dat, cols = c(12:ncol(dat)),
+                        values_to = "data",
+                        names_to = "Gene")
+    
+    # Filter according to user selection
+    dat <- dplyr::filter(dat,
+                         concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
+                         time.hours >= input$duration[1] & time.hours <= input$duration[2],
+                         cell.type %in% input$cell_type,
+                         species %in% input$species)
+    
+    # Check if data is empty
+    validate(
+      need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
+    )
+    
+    # Calculate statistics
+    stats_result <- dat %>%
+      group_by(Gene) %>%
+      summarise(
+        mean_control = round(mean(data[treatment == "control"], na.rm = TRUE), 2),
+        sd_control = round(sd(data[treatment == "control"], na.rm = TRUE), 2),
+        mean_palmitate = round(mean(data[treatment == "palmitate"], na.rm = TRUE), 2),
+        sd_palmitate = round(sd(data[treatment == "palmitate"], na.rm = TRUE), 2),
+        logFoldChange = mean_palmitate - mean_control,
+        FoldChange = round(2^logFoldChange, 2),
+        p_value = tryCatch(wilcox.test(data ~ treatment, data = cur_data())$p.value, error = function(e) NA),
+        FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(genelist)),
+        .groups = 'drop'
+      ) %>%
+      mutate(
+        Significance = case_when(
+          FDR < 0.001 ~ "***",
+          FDR < 0.01  ~ "**",
+          FDR < 0.05  ~ "*",
+          TRUE ~ ""
+        ),
+        p_value = format(p_value, scientific = TRUE, digits = 2),
+        FDR = format(FDR, scientific = TRUE, digits = 2)
+      ) %>%
+      data.frame(row.names = 1)
+    
+    stats_result <- data.frame(Statistics = colnames(stats_result),
+                                                     t(stats_result))
+    stats_result$Statistics <- gsub("_", " ", stats_result$Statistics)
+    stats_result$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result$Statistics)
+    stats_result$Statistics <- gsub("FoldChange", "Fold-change", stats_result$Statistics)
+    
+    return(stats_result)
+  })
+  
+  # Render table
+  output$statistics <- DT::renderDataTable({
+    dat <- statisticsData()
+    DT::datatable(
+      dat,
+      escape = FALSE, 
+      rownames = FALSE,
+      options = list(
+        searching = FALSE,   # Disable search bar
+        paging = FALSE,      # Disable pagination
+        info = FALSE,        # Hide "Showing X of Y entries"
+        dom = 't'            # Only display table body
+      )
+      )
   })
   
   #-----------------------------------------------------------------
