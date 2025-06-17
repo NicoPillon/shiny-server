@@ -47,7 +47,7 @@ server <- function(input, output, session) {
     
     # Combine all available rows
     selected_row <- do.call(rbind, selected_list)
-    rownames(selected_row) <- gsub(".*.feather\\.", "", rownames(selected_row))
+    rownames(selected_row) <- file_row$TARGET
     
     # Add missing genes as NA
     missing_genes <- setdiff(genename, rownames(selected_row))
@@ -178,8 +178,9 @@ server <- function(input, output, session) {
   })
   
   # Render table
-  output$statistics <- DT::renderDataTable({
+  output$statistics1 <- DT::renderDataTable({
     dat <- statisticsData()
+    dat <- dat[!dat$Statistics %in% c("mean control", "sd control", "n control", "mean palmitate", "sd palmitate", "n palmitate"),]
     DT::datatable(
       dat,
       escape = FALSE, 
@@ -188,10 +189,31 @@ server <- function(input, output, session) {
         searching = FALSE,   # Disable search bar
         paging = FALSE,      # Disable pagination
         info = FALSE,        # Hide "Showing X of Y entries"
+        ordering = FALSE,     # Disable column sorting
+        dom = 't'            # Only display table body
+      )
+    )
+  })
+  
+  # Render table
+  output$statistics2 <- DT::renderDataTable({
+    dat <- statisticsData()
+    dat <- dat[dat$Statistics %in% c("mean control", "sd control", "n control", "mean palmitate", "sd palmitate", "n palmitate"),]
+    DT::datatable(
+      dat,
+      escape = FALSE, 
+      rownames = FALSE,
+      options = list(
+        searching = FALSE,   # Disable search bar
+        paging = FALSE,      # Disable pagination
+        info = FALSE,        # Hide "Showing X of Y entries"
+        ordering = FALSE,     # Disable column sorting
         dom = 't'            # Only display table body
       )
       )
   })
+  
+
   
   #-----------------------------------------------------------------
   # Dataset tables

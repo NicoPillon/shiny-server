@@ -45,9 +45,7 @@ ui <- fluidPage(title="MyotubePalmitate",
       <span class="__dimensions_badge_embed__" data-id="pub.1152270218" data-legend="always"></span>
     </div>
   </div>
-'),
-                                    
-                                    
+')
                            ),
                            
                            # Panel for plots
@@ -69,11 +67,13 @@ ui <- fluidPage(title="MyotubePalmitate",
                                                                selected = c("human", "mouse", "rat"),
                                                                choices = c("human", "mouse", "rat")),
                                             actionButton("updatePlot", "Refresh plot", icon("refresh")),
+                                            tags$br(),tags$br(),
                                             downloadButton("downloadGeneData", "Download Data")
                                ),
                                mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                          plotOutput("geneBoxplot", height="500px") %>% withSpinner(color="#5B768E", type = 8),
-                                         DT::dataTableOutput("statistics") %>% withSpinner(color="#5B768E", type = 8))
+                                         DT::dataTableOutput("statistics1", width = "90%") %>% withSpinner(color="#5B768E", type = 8),
+                                         DT::dataTableOutput("statistics2", width = "90%") %>% withSpinner(color="#5B768E", type = 8))
 
                                )
                            ),
