@@ -22,12 +22,12 @@ ui <- fluidPage(title="MyotubePalmitate",
                            tabPanel("Explore Data",
                                     p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
            For information about the methods behind the plots <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">click here</a>.')),
+                                    tags$hr(),
                                     sidebarLayout(
                                       sidebarPanel(width = 3,
                                             selectizeInput("inputGeneSymbol", 
                                                            "Select your genes of interest:", 
                                                            choices=NULL, multiple=T, width=600),
-                                            tags$b(""),
                                             sliderInput("concentration", "Palmitate Concentation (µmol/L)",
                                                         min = 100, max = 500, value = c(100,500), step = 100, sep = ""),
                                             sliderInput("duration", "Palmitate Exposure (hours)",
@@ -40,14 +40,15 @@ ui <- fluidPage(title="MyotubePalmitate",
                                                                label = "Species", 
                                                                selected = c("human", "mouse", "rat"),
                                                                choices = c("human", "mouse", "rat")),
-                                            tags$hr(),
-                                            downloadButton("downloadGeneData", "Download Data (.csv)"),
-                                            downloadButton("downloadStats", "Download Statistics (.csv)")
+                                            tags$b("Download your results:"), tags$br(),
+                                            downloadButton("downloadGeneData", "Data (.csv)"),
+                                            downloadButton("downloadStats", "Statistics (.csv)")
                                ),
                                mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
                                          plotOutput("geneBoxplot", height="500px") %>% withSpinner(color="#5B768E", type = 8),
-                                         DT::dataTableOutput("statistics1", width = "90%"),
-                                         DT::dataTableOutput("statistics2", width = "90%"))
+                                         tags$hr(),
+                                         DT::dataTableOutput("statistics1", width = "95%"),
+                                         DT::dataTableOutput("statistics2", width = "95%"))
                                
                              )
                            ),

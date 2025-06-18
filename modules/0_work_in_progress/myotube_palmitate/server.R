@@ -94,11 +94,13 @@ server <- function(input, output, session) {
     ggplot(dat, aes(x=Gene, y=y, fill=treatment)) + 
       geom_boxplot(outlier.size = 0.1, alpha = 0.5, position = position_dodge(0.8))  + 
       geom_sina(size = 1.5, position = position_dodge(0.8), alpha = 0.1) +
-      theme_bw(16) + 
-      #theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+      theme_bw(17) + 
+      theme(axis.text.x = element_text(face = "bold", size = 14),
+            axis.title.y = element_text(face = "bold")) +
       labs(x="",
            y="mRNA expression (log2)",
-           title=element_blank()) +
+           title=element_blank(),
+           fill = "Treatment") +
       scale_shape_manual(values=rep(c(15,16,17), 20)) +
       scale_fill_manual(values = c("#5B768E", "#bd1a0e")) +
       scale_y_continuous(expand = expansion(mult = c(0.05, .15)))
