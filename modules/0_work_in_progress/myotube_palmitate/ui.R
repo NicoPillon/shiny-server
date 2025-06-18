@@ -21,8 +21,9 @@ ui <- fluidPage(title="MyotubePalmitate",
                   # Panel for plots
                   tabPanel("Explore Data",
 
-                           p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
-           For information about the methods behind the plots and statistics <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">click here</a>.')),
+                           p(HTML('Explore how skeletal muscle cells respond to palmitate exposure using integrated transcriptomic data. 
+       <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">Click here</a> to learn more about the methods and statistical analyses.')),
+                           
                            tags$br(),
                            sidebarLayout(
                              sidebarPanel(width = 3,
@@ -68,9 +69,11 @@ ui <- fluidPage(title="MyotubePalmitate",
                            p("This app offers a powerful and accessible resource to explore how saturated fats affect skeletal muscle cells. Palmitate, the most abundant saturated fatty acid in Western diets, is closely linked to inflammation and metabolic diseases. By examining its impact on the muscle cell transcriptome, this tool opens new avenues for research, therapeutic discovery, and prevention strategies targeting metabolic disorders."),
                            
                            h3("Methods"),
-                           p("Publicly available datasets from the Gene Expression Omnibus (GEO) were downloaded, including both microarray and RNA-seq platforms from human, mouse, and rat studies. Each dataset was processed using platform-appropriate normalization procedures, such as RMA for microarrays and VST transformation for RNA-seq count data. Lowly expressed genes were filtered based on manually defined expression thresholds, and only samples with paired control and palmitate treatments were retained."),
-                           p("Cross-species orthologs were annotated using biomaRt, allowing all datasets to be merged using human gene identifiers. Expression matrices were median-centered, quantile-normalized, and batch-corrected using study ID as the batch factor. Missing values were imputed using K-nearest neighbor imputation. Quality control was performed by inspecting known palmitate-responsive genes such as ANGPTL4 and PDK4, and by computing pairwise correlations of palmitate-induced gene expression changes across sample pairs. Outlier pairs, defined as those with average correlation in the lowest 5%, were excluded from the final analysis."),
-                           p("Statistics are Wilcoxon ranked signed test comparing palmitate to control. The result table shows the p values as well as the adjusted p values corrected for multipple testing using Bonferroni correction."),
+                           p("Publicly available datasets were downloaded from the Gene Expression Omnibus (GEO), including both microarray and RNA-seq platforms from human, mouse, and rat skeletal muscle cell models. Each dataset was processed using platform-appropriate normalization methods — Robust Multi-array Average (RMA) for microarrays and Variance Stabilizing Transformation (VST) for RNA-seq. Lowly expressed genes were filtered out, and only samples with paired control and palmitate-treated conditions were retained."),
+                           p("Orthologous gene annotations were obtained using BiomaRt to enable integration across species, using human gene identifiers as reference. Expression matrices were centered, quantile-normalized, and batch-corrected using study ID as a covariate. Missing values were imputed using k-nearest neighbor imputation. Quality control included the inspection of known palmitate-responsive genes (e.g., ANGPTL4, PDK4) and the computation of pairwise correlations across sample pairs. Sample pairs with poor correlation (lowest 5%) were flagged as outliers and removed."),
+                           
+                           h3("Statistics"),
+                           p("Statistical analysis is based on Wilcoxon signed-rank tests comparing palmitate-treated samples to controls. The results table presents both unadjusted p-values and Bonferroni-adjusted p-values to correct for multiple testing across all transcripts in the database, ensuring a highly conservative approach. Significance is indicated as follows: * for FDR < 0.05, ** for FDR < 0.01, and *** for FDR < 0.001. 'ns' denotes non-significant results."),
                            
                            h3("Datasets"),
                            tags$p(

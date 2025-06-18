@@ -182,7 +182,7 @@ server <- function(input, output, session) {
     stats_result$Statistics <- gsub("_", " ", stats_result$Statistics)
     stats_result$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result$Statistics)
     stats_result$Statistics <- gsub("FoldChange", "Fold-change", stats_result$Statistics)
-    stats_result$Statistics <- gsub("FDR", "Fold-change", stats_result$Statistics)
+    stats_result$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result$Statistics)
     stats_result
     
     return(stats_result)
