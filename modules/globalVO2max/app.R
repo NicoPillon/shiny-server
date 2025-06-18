@@ -48,10 +48,9 @@ ui <- fluidPage(title="globalVO2max",
 '),
                   
                   tabPanel(
-                    title = "Explore Data",
+                    title = "Nomogram",
                     
-                    p(HTML('Explore how your V&#775;O<sub>2</sub>peak compares to worlwide reference values. 
-       <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">Click here</a> to learn more about the methods and statistical analyses.')),
+                    p(HTML('Explore how your V&#775;O<sub>2</sub>peak compares to worlwide reference values. To learn more about the underlying data, read the  <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Methods\\\')\').click()">methods</a>.')),
                     
                     tags$br(),
                     
@@ -118,7 +117,7 @@ ui <- fluidPage(title="globalVO2max",
                   ),
                   
                   tabPanel(
-                    title = "Read Me",   
+                    title = "Methods",   
                     style="padding:0% 5% 1% 5%;",
                     
                     h3("Why this app?"),
@@ -347,8 +346,6 @@ server <- function(input, output, session) {
   
   output$studies_included <- DT::renderDataTable(escape = FALSE, 
                                                  rownames = FALSE, 
-                                                 options=list(paging = FALSE,
-                                                              dom = 'ft'), 
                                                  {
                                                    studies_included
                                                  })

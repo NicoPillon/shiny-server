@@ -17,6 +17,14 @@ server <- function(input, output, session) {
                        selected=c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"), 
                        options=NULL)
   
+  observeEvent(input$resetInputs, {
+    updateSelectizeInput(session, "inputGeneSymbol", selected = character(0))
+    updateSliderInput(session, "concentration", value = c(100, 500))
+    updateSliderInput(session, "duration", value = c(12, 96))
+    updateCheckboxGroupInput(session, "cell_type", selected = c("C2C12", "LHCN-M2", "primary"))
+    updateCheckboxGroupInput(session, "species", selected = c("human", "mouse", "rat"))
+  })
+  
   #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s)
   selectedGeneData <- reactive({
@@ -64,7 +72,7 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------------------------
   # Boxplots
-  plotDataBox <- eventReactive(input$updatePlot, {
+  plotDataBox <- reactive({
     df <- selectedGeneData()
     
     #plot
@@ -94,11 +102,13 @@ server <- function(input, output, session) {
     ggplot(dat, aes(x=Gene, y=y, fill=treatment)) + 
       geom_boxplot(outlier.size = 0.1, alpha = 0.5, position = position_dodge(0.8))  + 
       geom_sina(size = 1.5, position = position_dodge(0.8), alpha = 0.1) +
-      theme_bw(16) + 
-      #theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+      theme_minimal(17, base_family = "Arial") + 
+      theme(axis.text.x = element_text(face = "bold", size = 14, color = "black"),
+            axis.text.y = element_text("black"),
+            axis.title.y = element_text(face = "bold", color = "black")) +
       labs(x="",
            y="mRNA expression (log2)",
-           title=element_blank()) +
+           fill = "Treatment") +
       scale_shape_manual(values=rep(c(15,16,17), 20)) +
       scale_fill_manual(values = c("#5B768E", "#bd1a0e")) +
       scale_y_continuous(expand = expansion(mult = c(0.05, .15)))
@@ -113,7 +123,7 @@ server <- function(input, output, session) {
   # Statistics table
   
   # Reactive: compute Wilcoxon test
-  statisticsData <- eventReactive(input$updatePlot, {
+  statisticsData <- reactive({
     df <- selectedGeneData()
     
     # Merge metadata with gene expression
@@ -156,7 +166,7 @@ server <- function(input, output, session) {
           FDR < 0.001 ~ "***",
           FDR < 0.01  ~ "**",
           FDR < 0.05  ~ "*",
-          TRUE ~ ""
+          TRUE ~ "ns"
         ),
         p_value = format(p_value, scientific = TRUE, digits = 2),
         FDR = format(FDR, scientific = TRUE, digits = 2)
@@ -172,6 +182,7 @@ server <- function(input, output, session) {
     stats_result$Statistics <- gsub("_", " ", stats_result$Statistics)
     stats_result$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result$Statistics)
     stats_result$Statistics <- gsub("FoldChange", "Fold-change", stats_result$Statistics)
+    stats_result$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result$Statistics)
     stats_result
     
     return(stats_result)
@@ -181,6 +192,7 @@ server <- function(input, output, session) {
   output$statistics1 <- DT::renderDataTable({
     dat <- statisticsData()
     dat <- dat[!dat$Statistics %in% c("mean control", "sd control", "n control", "mean palmitate", "sd palmitate", "n palmitate"),]
+    colnames(dat)[1] <- "Differential Expression Analysis"
     DT::datatable(
       dat,
       escape = FALSE, 
@@ -205,6 +217,7 @@ server <- function(input, output, session) {
   output$statistics2 <- DT::renderDataTable({
     dat <- statisticsData()
     dat <- dat[dat$Statistics %in% c("mean control", "sd control", "n control", "mean palmitate", "sd palmitate", "n palmitate"),]
+    colnames(dat)[1] <- "Group Summary Statistics"
     DT::datatable(
       dat,
       escape = FALSE, 
@@ -249,18 +262,57 @@ server <- function(input, output, session) {
   })
   
   #-----------------------------------------------------------------
-  # Download button
-  output$downloadGeneData <- downloadHandler(
+  # Download button - plot
+  output$downloadPlot <- downloadHandler(
     filename = function() {
-      paste0("gene_expression_", Sys.Date(), ".csv")
+      paste0("MyotubePalmitate_plot_", Sys.Date(), ".png")
+    },
+    content = function(file) {
+      plot_obj <- plotDataBox()  # This returns a ggplot object
+      plot_obj <- plot_obj + labs(caption = "Plot generated on muscleOmics.org")
+      
+      # Open PNG device, print plot, close device
+      png(filename = file, width = 3200, height = 1800, res = 300)
+      print(plot_obj)
+      dev.off()
+    }
+  )
+  
+  #-----------------------------------------------------------------
+  # Download button - data
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste0("MyotubePalmitate_data_", Sys.Date(), ".csv")
     },
     content = function(file) {
       df <- selectedGeneData()
-      df <- data.frame(metadata,
-                       t(df))
-
+      df <- data.frame(metadata, t(df))
+      
       if (!is.null(df)) {
-        write.csv(df, file, row.names = TRUE)
+        # Write the data without row names
+        write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
+        
+        # Append the footer line
+        cat("\n# Data generated on muscleOmics.org\n", file = file, append = TRUE)
+      }
+    }
+  )
+  
+  #-----------------------------------------------------------------
+  # Download button - stats
+  output$downloadStats <- downloadHandler(
+    filename = function() {
+      paste0("MyotubePalmitate_statistics_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      df <- statisticsData()
+      
+      if (!is.null(df)) {
+        # Write the data without row names
+        write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
+        
+        # Append the footer line
+        cat("\n# Data generated on muscleOmics.org\n", file = file, append = TRUE)
       }
     }
   )
