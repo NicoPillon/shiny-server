@@ -21,8 +21,8 @@ ui <- fluidPage(title="MyotubePalmitate",
                            # Panel for plots
                            tabPanel("Explore Data",
                                     p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
-           For information about the methods behind the plots <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">click here</a>.')),
-                                    tags$hr(),
+           For information about the methods behind the plots and statistics <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">click here</a>.')),
+                                    tags$br(),
                                     sidebarLayout(
                                       sidebarPanel(width = 3,
                                             selectizeInput("inputGeneSymbol", 
@@ -62,7 +62,7 @@ ui <- fluidPage(title="MyotubePalmitate",
                                     h3("Methods"),
                                     p("Publicly available datasets from the Gene Expression Omnibus (GEO) were downloaded, including both microarray and RNA-seq platforms from human, mouse, and rat studies. Each dataset was processed using platform-appropriate normalization procedures, such as RMA for microarrays and VST transformation for RNA-seq count data. Lowly expressed genes were filtered based on manually defined expression thresholds, and only samples with paired control and palmitate treatments were retained."),
                                     p("Cross-species orthologs were annotated using biomaRt, allowing all datasets to be merged using human gene identifiers. Expression matrices were median-centered, quantile-normalized, and batch-corrected using study ID as the batch factor. Missing values were imputed using K-nearest neighbor imputation. Quality control was performed by inspecting known palmitate-responsive genes such as ANGPTL4 and PDK4, and by computing pairwise correlations of palmitate-induced gene expression changes across sample pairs. Outlier pairs, defined as those with average correlation in the lowest 5%, were excluded from the final analysis."),
-                                    p("Wilcoxon ranked signed test comparing palmitate to control. The result table shows the p values as well as the adjusted p values corrected for multipple testing using Bonferroni correction."),
+                                    p("Statistics are Wilcoxon ranked signed test comparing palmitate to control. The result table shows the p values as well as the adjusted p values corrected for multipple testing using Bonferroni correction."),
                                     
                                     h3("Datasets"),
                                     tags$p(
