@@ -10,13 +10,7 @@ server <- function(input, output, session) {
   session$onFlushed(function() {
     session$sendCustomMessage("resizeFrame", list())
   }, once = FALSE)
-    
-  # updateSelectizeInput(session, 'inputGeneSymbol', 
-  #                      choices=gene_list$TARGET, 
-  #                      server=TRUE, 
-  #                      selected=c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"), 
-  #                      options=NULL)
-  
+
   observeEvent(input$resetInputs, {
     updateSelectizeInput(session, "inputGeneSymbol", selected = character(0))
     updateSliderInput(session, "concentration", value = c(100, 500))
@@ -29,7 +23,7 @@ server <- function(input, output, session) {
   # REACTIVE: load only selected gene(s)
   selectedGeneData <- reactive({
     req(input$inputGeneSymbol)
-    genename <- c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2")
+    genename <- c("PDK4", "PXMP4", "ANGPTL4", "CPT1A", "ACAA2")
     genename <- toupper(input$inputGeneSymbol)
     
     # Match gene to file and row info
@@ -37,8 +31,6 @@ server <- function(input, output, session) {
     
     # Split by file
     split_rows <- split(file_row, file_row$file)
-    
-    rows <- split_rows[[1]]
     
     # # Load available data
     selected_list <- lapply(split_rows, function(rows) {
@@ -274,7 +266,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       plot_obj <- plotDataBox()  # This returns a ggplot object
-      plot_obj <- plot_obj + labs(caption = "Plot generated on muscleOmics.org")
+      plot_obj <- plot_obj + labs(caption = "Plot generated on MuscleOmics.org")
       
       # Open PNG device, print plot, close device
       png(filename = file, width = 3200, height = 1800, res = 300)
@@ -298,7 +290,7 @@ server <- function(input, output, session) {
         write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
         
         # Append the footer line
-        cat("\n# Data generated on muscleOmics.org\n", file = file, append = TRUE)
+        cat("\n# Data generated on MuscleOmics.org\n", file = file, append = TRUE)
       }
     }
   )
@@ -317,7 +309,7 @@ server <- function(input, output, session) {
         write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
         
         # Append the footer line
-        cat("\n# Data generated on muscleOmics.org\n", file = file, append = TRUE)
+        cat("\n# Data generated on MuscleOmics.org\n", file = file, append = TRUE)
       }
     }
   )
