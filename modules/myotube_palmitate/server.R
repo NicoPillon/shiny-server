@@ -11,11 +11,11 @@ server <- function(input, output, session) {
     session$sendCustomMessage("resizeFrame", list())
   }, once = FALSE)
     
-  updateSelectizeInput(session, 'inputGeneSymbol', 
-                       choices=gene_list$TARGET, 
-                       server=TRUE, 
-                       selected=c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"), 
-                       options=NULL)
+  # updateSelectizeInput(session, 'inputGeneSymbol', 
+  #                      choices=gene_list$TARGET, 
+  #                      server=TRUE, 
+  #                      selected=c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"), 
+  #                      options=NULL)
   
   observeEvent(input$resetInputs, {
     updateSelectizeInput(session, "inputGeneSymbol", selected = character(0))
@@ -38,17 +38,22 @@ server <- function(input, output, session) {
     # Split by file
     split_rows <- split(file_row, file_row$file)
     
-    # Load available data
+    rows <- split_rows[[1]]
+    
+    # # Load available data
     selected_list <- lapply(split_rows, function(rows) {
       path <- file.path("data", unique(rows$file))
-      df <- arrow::read_feather(path)
       
-      selected <- df[rows$row, , drop = FALSE] %>%
-        data.frame()
+      ds <- arrow::open_dataset(path, format = "parquet")
       
-      # Ensure rownames are matched properly
-      rownames(selected) <- rows$TARGET[order(rows$row)]
+      selected <- ds %>%
+        filter(TARGET %in% rows$TARGET) %>%
+        collect() %>%
+        as.data.frame()
+      
+      rownames(selected) <- selected$TARGET
       selected <- selected[match(rows$TARGET, rownames(selected)), , drop = FALSE]
+      selected <- selected[, !(colnames(selected) %in% "TARGET"), drop = FALSE]
       
       return(selected)
     })
