@@ -17,6 +17,14 @@ server <- function(input, output, session) {
                        selected=c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"), 
                        options=NULL)
   
+  observeEvent(input$resetInputs, {
+    updateSelectizeInput(session, "inputGeneSymbol", selected = character(0))
+    updateSliderInput(session, "concentration", value = c(100, 500))
+    updateSliderInput(session, "duration", value = c(12, 96))
+    updateCheckboxGroupInput(session, "cell_type", selected = c("C2C12", "LHCN-M2", "primary"))
+    updateCheckboxGroupInput(session, "species", selected = c("human", "mouse", "rat"))
+  })
+  
   #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s)
   selectedGeneData <- reactive({
@@ -158,7 +166,7 @@ server <- function(input, output, session) {
           FDR < 0.001 ~ "***",
           FDR < 0.01  ~ "**",
           FDR < 0.05  ~ "*",
-          TRUE ~ ""
+          TRUE ~ "ns"
         ),
         p_value = format(p_value, scientific = TRUE, digits = 2),
         FDR = format(FDR, scientific = TRUE, digits = 2)

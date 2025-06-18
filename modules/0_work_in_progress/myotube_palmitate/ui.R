@@ -18,63 +18,70 @@ ui <- fluidPage(title="MyotubePalmitate",
     <span style="font-size: 20px; font-weight: bold; margin-right: 10px;">Palmitate</span>
   </div>
 '),
-                           # Panel for plots
-                           tabPanel("Explore Data",
-                                    p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
-           For information about the methods behind the plots and statistics <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">click here</a>.')),
-                                    tags$br(),
-                                    sidebarLayout(
-                                      sidebarPanel(width = 3,
-                                            selectizeInput("inputGeneSymbol", 
-                                                           "Select your genes of interest:", 
-                                                           choices=NULL, multiple=T, width=600),
-                                            sliderInput("concentration", "Palmitate Concentation (µmol/L)",
-                                                        min = 100, max = 500, value = c(100,500), step = 100, sep = ""),
-                                            sliderInput("duration", "Palmitate Exposure (hours)",
-                                                        min = 12, max = 96, value = c(12,96), step = 12, sep = ""),
-                                            checkboxGroupInput("cell_type", 
-                                                               label = "Cell type", 
-                                                               selected = c("C2C12", "LHCN-M2", "primary"),
-                                                               choices = c("C2C12", "LHCN-M2", "primary")),
-                                            checkboxGroupInput("species", 
-                                                               label = "Species", 
-                                                               selected = c("human", "mouse", "rat"),
-                                                               choices = c("human", "mouse", "rat")),
-                                            tags$b("Download your results:"), tags$br(),
-                                            downloadButton("downloadPlot", "Plot (.png)"),
-                                            downloadButton("downloadData", "Data (.csv)"),
-                                            downloadButton("downloadStats", "Statistics (.csv)")
-                               ),
-                               mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
-                                         plotOutput("geneBoxplot", height="500px") %>% withSpinner(color="#5B768E", type = 8),
-                                         tags$hr(),
-                                         DT::dataTableOutput("statistics1", width = "95%"),
-                                         DT::dataTableOutput("statistics2", width = "95%"))
-                               
-                             )
-                           ),
-                           
-                           # description of methods
-                           tabPanel("Read Me",
+                  # Panel for plots
+                  tabPanel("Explore Data",
 
-                                    h3("Why this app?"),
-                                    p("This app offers a powerful and accessible resource to explore how saturated fats affect skeletal muscle cells. Palmitate, the most abundant saturated fatty acid in Western diets, is closely linked to inflammation and metabolic diseases. By examining its impact on the muscle cell transcriptome, this tool opens new avenues for research, therapeutic discovery, and prevention strategies targeting metabolic disorders."),
-                                    
-                                    h3("Methods"),
-                                    p("Publicly available datasets from the Gene Expression Omnibus (GEO) were downloaded, including both microarray and RNA-seq platforms from human, mouse, and rat studies. Each dataset was processed using platform-appropriate normalization procedures, such as RMA for microarrays and VST transformation for RNA-seq count data. Lowly expressed genes were filtered based on manually defined expression thresholds, and only samples with paired control and palmitate treatments were retained."),
-                                    p("Cross-species orthologs were annotated using biomaRt, allowing all datasets to be merged using human gene identifiers. Expression matrices were median-centered, quantile-normalized, and batch-corrected using study ID as the batch factor. Missing values were imputed using K-nearest neighbor imputation. Quality control was performed by inspecting known palmitate-responsive genes such as ANGPTL4 and PDK4, and by computing pairwise correlations of palmitate-induced gene expression changes across sample pairs. Outlier pairs, defined as those with average correlation in the lowest 5%, were excluded from the final analysis."),
-                                    p("Statistics are Wilcoxon ranked signed test comparing palmitate to control. The result table shows the p values as well as the adjusted p values corrected for multipple testing using Bonferroni correction."),
-                                    
-                                    h3("Datasets"),
-                                    tags$p(
-                                      tags$em("Have we missed a relevant study? Please ",
-                                      a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
-                                      )
-                                    ),    
-                                    dataTableOutput("references"),
-                                    
-                                    h3("Citation"),
-                                    HTML('
+                           p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
+           For information about the methods behind the plots and statistics <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">click here</a>.')),
+                           tags$br(),
+                           sidebarLayout(
+                             sidebarPanel(width = 3,
+                                          selectizeInput("inputGeneSymbol", 
+                                                         "Select your genes of interest:", 
+                                                         choices=NULL, multiple=T, width=600),
+                                          sliderInput("concentration", "Palmitate Concentation (µmol/L)",
+                                                      min = 100, max = 500, value = c(100,500), step = 100, sep = ""),
+                                          sliderInput("duration", "Palmitate Exposure (hours)",
+                                                      min = 12, max = 96, value = c(12,96), step = 12, sep = ""),
+                                          checkboxGroupInput("cell_type", 
+                                                             label = "Cell type", 
+                                                             selected = c("C2C12", "LHCN-M2", "primary"),
+                                                             choices = c("C2C12", "LHCN-M2", "primary")),
+                                          checkboxGroupInput("species", 
+                                                             label = "Species", 
+                                                             selected = c("human", "mouse", "rat"),
+                                                             choices = c("human", "mouse", "rat")),
+                                          tags$b("Download your results:"), tags$br(),
+                                          downloadButton("downloadPlot", "Plot (.png)"),
+                                          downloadButton("downloadData", "Data (.csv)"),
+                                          downloadButton("downloadStats", "Statistics (.csv)"),
+                                          tags$hr(),
+                                          actionButton("resetInputs", "Reset Filters", icon = icon("undo"))
+                             ),
+                             mainPanel(width = 9, style="padding:0% 4% 0% 1%;",
+                                       plotOutput("geneBoxplot", height="550px") %>% withSpinner(color="#5B768E", type = 8),
+                                       tags$hr(),
+                                       DT::dataTableOutput("statistics1"),
+                                       tags$br(),
+                                       DT::dataTableOutput("statistics2"),
+                                       tags$br()
+                             )
+                           )
+                  ),
+                  
+                  
+                  # description of methods
+                  tabPanel("Read Me",
+                           style="padding:0% 5% 1% 5%;",
+                           
+                           h3("Why this app?"),
+                           p("This app offers a powerful and accessible resource to explore how saturated fats affect skeletal muscle cells. Palmitate, the most abundant saturated fatty acid in Western diets, is closely linked to inflammation and metabolic diseases. By examining its impact on the muscle cell transcriptome, this tool opens new avenues for research, therapeutic discovery, and prevention strategies targeting metabolic disorders."),
+                           
+                           h3("Methods"),
+                           p("Publicly available datasets from the Gene Expression Omnibus (GEO) were downloaded, including both microarray and RNA-seq platforms from human, mouse, and rat studies. Each dataset was processed using platform-appropriate normalization procedures, such as RMA for microarrays and VST transformation for RNA-seq count data. Lowly expressed genes were filtered based on manually defined expression thresholds, and only samples with paired control and palmitate treatments were retained."),
+                           p("Cross-species orthologs were annotated using biomaRt, allowing all datasets to be merged using human gene identifiers. Expression matrices were median-centered, quantile-normalized, and batch-corrected using study ID as the batch factor. Missing values were imputed using K-nearest neighbor imputation. Quality control was performed by inspecting known palmitate-responsive genes such as ANGPTL4 and PDK4, and by computing pairwise correlations of palmitate-induced gene expression changes across sample pairs. Outlier pairs, defined as those with average correlation in the lowest 5%, were excluded from the final analysis."),
+                           p("Statistics are Wilcoxon ranked signed test comparing palmitate to control. The result table shows the p values as well as the adjusted p values corrected for multipple testing using Bonferroni correction."),
+                           
+                           h3("Datasets"),
+                           tags$p(
+                             tags$em("Have we missed a relevant study? Please ",
+                                     a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+                             )
+                           ),    
+                           dataTableOutput("references"),
+                           
+                           h3("Citation"),
+                           HTML('
   <div style="margin: 0rem;">
     <div>
       Pillon NJ, Sardón Puig L, Altıntaş A, Kamble PG, Casaní-Galdón S, Gabriel BM, Barrès R, Conesa A, Chibalin AV, Näslund E, Krook A, Zierath JR.
@@ -88,11 +95,11 @@ ui <- fluidPage(title="MyotubePalmitate",
     </div>
   </div>
 ')
-                           ),
-                           
-                           # Code to send height to resizing iframe
-                           tags$head(
-                             tags$script(HTML("
+                  ),
+                  
+                  # Code to send height to resizing iframe
+                  tags$head(
+                    tags$script(HTML("
     Shiny.addCustomMessageHandler('resizeFrame', function(message) {
       const height = document.documentElement.scrollHeight;
       parent.postMessage({ frameHeight: height }, '*');
@@ -103,9 +110,8 @@ ui <- fluidPage(title="MyotubePalmitate",
       parent.postMessage({ frameHeight: height }, '*');
     });
   "))
-                           )
+                  )
                 )
 )
 
-                           
-                
+
