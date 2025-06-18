@@ -12,9 +12,8 @@ ui <- fluidPage(title="MyotubePalmitate",
                 
                 # main page
                 navbarPage(
-                  title = HTML('<img src="../../../www/img/snippet/myotube_palmitate.png" style="height: 100%; margin:-10px;">'),
-
-                           
+                  title = HTML('<img src="../../../www/img/snippet/myotube_palmitate.png" style="height: 100%; max-height: 60px; margin-top:-10px;">'),
+                  
                            # Panel for plots
                            tabPanel("Explore Data",
                                     p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
