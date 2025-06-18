@@ -19,12 +19,14 @@ studies_included <- readRDS("data/studies_included.Rds")
 countries <- sort(unique(VO2_data$Country))
 
 # Define UI ----
-ui <- fluidPage(
-  # CSS for style
-  tags$head(includeCSS("../../www/style.css")),
-  
-  # HTML code to display the countries in line
-  tags$style(HTML("
+ui <- fluidPage(title="globalVO2max",
+                style="padding:0%",
+                
+                # CSS for style
+                tags$head(includeCSS("../../www/style.css")),
+                
+                # HTML code to display the countries in line
+                tags$style(HTML("
   .multicol {
     -webkit-column-count: 2;  /* Chrome, Safari, Opera */
     -moz-column-count: 2;     /* Firefox */
@@ -35,89 +37,112 @@ ui <- fluidPage(
     white-space: normal !important;
   }
 ")),
-  
-  # main page
-  navbarPage("GlobalVO2max",
-             
-             tabPanel(
-               title = "Nomogram",
-               
-               sidebarPanel(width = 3,
-                            selectInput("sex",
-                                        label = "Your Sex", 
-                                        selected = "Female", 
-                                        choices = c("Female", "Male")),
-                            numericInput("age",
-                                         label = "Your Age (years)",
-                                         value = 32),
-                            numericInput("vo2max",
-                                         label = "Your VO2max (mL/min/kg)",
-                                         value = 33),
-                            checkboxGroupInput("modality",
-                                               label = "Modality", 
-                                               selected = c("Cycle", "Treadmill"), 
-                                               choices = c("Cycle", "Treadmill")),
-                            # tags$b("Countries"),                             
-                            # tags$br(),
-                            # actionButton("select_all_countries", "Select All"),
-                            # actionButton("deselect_all_countries", "Deselect All"),
-                            # div(class = "multicol",
-                            #     checkboxGroupInput("country",
-                            #                        label = NULL,
-                            #                        selected = countries,
-                            #                        choices = countries)
-                            # ),
-                            shinyWidgets::pickerInput(
-                              inputId = "country",
-                              label = "Countries",
-                              choices = countries,
-                              selected = countries,
-                              multiple = TRUE,
-                              options = list(
-                                `actions-box` = TRUE,
-                                `live-search` = TRUE
-                              )
-                            ),
-                            # tags$br(),
-                            sliderInput("date", "Year",
-                                        min = 1968, max = 2024, value = c(1968,2024), step = 1, sep = "")
-               ),
-               mainPanel(width = 9,
-                         plotOutput("vo2Plot", height = "600px") %>% withSpinner(color="#5B768E", type = 8),
-                         tags$br(),tags$br(),
-                         textOutput("percentileText"),
-                         tags$br(),
-                         downloadButton("download_nomogram", "Download Nomogram (.pdf)"),
-                         downloadButton("download_data", "Download Data (.csv)")
-               )
-             ),
-
-             tabPanel(
-               title = "Description",   
-               
-               h3("Citation"),
-               p("Pillon NJ, Ortiz de Zevallos J, Zierath JR, LaMonte MK, Ainsworth BE. In Press, 2025. Stay tuned!"),
-               tags$hr(),
-               
-               h3("Methods"),
-               p("Our review employed a systematic methodology to collate and map existing evidence on oxygen uptake during maximal exercise testing by sex and age. This review followed PRISMA guidelines and was prospectively registered in PROSPERO (CRD42025641493). Studies were included if they directly measured oxygen uptake (VO2peak or VO2max) via incremental exercise testing with direct gas analysis in healthy adults (≥18 years). We excluded studies involving children, adolescents, athletes, or individuals with chronic diseases, as well as studies using indirect VO2peak estimates or mixing exercise modalities."),
-               p("We systematically searched MEDLINE/PubMed, Embase, CINAHL, and Web of Science from inception to December 31, 2024. Reference lists of reviews and meta-analyses were also screened. Search terms included combinations of 'cardiopulmonary exercise testing', 'VO2max', 'VO2peak', and related synonyms, combined with terms for 'reference values' and 'age', while excluding animal studies, pediatric populations, athletes, and secondary sources (systematic reviews, meta-analyses). Titles and abstracts were screened independently by two reviewers in Covidence. Full-text reviews were conducted for eligible articles, with discrepancies resolved by consensus. One reviewer extracted study details (author, year, country), participant characteristics (age, sex, height, weight, BMI, sample size), testing modality (treadmill or cycle), and VO2peak statistics, verified by a second reviewer."),
-               
-               tags$hr(),
-
-               h3("Datasets"),
-               tags$p(
-                 tags$b("Have we missed a relevant study? Do you want to contribute? Please "),
-                 a("contact us", href = "mailto:nicolas.pillon@ki.se", target = "_blank"), "!"
-               ),
-               DT::dataTableOutput("studies_included")
-             )
-  ),
-  
-  
-  # Code to send height to resizing iframe
-  tags$head(
-    tags$script(HTML("
+                
+                # main page
+                navbarPage(
+                  title = HTML('
+  <div style="display: flex; align-items: center;margin: -10px;">
+    <img src="../../../www/img/snippet/globalVO2max.png" style="height: 40px; margin-right: 10px;">
+    <span style="font-size: 20px; font-weight: bold; margin-right: 10px;">V&#775;O<sub>2</sub>peak</span>
+  </div>
+'),
+                  
+                  tabPanel(
+                    title = "Explore Data",
+                    
+                    p(HTML('Explore how your V&#775;O<sub>2</sub>peak compares to worlwide reference values. 
+       <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">Click here</a> to learn more about the methods and statistical analyses.')),
+                    
+                    tags$br(),
+                    
+                    sidebarPanel(width = 3,
+                                 selectInput("sex",
+                                             label = "Your Sex", 
+                                             selected = "Female", 
+                                             choices = c("Female", "Male")),
+                                 numericInput("age",
+                                              label = "Your Age (years)",
+                                              value = 32),
+                                 numericInput("vo2max",
+                                              label = "Your VO2max (mL/min/kg)",
+                                              value = 33),
+                                 checkboxGroupInput("modality",
+                                                    label = "Modality", 
+                                                    selected = c("Cycle", "Treadmill"), 
+                                                    choices = c("Cycle", "Treadmill")),
+                                 # tags$b("Countries"),                             
+                                 # tags$br(),
+                                 # actionButton("select_all_countries", "Select All"),
+                                 # actionButton("deselect_all_countries", "Deselect All"),
+                                 # div(class = "multicol",
+                                 #     checkboxGroupInput("country",
+                                 #                        label = NULL,
+                                 #                        selected = countries,
+                                 #                        choices = countries)
+                                 # ),
+                                 shinyWidgets::pickerInput(
+                                   inputId = "country",
+                                   label = "Countries",
+                                   choices = countries,
+                                   selected = countries,
+                                   multiple = TRUE,
+                                   options = list(
+                                     `actions-box` = TRUE,
+                                     `live-search` = TRUE
+                                   )
+                                 ),
+                                 # tags$br(),
+                                 sliderInput("date", "Year",
+                                             min = 1968, max = 2024, value = c(1968,2024), step = 1, sep = ""),
+                                 tags$hr(),
+                                 tags$b("Download the data:"), tags$br(),
+                                 downloadButton("download_nomogram", "Nomogram (.pdf)"),
+                                 downloadButton("download_data", "Data (.csv)")
+                    ),
+                    mainPanel(
+                      width = 9,
+                      fluidRow(
+                        column(
+                          style = "padding: 0%;",
+                          width = 9,
+                          plotOutput("vo2Plot", height = "600px") %>% withSpinner(color = "#5B768E", type = 8)
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding: 0% 5% 0% 1%;",
+                          h4("Your results"),
+                          uiOutput("percentileText")
+                        )
+                      )
+                    )
+                  ),
+                  
+                  tabPanel(
+                    title = "Read Me",   
+                    style="padding:0% 5% 1% 5%;",
+                    
+                    h3("Why this app?"),
+                    p("This app was developed to allow accessibility to our global analysis of cardiorespiratory fitness. It provides an interactive platform where users can explore reference values for maximal oxygen uptake in healthy adults, compare data across countries, sexes, and age groups, and examine trends based on testing modality (cycle vs treadmill) and decade of testing. The dataset includes results from direct cardiopulmonary exercise testing (CPET) in individuals aged 18 to 90 years, covering studies conducted between 1968 and the present across multiple countries."),
+                    
+                    h3("Methods"),
+                    p("Our analysis employed a systematic methodology to collate and map existing evidence on oxygen uptake during maximal exercise testing by sex and age. This review followed PRISMA guidelines and was prospectively registered in PROSPERO (CRD42025641493). Studies were included if they directly measured oxygen uptake (VO2peak or VO2max) via incremental exercise testing with direct gas analysis in healthy adults (≥18 years). We excluded studies involving children, adolescents, athletes, or individuals with chronic diseases, as well as studies using indirect VO2peak estimates or mixing exercise modalities."),
+                    p("We systematically searched MEDLINE/PubMed, Embase, CINAHL, and Web of Science from inception to December 31, 2024. Reference lists of reviews and meta-analyses were also screened. Search terms included combinations of 'cardiopulmonary exercise testing', 'VO2max', 'VO2peak', and related synonyms, combined with terms for 'reference values' and 'age', while excluding animal studies, pediatric populations, athletes, and secondary sources (systematic reviews, meta-analyses). Titles and abstracts were screened independently by two reviewers in Covidence. Full-text reviews were conducted for eligible articles, with discrepancies resolved by consensus. One reviewer extracted study details (author, year, country), participant characteristics (age, sex, height, weight, BMI, sample size), testing modality (treadmill or cycle), and VO2peak statistics, verified by a second reviewer."),
+                    
+                    h3("Citation"),
+                    p("Pillon NJ, Ortiz de Zevallos J, Zierath JR, LaMonte MK, Ainsworth BE. In Press, 2025. Stay tuned!"),
+                    
+                    h3("Datasets"),
+                    tags$p(
+                      tags$em("Have we missed a relevant study? Please ",
+                              a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+                      )
+                    ),    
+                    DT::dataTableOutput("studies_included")
+                  ),
+                  
+                  # Code to send height to resizing iframe
+                  tags$head(
+                    tags$script(HTML("
     Shiny.addCustomMessageHandler('resizeFrame', function(message) {
       const height = document.documentElement.scrollHeight;
       parent.postMessage({ frameHeight: height }, '*');
@@ -128,8 +153,8 @@ ui <- fluidPage(
       parent.postMessage({ frameHeight: height }, '*');
     });
   "))
-  )
-  
+                  )
+                )
 )
 
 
@@ -201,7 +226,7 @@ server <- function(input, output, session) {
   })
   
   
-  output$percentileText <- renderPrint({
+  output$percentileText <- renderUI({
     df <- VO2_data
     df <- filtered_data()
     
@@ -266,13 +291,17 @@ server <- function(input, output, session) {
       feedback <- "Fantastic! You’re in excellent shape — congratulations on your high fitness level!"
     }
     
-    cat(paste(output_message, feedback))
+    # Final message with HTML paragraph tags
+    HTML(paste0(
+      "<p>", output_message, "</p>",
+      "<p><strong>", feedback, "</strong></p>"
+    ))
     
   })
   
   
   
-
+  
   output$vo2Plot <- renderPlot({
     df <- filtered_data()
     
@@ -281,11 +310,14 @@ server <- function(input, output, session) {
     
     ggplot(df, aes(x = Age_mean, y = VO2max,
                    color = Percentile, linetype = Percentile)) +
-      theme_bw(16) +
+      theme_bw(17, base_family = "Arial") + 
       theme(panel.grid.major = element_line(color = "gray80",
                                             linewidth = 0.5,
                                             linetype = 1),
-            legend.title = element_blank()) +
+            legend.title = element_blank(),
+            axis.title.x = element_text(face = "bold", color = "black"),
+            axis.text.y = element_text("black"),
+            axis.title.y = element_text(face = "bold", color = "black")) +
       scale_x_continuous(breaks = seq(0, 100, 10),
                          minor_breaks = seq(0, 100, 1)) +
       scale_y_continuous(breaks = seq(0, 100, 10),
@@ -328,7 +360,7 @@ server <- function(input, output, session) {
     content = function(file) {
       df <- filtered_data()
       
-
+      
       # build plot
       x_range <- diff(range(df$Age_mean, na.rm = TRUE))
       y_range <- diff(range(df$VO2max, na.rm = TRUE))
@@ -365,16 +397,16 @@ server <- function(input, output, session) {
       caption_text <- stringr::str_wrap(
         paste0(
           "\n",
-        "Source: Pillon NJ, Ortiz de Zevallos J, Zierath JR, LaMonte MK, Ainsworth BE. Submitted manuscript, coming soon.\n\n",
-        "The nomogram was created with the following parameters:\n",
-        "Sex: ", selected_sex, ", \n",
-        "Modality: ", selected_modality, ", \n",
-        "Years: ", selected_years, ", \n",
-        "Countries: ", selected_countries, "."
+          "Source: Pillon NJ, Ortiz de Zevallos J, Zierath JR, LaMonte MK, Ainsworth BE. Submitted manuscript, coming soon.\n\n",
+          "The nomogram was created with the following parameters:\n",
+          "Sex: ", selected_sex, ", \n",
+          "Modality: ", selected_modality, ", \n",
+          "Years: ", selected_years, ", \n",
+          "Countries: ", selected_countries, "."
         )
         ,
         width = 135
-        )
+      )
       
       caption_plot <- ggdraw() + 
         draw_label(caption_text, x = 0, y = 1, hjust = 0, vjust = 1, size = 9, fontface = "italic")

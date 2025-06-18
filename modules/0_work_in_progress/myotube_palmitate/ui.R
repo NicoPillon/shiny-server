@@ -20,11 +20,12 @@ ui <- fluidPage(title="MyotubePalmitate",
 '),
                   # Panel for plots
                   tabPanel("Explore Data",
-
+                           
                            p(HTML('Explore how skeletal muscle cells respond to palmitate exposure using integrated transcriptomic data. 
        <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">Click here</a> to learn more about the methods and statistical analyses.')),
                            
                            tags$br(),
+                           
                            sidebarLayout(
                              sidebarPanel(width = 3,
                                           selectizeInput("inputGeneSymbol", 
@@ -42,6 +43,7 @@ ui <- fluidPage(title="MyotubePalmitate",
                                                              label = "Species", 
                                                              selected = c("human", "mouse", "rat"),
                                                              choices = c("human", "mouse", "rat")),
+                                          tags$hr(),
                                           tags$b("Download your results:"), tags$br(),
                                           downloadButton("downloadPlot", "Plot (.png)"),
                                           downloadButton("downloadData", "Data (.csv)"),
@@ -75,14 +77,6 @@ ui <- fluidPage(title="MyotubePalmitate",
                            h3("Statistics"),
                            p("Statistical analysis is based on Wilcoxon signed-rank tests comparing palmitate-treated samples to controls. The results table presents both unadjusted p-values and Bonferroni-adjusted p-values to correct for multiple testing across all transcripts in the database, ensuring a highly conservative approach. Significance is indicated as follows: * for FDR < 0.05, ** for FDR < 0.01, and *** for FDR < 0.001. 'ns' denotes non-significant results."),
                            
-                           h3("Datasets"),
-                           tags$p(
-                             tags$em("Have we missed a relevant study? Please ",
-                                     a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
-                             )
-                           ),    
-                           dataTableOutput("references"),
-                           
                            h3("Citation"),
                            HTML('
   <div style="margin: 0rem;">
@@ -97,7 +91,14 @@ ui <- fluidPage(title="MyotubePalmitate",
       <span class="__dimensions_badge_embed__" data-id="pub.1152270218" data-legend="always"></span>
     </div>
   </div>
-')
+'),
+                           h3("Datasets"),
+                           tags$p(
+                             tags$em("Have we missed a relevant study? Please ",
+                                     a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+                             )
+                           ),    
+                           dataTableOutput("references")
                   ),
                   
                   # Code to send height to resizing iframe
