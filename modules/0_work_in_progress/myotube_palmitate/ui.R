@@ -8,7 +8,7 @@ ui <- fluidPage(title="MyotubePalmitate",
                 style="padding:0%",
                 
                 # CSS for style
-                tags$head(includeCSS("/www/style.css")),
+                #tags$head(includeCSS("../../www/style.css")),
                 
                 # main page
                 navbarPage("MyotubePalmitate",
