@@ -403,3 +403,14 @@ input[type='radio'] {
   color: #ffffff;
   background-color: #c93f1e;
 }
+
+/* Prevent navbar hover */
+.navbar-header .navbar-brand {
+   pointer-events: none;
+   cursor: default !important;
+   color: black !important;
+ }
+.navbar-header .navbar-brand:hover {
+   color: black !important;
+   text-decoration: none !important;
+ }
