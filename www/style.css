@@ -409,6 +409,9 @@ input[type='radio'] {
    pointer-events: none;
    cursor: default !important;
    color: black !important;
+   border-right: 1px solid black; /* or any color you prefer */
+   padding-right: 15px;          /* adds spacing before the border */
+   margin-right: 15px;           /* spacing between this and the next element */
  }
 .navbar-header .navbar-brand:hover {
    color: black !important;
