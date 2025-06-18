@@ -11,12 +11,12 @@ ui <- fluidPage(title="MyotubePalmitate",
                 #tags$head(includeCSS("../../www/style.css")),
                 
                 # main page
-                navbarPage("MyotubePalmitate",
+                navbarPage( HTML('<img src="www/img/snippet/myotube_palmitate.png" height="30" style="margin-top:-5px;">'),
                            
                            # Panel for plots
                            tabPanel("Explore Data",
-                                    p(HTML('Use this app to explore the transcriptomics response of myotubes to palmitate exposure.
-           For information about the methods behind the plots <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read me\\\')\').click()">click here</a>.')),
+                                    p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
+           For information about the methods behind the plots <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Read Me\\\')\').click()">click here</a>.')),
                                     sidebarLayout(
                                       sidebarPanel(width = 3,
                                             selectizeInput("inputGeneSymbol", 
@@ -48,7 +48,7 @@ ui <- fluidPage(title="MyotubePalmitate",
                            ),
                            
                            # description of methods
-                           tabPanel("Read me",
+                           tabPanel("Read Me",
 
                                     h3("Why this app?"),
                                     p("This app offers a powerful and accessible resource to explore how saturated fats affect skeletal muscle cells. Palmitate, the most abundant saturated fatty acid in Western diets, is closely linked to inflammation and metabolic diseases. By examining its impact on the muscle cell transcriptome, this tool opens new avenues for research, therapeutic discovery, and prevention strategies targeting metabolic disorders."),
@@ -60,8 +60,9 @@ ui <- fluidPage(title="MyotubePalmitate",
                                     
                                     h3("Datasets"),
                                     tags$p(
-                                      tags$b("Are we missing a relevant study? Please "),
+                                      tags$em("Have we missed a relevant study? Please ",
                                       a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+                                      )
                                     ),    
                                     dataTableOutput("references"),
                                     
