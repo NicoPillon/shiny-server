@@ -12,8 +12,12 @@ ui <- fluidPage(title="MyotubePalmitate",
                 
                 # main page
                 navbarPage(
-                  title = HTML('<img src="../../../www/img/snippet/myotube_palmitate.png" style="height: 40px;margin: -10px;">'),
-                  
+                  title = HTML('
+  <div style="display: flex; align-items: center;margin: -10px;">
+    <img src="../../../www/img/snippet/myotube_palmitate.png" style="height: 40px; margin-right: 10px;">
+    <span style="font-size: 20px; font-weight: bold; margin-right: 10px;">Palmitate</span>
+  </div>
+'),
                            # Panel for plots
                            tabPanel("Explore Data",
                                     p(HTML('Use this app to explore the transcriptomic response of myotubes to palmitate exposure.
