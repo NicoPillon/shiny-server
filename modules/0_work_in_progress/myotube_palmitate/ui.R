@@ -12,7 +12,7 @@ ui <- fluidPage(title="MyotubePalmitate",
                 
                 # main page
                 navbarPage(
-                  title = HTML('<img src="../../../www/img/snippet/myotube_palmitate.png" style="display:block; height:50px;">'),
+                  title = HTML('<img src="../../../www/img/snippet/myotube_palmitate.png">'),
                   
                   
                            # Panel for plots
