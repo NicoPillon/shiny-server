@@ -11,7 +11,7 @@ ui <- fluidPage(title="MyotubePalmitate",
                 #tags$head(includeCSS("../../www/style.css")),
                 
                 # main page
-                navbarPage( HTML('<img src="www/img/snippet/myotube_palmitate.png" height="30" style="margin-top:-5px;">'),
+                navbarPage( HTML('<img src="../../../www/img/snippet/myotube_palmitate.png" height="30" style="margin-top:-5px;">'),
                            
                            # Panel for plots
                            tabPanel("Explore Data",
