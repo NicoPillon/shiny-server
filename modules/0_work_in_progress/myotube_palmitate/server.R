@@ -94,7 +94,7 @@ server <- function(input, output, session) {
     ggplot(dat, aes(x=Gene, y=y, fill=treatment)) + 
       geom_boxplot(outlier.size = 0.1, alpha = 0.5, position = position_dodge(0.8))  + 
       geom_sina(size = 1.5, position = position_dodge(0.8), alpha = 0.1) +
-      theme_bw(17) + 
+      theme_bw(17, base_family = "Arial") + 
       theme(axis.text.x = element_text(face = "bold", size = 14),
             axis.title.y = element_text(face = "bold")) +
       labs(x="",
