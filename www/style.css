@@ -158,6 +158,23 @@ hr {
   border-radius: 10px;
 }
 
+/* Dataset card image styling */
+.framed-img {
+  border: 5px solid #c93f1e;       /* Frame border */
+  background-color: white;
+  border-radius: 25px;          /* Rounded corners */
+  padding: 0px;                 /* Space between image and frame */
+  overflow: hidden;             /* Ensures corners are clipped */
+}
+
+.framed-img img {
+  display: block;
+  border-radius: 25px;           /* Optional: rounds the image itself */
+  max-width: 100%;              /* Ensures responsiveness */
+  height: auto;
+}
+
+
 /* -------------------------------------------
    4. LINKS STYLING (Normal / Hover / Visited / Active)
 --------------------------------------------*/
