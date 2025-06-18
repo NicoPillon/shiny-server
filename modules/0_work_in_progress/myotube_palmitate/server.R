@@ -100,8 +100,7 @@ server <- function(input, output, session) {
             axis.title.y = element_text(face = "bold", color = "black")) +
       labs(x="",
            y="mRNA expression (log2)",
-           fill = "Treatment",
-           caption = "Data from muscleOmics.org",) +
+           fill = "Treatment") +
       scale_shape_manual(values=rep(c(15,16,17), 20)) +
       scale_fill_manual(values = c("#5B768E", "#bd1a0e")) +
       scale_y_continuous(expand = expansion(mult = c(0.05, .15)))
@@ -253,18 +252,38 @@ server <- function(input, output, session) {
   })
   
   #-----------------------------------------------------------------
+  # Download button - plot
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      paste0("MyotubePalmitate_plot_", Sys.Date(), ".png")
+    },
+    content = function(file) {
+      plot_obj <- plotDataBox()  # This returns a ggplot object
+      plot_obj <- plot_obj + labs(caption = "Plot generated on muscleOmics.org")
+      
+      # Open PNG device, print plot, close device
+      png(filename = file, width = 3200, height = 1800, res = 300)
+      print(plot_obj)
+      dev.off()
+    }
+  )
+  
+  #-----------------------------------------------------------------
   # Download button - data
-  output$downloadGeneData <- downloadHandler(
+  output$downloadData <- downloadHandler(
     filename = function() {
       paste0("MyotubePalmitate_data_", Sys.Date(), ".csv")
     },
     content = function(file) {
       df <- selectedGeneData()
-      df <- data.frame(metadata,
-                       t(df))
-
+      df <- data.frame(metadata, t(df))
+      
       if (!is.null(df)) {
-        write.csv(df, file, row.names = FALSE)
+        # Write the data without row names
+        write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
+        
+        # Append the footer line
+        cat("\n# Data generated on muscleOmics.org\n", file = file, append = TRUE)
       }
     }
   )
@@ -279,7 +298,11 @@ server <- function(input, output, session) {
       df <- statisticsData()
       
       if (!is.null(df)) {
-        write.csv(df, file, row.names = FALSE)
+        # Write the data without row names
+        write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
+        
+        # Append the footer line
+        cat("\n# Data generated on muscleOmics.org\n", file = file, append = TRUE)
       }
     }
   )
