@@ -137,7 +137,7 @@ server <- function(input, output, session) {
     }
     
     # Format a vector as a human-readable list with "or" before the last item
-    format_list <- function(x) {
+    format_list1 <- function(x) {
       x <- sort(unique(x))  # ensure unique + sorted
       n <- length(x)
       if (n == 0) return("")
@@ -146,12 +146,21 @@ server <- function(input, output, session) {
       paste(paste(x[-n], collapse = ", "), "and", x[n])
     }
     
+    format_list2 <- function(x) {
+      x <- sort(unique(x))  # ensure unique + sorted
+      n <- length(x)
+      if (n == 0) return("")
+      if (n == 1) return(x)
+      if (n == 2) return(paste(x, collapse = " or "))
+      paste(paste(x[-n], collapse = ", "), "or", x[n])
+    }
+    
     # Generate a combined cell type/species description (e.g., "human C2C12")
-    cell_types <- format_list(paste(dat$species, dat$cell.type))
+    cell_types <- format_list1(paste(dat$species, dat$cell.type))
     
     # Unique concentrations and durations (sorted for clarity)
-    conc <- format_list(dat$concentration.micromolar)
-    time <- format_list(dat$time.hours)
+    conc <- format_list2(dat$concentration.micromolar)
+    time <- format_list2(dat$time.hours)
     
     # Construct final sentence
     glue::glue(
