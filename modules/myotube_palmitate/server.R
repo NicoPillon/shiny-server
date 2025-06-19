@@ -14,6 +14,15 @@ server <- function(input, output, session) {
   }, once = FALSE)
   
   #-----------------------------------------------
+  # Update gene list in UI
+  observe({
+    updateSelectizeInput(session, "inputGeneSymbol", 
+                         choices = gene_list$TARGET, 
+                         selected = c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"),
+                         server = TRUE)
+  })
+  
+  #-----------------------------------------------
   # Reset button functionality: resets all UI inputs to their default values
   observeEvent(input$resetInputs, {
     updateSelectizeInput(session, "inputGeneSymbol", selected = character(0))
@@ -62,8 +71,8 @@ server <- function(input, output, session) {
     }
     
     # Ensure output preserves original input order
-    selected_row <- selected_row[genename, , drop = FALSE]
-    data.frame(selected_row)
+    df <- selected_row[genename, , drop = FALSE]
+    data.frame(df)
   })
   
   #-----------------------------------------------------------------
@@ -111,8 +120,7 @@ server <- function(input, output, session) {
   #-----------------------------------------------------------------
   # Reactive text description of the current filters (used in UI summary)
   filterSummary <- reactive({
-    req(input$cell_type, input$concentration, input$duration)
-    
+
     # Load gene expression data and merge with metadata
     df <- selectedGeneData()
     dat <- data.frame(metadata, t(df))

@@ -45,8 +45,7 @@ ui <- fluidPage(
                             # Gene selector (multi-select)
                             selectizeInput("inputGeneSymbol", 
                                            "Genes of Interest", 
-                                           selected = c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"),
-                                           choices = gene_list$TARGET, 
+                                           choices = NULL, 
                                            multiple = TRUE, 
                                            width = 600),
                             
@@ -67,14 +66,14 @@ ui <- fluidPage(
                             #             min = 12, max = 96, value = c(12, 96), step = 12, sep = ""),
                             
                             # Checkbox filters for cell type and species
-                             checkboxGroupInput("cell_type", 
+                            checkboxGroupInput("cell_type", 
                                                label = "Cell Type", 
                                                selected = c("human primary", "human LHCN-M2", "mouse C2C12", "rat primary"),
                                                choices = c("human primary", "human LHCN-M2", "mouse C2C12", "rat primary")),
                             
                             # Button to reset all filters
                             actionButton("resetInputs", "Reset Filters", icon = icon("undo")),
-
+                            
                             tags$hr(),
                             
                             # Download section
