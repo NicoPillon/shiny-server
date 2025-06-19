@@ -142,8 +142,8 @@ server <- function(input, output, session) {
       n <- length(x)
       if (n == 0) return("")
       if (n == 1) return(x)
-      if (n == 2) return(paste(x, collapse = " or "))
-      paste(paste(x[-n], collapse = ", "), "or", x[n])
+      if (n == 2) return(paste(x, collapse = " and "))
+      paste(paste(x[-n], collapse = ", "), "and", x[n])
     }
     
     # Generate a combined cell type/species description (e.g., "human C2C12")
