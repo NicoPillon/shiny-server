@@ -1,24 +1,39 @@
 #--------------------------------------------------------------------------------------------------------
 #
-# Transcriptomic profile of skeletal muscle cells
+# Transcriptomic profile of skeletal muscle cells - Global
 #
 #--------------------------------------------------------------------------------------------------------
 
-# Load data and libraries
-library(feather)
-library(shinycssloaders)
-library(tidyverse)
-library(ggplot2)
-library(ggpubr)
-library(ggforce)
-library(cowplot)
-library(DT)
-library(matrixStats)
-library(pheatmap)
+#======================
+# Load Required Packages
+#======================
+# Efficient disk-based dataset access (used to load parquet files)
 library(arrow)
 
-# Load static reference data
-metadata <- readRDS("data/metadata.Rds")
-references <- readRDS("data/references.Rds")
-gene_list <- readRDS("data/list_gene.Rds")
+# For advanced shiny options
+library(shinycssloaders)
+library(shinyWidgets)
 
+# Data wrangling and transformation (includes dplyr, tidyr, readr, etc.)
+library(tidyverse)
+
+# For advanced ggplot geoms like geom_sina (used for scatter overlay)
+library(ggforce)
+
+# Interactive tables
+library(DT)
+
+
+
+#======================
+# Load Static Data Files
+#======================
+
+# Sample-level metadata (used for filtering, plotting, and statistics)
+metadata <- readRDS("data/metadata.Rds")
+
+# References table with dataset descriptions
+references <- readRDS("data/references.Rds")
+
+# Lookup table that maps gene symbols to files and rows
+gene_list <- readRDS("data/list_gene.Rds")
