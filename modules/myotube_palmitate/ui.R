@@ -67,14 +67,10 @@ ui <- fluidPage(
                             #             min = 12, max = 96, value = c(12, 96), step = 12, sep = ""),
                             
                             # Checkbox filters for cell type and species
-                            checkboxGroupInput("cell_type", 
-                                               label = "Cell type", 
-                                               selected = c("C2C12", "LHCN-M2", "primary"),
-                                               choices = c("C2C12", "LHCN-M2", "primary")),
-                            checkboxGroupInput("species", 
-                                               label = "Species", 
-                                               selected = c("human", "mouse", "rat"),
-                                               choices = c("human", "mouse", "rat")),
+                             checkboxGroupInput("cell_type", 
+                                               label = "Cell Type", 
+                                               selected = c("human primary", "human LHCN-M2", "mouse C2C12", "rat primary"),
+                                               choices = c("human primary", "human LHCN-M2", "mouse C2C12", "rat primary")),
                             
                             # Button to reset all filters
                             actionButton("resetInputs", "Reset Filters", icon = icon("undo")),

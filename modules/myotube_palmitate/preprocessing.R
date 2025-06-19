@@ -57,6 +57,7 @@ saveRDS(gene_list, "data/list_gene.Rds")
 
 # Load sample-level metadata (sample ID, treatment, cell type, etc.)
 metadata <- readRDS("../../rawdata/myotube_palmitate/data_out/metadata.Rds")
+metadata$cell.type <- paste(metadata$species, metadata$cell.type)
 
 # Save to app directory
 saveRDS(metadata, file = "data/metadata.Rds")

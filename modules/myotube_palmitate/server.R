@@ -19,8 +19,7 @@ server <- function(input, output, session) {
     updateSelectizeInput(session, "inputGeneSymbol", selected = character(0))
     updateSliderInput(session, "concentration", value = c(100, 500))
     updateSliderInput(session, "duration", value = c(12, 96))
-    updateCheckboxGroupInput(session, "cell_type", selected = c("C2C12", "LHCN-M2", "primary"))
-    updateCheckboxGroupInput(session, "species", selected = c("human", "mouse", "rat"))
+    updateCheckboxGroupInput(session, "cell_type", selected = c("human primary", "human LHCN-M2", "mouse C2C12", "rat primary"))
   })
   
   #-----------------------------------------------------------------
@@ -82,8 +81,7 @@ server <- function(input, output, session) {
     dat <- dplyr::filter(dat,
                          concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
                          time.hours >= input$duration[1] & time.hours <= input$duration[2],
-                         cell.type %in% input$cell_type,
-                         species %in% input$species)
+                         cell.type %in% input$cell_type)
     
     # Validate that some data is available
     validate(
@@ -113,7 +111,7 @@ server <- function(input, output, session) {
   #-----------------------------------------------------------------
   # Reactive text description of the current filters (used in UI summary)
   filterSummary <- reactive({
-    req(input$cell_type, input$species, input$concentration, input$duration)
+    req(input$cell_type, input$concentration, input$duration)
     
     # Load gene expression data and merge with metadata
     df <- selectedGeneData()
@@ -128,8 +126,7 @@ server <- function(input, output, session) {
     dat <- dplyr::filter(dat,
                          concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
                          time.hours >= input$duration[1] & time.hours <= input$duration[2],
-                         cell.type %in% input$cell_type,
-                         species %in% input$species)
+                         cell.type %in% input$cell_type)
     
     # If no rows remain, return fallback
     if (nrow(dat) == 0) {
@@ -155,8 +152,8 @@ server <- function(input, output, session) {
       paste(paste(x[-n], collapse = ", "), "or", x[n])
     }
     
-    # Generate a combined cell type/species description (e.g., "human C2C12")
-    cell_types <- format_list1(paste(dat$species, dat$cell.type))
+    # Generate a combined cell type description (e.g., "human C2C12")
+    cell_types <- format_list1(dat$cell.type)
     
     # Unique concentrations and durations (sorted for clarity)
     conc <- format_list2(dat$concentration.micromolar)
@@ -188,8 +185,7 @@ server <- function(input, output, session) {
     dat <- dplyr::filter(dat,
                          concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
                          time.hours >= input$duration[1] & time.hours <= input$duration[2],
-                         cell.type %in% input$cell_type,
-                         species %in% input$species)
+                         cell.type %in% input$cell_type)
     
     # Ensure there's data to analyze
     validate(
