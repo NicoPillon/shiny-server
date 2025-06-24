@@ -10,27 +10,19 @@ server <- function(input, output, session) {
   # Resize the iframe containing the app
   # Sends a custom message to the parent HTML to adjust height dynamically
   session$onFlushed(function() {
-    session$sendCustomMessage("resizeFrame", list())
-  }, once = FALSE)
-  
-  #-----------------------------------------------
-  # Code to collect gene name from loading page    
-  observe({
     query <- parseQueryString(session$clientData$url_search)
     
-    if (!is.null(query$gene)) {
-      selected_gene <- toupper(query$gene)  # normalize to uppercase
-      updateSelectizeInput(session, "inputGeneSymbol",
-                           choices = gene_list$SYMBOL,
-                           selected = selected_gene,
-                           server = TRUE)
+    selected_gene <- if (!is.null(query$gene)) {
+      toupper(query$gene)
     } else {
-      updateSelectizeInput(session, "inputGeneSymbol",
-                           choices = gene_list$SYMBOL,
-                           selected = c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"),  # default genes
-                           server = TRUE)
+      c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2")
     }
-  })
+    
+    updateSelectizeInput(session, "inputGeneSymbol",
+                         choices = gene_list$SYMBOL,
+                         selected = selected_gene,
+                         server = TRUE)
+  }, once = TRUE)
   
   
   #-----------------------------------------------
