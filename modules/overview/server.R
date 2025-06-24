@@ -11,14 +11,6 @@ server <- function(input, output, session) {
     session$sendCustomMessage("resizeFrame", list())
   }, once = FALSE)
 
-  # code to send the store the selected gene to use as input in other apps
-  observeEvent(input$go_to_app1, {
-    selected_gene <- input$gene_selector # or wherever your gene input is stored
-    url <- paste0("app1.html?gene=", URLencode(selected_gene))
-    updateQueryString(url, mode = "replace") # optional for local display
-    shinyjs::runjs(sprintf("window.open('%s', '_blank')", url))  # open in new tab
-  })
-  
   # Code to collect gene name from loading page    
   observe({
     query <- parseQueryString(session$clientData$url_search)

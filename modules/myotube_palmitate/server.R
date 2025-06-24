@@ -14,17 +14,24 @@ server <- function(input, output, session) {
   }, once = FALSE)
   
   #-----------------------------------------------
-  # Parse gene from URL query string
+  # Code to collect gene name from loading page    
   observe({
-    query <- shiny::getQueryString()
-    default_gene <- if (!is.null(query$gene)) unlist(strsplit(query$gene, ",")) else 
-      c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2")
+    query <- parseQueryString(session$clientData$url_search)
     
-    updateSelectizeInput(session, "inputGeneSymbol", 
-                         choices = gene_list$TARGET, 
-                         selected = default_gene,
-                         server = TRUE)
+    if (!is.null(query$gene)) {
+      selected_gene <- toupper(query$gene)  # normalize to uppercase
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$SYMBOL,
+                           selected = selected_gene,
+                           server = TRUE)
+    } else {
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$SYMBOL,
+                           selected = c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"),  # default genes
+                           server = TRUE)
+    }
   })
+  
   
   #-----------------------------------------------
   # Reset button functionality: resets all UI inputs to their default values
