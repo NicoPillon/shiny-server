@@ -18,7 +18,7 @@ server <- function(input, output, session) {
   observe({
     updateSelectizeInput(session, "inputGeneSymbol", 
                          choices = gene_list$TARGET, 
-                         selected = c("HAAO", "KCNJ15", "MYF5", "IL15"),
+                         selected = c("SUSD5", "NHSL2", "MYF5", "SAMD12"),
                          server = TRUE)
   })
   
