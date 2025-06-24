@@ -79,12 +79,10 @@ server <- function(input, output, session) {
     # Add Significance category
     dat <- dat %>%
       mutate(Significance = case_when(
-        adj.P.Val < 0.001 ~ "FDR < 0.001",
-        adj.P.Val < 0.01  ~ "FDR < 0.01",
         adj.P.Val < 0.05  ~ "FDR < 0.05",
         TRUE              ~ "ns"
       )) %>%
-      mutate(Significance = factor(Significance, levels = c("FDR < 0.001", "FDR < 0.01", "FDR < 0.05", "ns")))
+      mutate(Significance = factor(Significance, levels = c("FDR < 0.05", "ns")))
     
     # Sort and preserve order
     dat <- dat %>%
@@ -93,9 +91,7 @@ server <- function(input, output, session) {
     
     # Define color mapping for significance
     signif_colors <- c(
-      "FDR < 0.001" = "darkgreen",
-      "FDR < 0.01"  = "orange",
-      "FDR < 0.05"  = "yellow",
+      "FDR < 0.05"  = "darkgreen",
       "ns"          = "gray"
     )
     
@@ -132,13 +128,13 @@ server <- function(input, output, session) {
         gridLineWidth = 1,
         gridLineColor = "#e0e0e0",
         labels = list(style = list(color = "black", 
-                                   fontSize = "14px",
+                                   fontSize = "15px",
                                    whiteSpace = "nowrap",
                                    textOverflow = "none",
                                    overflow = "allow"))
       ) %>%
       hc_yAxis(
-        title = list(text = "Fold-change (log2)", style = list(color = "black", fontSize = "14px")),
+        title = list(text = "Fold-change (log2)", style = list(color = "black", fontSize = "16px")),
         labels = list(style = list(color = "gray", fontSize = "12px")),
         gridLineWidth = 1,
         gridLineColor = "#e0e0e0",
