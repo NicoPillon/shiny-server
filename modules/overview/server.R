@@ -131,7 +131,7 @@ server <- function(input, output, session) {
         name = experiment,
         color = signif_colors[[Significance]],
         #url = url,
-        url = paste0("app1.html?gene=", URLencode(input$inputGeneSymbol))
+        url = paste0(url, "?gene=", URLencode(input$inputGeneSymbol))
       )
     })
     
