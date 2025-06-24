@@ -24,5 +24,3 @@ library(httr)
 library(jsonlite)
 
 gene_list <- readRDS("data/list_gene.Rds")
-gene_protein_map <- readRDS("gene_uniprot_map.rds")
-
