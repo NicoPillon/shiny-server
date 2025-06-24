@@ -32,34 +32,7 @@ server <- function(input, output, session) {
     }
   })
   
-  
-  #----------------------------------------------------------------------------------------
-  # Detect unavailable genes
-  observe({
-    req(input$inputGeneSymbol)
-    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
 
-    # Check across all datasets
-    found_in_any <- any(genename %in% gene_list$SYMBOL)
-    
-    if (!found_in_any) {
-      output$gene_warning <- renderUI({
-        tags$div(style = "color: red; font-weight: bold; padding-top: 10px;",
-                 paste("⚠️ Sorry, the gene", genename, "was not found in any dataset. Please check your spelling."))
-      })
-      
-      # optionally: prevent downstream analysis
-      isolate({
-        start_aging(FALSE)
-        start_obesity(FALSE)
-        start_fibers(FALSE)
-      })
-      
-    } else {
-      output$gene_warning <- renderUI({ NULL })  # Clear the warning
-    }
-  })
-  
   #-----------------------------------------------------------------
   # REACTIVE: Load only selected gene(s) from on-disk parquet files
   selectedGeneData <- reactive({

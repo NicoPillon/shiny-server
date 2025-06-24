@@ -17,22 +17,21 @@ server <- function(input, output, session) {
   # Code to collect gene name from loading page    
   observe({
     query <- parseQueryString(session$clientData$url_search)
-    
+
     if (!is.null(query$gene)) {
       selected_gene <- toupper(query$gene)  # normalize to uppercase
       updateSelectizeInput(session, "inputGeneSymbol",
-                           choices = gene_list$SYMBOL,
+                           choices = gene_list$TARGET,
                            selected = selected_gene,
                            server = TRUE)
     } else {
       updateSelectizeInput(session, "inputGeneSymbol",
-                           choices = gene_list$SYMBOL,
+                           choices = gene_list$TARGET,
                            selected = c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"),  # default genes
                            server = TRUE)
     }
   })
-  
-  
+
   #-----------------------------------------------
   # Reset button functionality: resets all UI inputs to their default values
   observeEvent(input$resetInputs, {
@@ -106,7 +105,7 @@ server <- function(input, output, session) {
     dat <- selectedGeneData()
 
     # Validate that some data is available
-    validate(
+    shiny::validate(
       need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
     )
     
@@ -185,7 +184,7 @@ server <- function(input, output, session) {
     dat <- selectedGeneData()
 
     # Ensure there's y to analyze
-    validate(
+    shiny::validate(
       need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
     )
     
