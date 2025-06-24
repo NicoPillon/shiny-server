@@ -14,11 +14,15 @@ server <- function(input, output, session) {
   }, once = FALSE)
   
   #-----------------------------------------------
-  # Update gene list in UI
+  # Parse gene from URL query string
   observe({
+    query <- shiny::getQueryString()
+    default_gene <- if (!is.null(query$gene)) unlist(strsplit(query$gene, ",")) else 
+      c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2")
+    
     updateSelectizeInput(session, "inputGeneSymbol", 
                          choices = gene_list$TARGET, 
-                         selected = c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"),
+                         selected = default_gene,
                          server = TRUE)
   })
   
