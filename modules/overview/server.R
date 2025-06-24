@@ -6,11 +6,14 @@
 
 server <- function(input, output, session) {
 
-  # Code to send the height of the app to adjust iframe
+  #-----------------------------------------------
+  # Resize the iframe containing the app
+  # Sends a custom message to the parent HTML to adjust height dynamically
   session$onFlushed(function() {
     session$sendCustomMessage("resizeFrame", list())
   }, once = FALSE)
 
+  #-----------------------------------------------
   # Code to collect gene name from loading page    
   observe({
     query <- parseQueryString(session$clientData$url_search)

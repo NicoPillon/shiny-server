@@ -15,20 +15,22 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------
   # Code to collect gene name from loading page    
-  session$onFlushed(function() {
+  observe({
     query <- parseQueryString(session$clientData$url_search)
     
-    selected_gene <- if (!is.null(query$gene)) {
-      toupper(query$gene)
+    if (!is.null(query$gene)) {
+      selected_gene <- toupper(query$gene)  # normalize to uppercase
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$SYMBOL,
+                           selected = selected_gene,
+                           server = TRUE)
     } else {
-      c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2")
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$SYMBOL,
+                           selected = c("PDK4", "PXMP4", "LSM2", "ANGPTL4", "CPT1A", "ACAA2"),  # default genes
+                           server = TRUE)
     }
-    
-    updateSelectizeInput(session, "inputGeneSymbol",
-                         choices = gene_list$SYMBOL,
-                         selected = selected_gene,
-                         server = TRUE)
-  }, once = TRUE)
+  })
   
   
   #-----------------------------------------------
