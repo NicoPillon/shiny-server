@@ -88,11 +88,24 @@ server <- function(input, output, session) {
   # Set up reactivity of home page
   #
   #=======================================================================================
-  updateSelectizeInput(session, 'genename_home',
-                       choices=human_genes$SYMBOL,
-                       server=TRUE,
-                       selected='NR4A3',
-                       options=NULL)
+  # Code to collect target name from loading page    
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    
+    if (!is.null(query$target)) {
+      selected_target <- toupper(query$target)  # normalize to uppercase
+      updateSelectizeInput(session, "genename_home",
+                           choices = human_genes$SYMBOL,
+                           selected = selected_target,
+                           server = TRUE)
+    } else {
+      updateSelectizeInput(session, "genename_home",
+                           choices = human_genes$SYMBOL,
+                           selected='NR4A3',  # default genes
+                           server = TRUE)
+    }
+  })
+  
 
   # Synchronize genenames according to home page
   observeEvent(input$genename_home, { updateSelectizeInput(session, 'genename_metaanalysis_human',

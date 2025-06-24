@@ -176,18 +176,32 @@ server <- function(input, output, session) {
     session$sendCustomMessage("resizeFrame", list())
   }, once = FALSE)
   
-  updateSelectizeInput(session, 'inputGeneSymbol', 
-                       choices=genelist, 
-                       server=TRUE, 
-                       selected='F13A1', 
-                       options=NULL)
+
+  #-----------------------------------------------
+  # Code to collect target name from loading page    
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    
+    if (!is.null(query$target)) {
+      selected_target <- toupper(query$target)  # normalize to uppercase
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = genelist,
+                           selected = selected_target,
+                           server = TRUE)
+    } else {
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = genelist,
+                           selected='F13A1',   # default genes
+                           server = TRUE)
+    }
+  })
   
   ##################################################################################################################
   mousePlot_function <- function(){
     genename <- "F13a1"
     genename <- firstup(tolower(input$inputGeneSymbol))
     data <- mouse_data[genename,]
-    validate(need(isFALSE(rowSums(is.na(data)) == ncol(data)), "\nImpossible to find data for this gene name."))
+    shiny::validate(need(isFALSE(rowSums(is.na(data)) == ncol(data)), "\nImpossible to find data for this gene name."))
     
     
     #get samples
@@ -272,7 +286,7 @@ server <- function(input, output, session) {
     #genename <- "Arg1"
     genename <- toupper(input$inputGeneSymbol)
     data <- human_data[genename,]
-    validate(need(isFALSE(rowSums(is.na(data)) == ncol(data)), "\nImpossible to find data for this gene name."))
+    shiny::validate(need(isFALSE(rowSums(is.na(data)) == ncol(data)), "\nImpossible to find data for this gene name."))
     
     #get samples
     genedata <- t(human_data[genename,])

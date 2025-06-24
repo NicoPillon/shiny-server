@@ -15,12 +15,22 @@ server <- function(input, output, session) {
   }, once = FALSE)
   
   #-----------------------------------------------
-  # Update gene list in UI
+  # Code to collect target name from loading page    
   observe({
-    updateSelectizeInput(session, "inputGeneSymbol", 
-                         choices = gene_list$TARGET, 
-                         selected = c("PDK4", "NR1D1", "KLF15", "TXNIP", "MYOD1"),
-                         server = TRUE)
+    query <- parseQueryString(session$clientData$url_search)
+    
+    if (!is.null(query$target)) {
+      selected_target <- toupper(query$target)  # normalize to uppercase
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$TARGET,
+                           selected = selected_target,
+                           server = TRUE)
+    } else {
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$TARGET,
+                           selected = c("PDK4", "NR1D1", "KLF15", "TXNIP", "MYOD1"),  # default genes
+                           server = TRUE)
+    }
   })
   
   #-----------------------------------------------

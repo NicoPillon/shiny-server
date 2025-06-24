@@ -41,11 +41,17 @@
       <iframe 
         id="dynamic-iframe"
         title="Muscle Aging"
-        src="https://shiny.nicopillon.com/modules/human_muscle_aging/"
         style="width: 99%; border: none;"
         onload="document.getElementById('iframe-loader').style.display='none';"
       ></iframe>
-    </div>
+
+      <script>
+        // Pass query string to iframe
+        const queryString = window.location.search;
+        const iframe = document.getElementById("dynamic-iframe");
+        iframe.src = "https://shiny.nicopillon.com/modules/human_muscle_aging/" + queryString;
+      </script>
+    </div>   
 
     <!-- Script to receive height from iframe and adjust iframe size -->
     <script>

@@ -6,16 +6,31 @@
 
 server <- function(input, output, session) {
 
-  # Code to send the height of the app to adjust iframe
+  #-----------------------------------------------
+  # Resize the iframe containing the app
+  # Sends a custom message to the parent HTML to adjust height dynamically
   session$onFlushed(function() {
     session$sendCustomMessage("resizeFrame", list())
   }, once = FALSE)
     
-  updateSelectizeInput(session, 'inputGeneSymbol', 
-                       choices=genelist, 
-                       server=TRUE, 
-                       selected=c("FN1", "SPP1", "MYL4", "MYH7", "ATP2A1", "MYL3"), 
-                       options=NULL)
+  #-----------------------------------------------
+  # Code to collect target name from loading page    
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    
+    if (!is.null(query$target)) {
+      selected_target <- toupper(query$target)  # normalize to uppercase
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$TARGET,
+                           selected = selected_target,
+                           server = TRUE)
+    } else {
+      updateSelectizeInput(session, "inputGeneSymbol",
+                           choices = gene_list$TARGET,
+                           selected = c("FN1", "SPP1", "MYL4", "MYH7", "ATP2A1", "MYL3"),  # default genes
+                           server = TRUE)
+    }
+  })
   
   # REACTIVE: load only selected gene(s)
   selectedGeneData <- reactive({

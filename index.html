@@ -42,13 +42,13 @@
     </p>
     <p style="margin-top: 1rem;">Start by <a href="modules/overview.html">exploring the overview</a> of all datasets.</p>
     <div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;">
-      <input type="text" id="geneInput" placeholder="Type a target name and start exploring!" 
+      <input type="text" id="targetInput" placeholder="Type a target name and start exploring!" 
             style="padding: 10px 15px; width: 260px; font-size: 12px; border: none; 
                   border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); 
                   box-shadow: 0 1px 4px rgba(0,0,0,0.3);"
-            onkeypress="if(event.key === 'Enter') searchGene()">
+            onkeypress="if(event.key === 'Enter') searchTarget()">
 
-      <button onclick="searchGene()" 
+      <button onclick="searchTarget()" 
               style="padding: 8px 15px; font-size: 16px; background-color: #5B768E; 
                     color: white; border: none; border-radius: 5px; 
                     font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
@@ -60,10 +60,10 @@
 
 
 <script>
-  function searchGene() {
-    var gene = document.getElementById("geneInput").value.trim();
+  function searchTarget() {
+    var gene = document.getElementById("targetInput").value.trim();
     if (gene !== "") {
-      window.location.href = "modules/overview.html?gene=" + encodeURIComponent(gene);
+      window.location.href = "modules/overview.html?target=" + encodeURIComponent(gene);
     }
   }
 </script>
