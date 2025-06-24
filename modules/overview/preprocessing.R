@@ -13,21 +13,6 @@ library(ggiraph)
 library(arrow)
 library(highcharter)
 
-library(biomaRt)
-ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-att <- listAttributes(ensembl)
-gene_map <- getBM(
-  attributes = c("hgnc_symbol", "uniprot_gn_id", "ensembl_gene_id", "wikigene_description"),
-  mart = ensembl
-)
-
-# Filter out empty IDs
-gene_map <- gene_map[gene_map$uniprot_gn_id != "", ]
-
-# Save for later use
-saveRDS(gene_map, "gene_uniprot_map.rds")
-
-
 #--------------------------------------------------------------------------------------------------
 # Collect statistics from all apps
 #--------------------------------------------------------------------------------------------------
@@ -55,7 +40,7 @@ palmitate <- readRDS("../../rawdata/myotube_palmitate/data_out/stats.Rds")
 palmitate$SYMBOL <- rownames(palmitate)
 palmitate$experiment <- "Myotubes Exposed to Palmitate (mRNA)"
 palmitate$model <- "Myotube"
-palmitate$url <- "https://shiny.nicopillon.com/modules/myotube_palmitate/"
+palmitate$url <- "https://shiny.nicopillon.com/modules/myotube_palmitate.html"
 
 EPS <- readRDS("../../rawdata/myotube_EPS/data_out/stats.Rds")
 EPS$SYMBOL <- rownames(EPS)
