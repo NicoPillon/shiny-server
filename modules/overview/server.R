@@ -177,7 +177,7 @@ server <- function(input, output, session) {
       hc_plotOptions(series = list(
         cursor = "pointer",
         point = list(events = list(
-          click = JS("function() { window.open(this.url, '_blank'); }")
+          click = JS("function() { window.location.href = this.url; }")
         ))
       )) %>%
       hc_tooltip(
