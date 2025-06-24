@@ -73,25 +73,27 @@ server <- function(input, output, session) {
     # Ensure output preserves original input order
     df <- selected_row[genename, , drop = FALSE]
     data.frame(df)
+    
+    # Merge with metadata
+    dat <- data.frame(metadata, t(df)) 
+    
+    # Convert to long format for stats
+    dat <- pivot_longer(dat, cols = c(12:ncol(dat)),
+                        values_to = "y",
+                        names_to = "Gene")
+    
+    # Apply same filters as for plot
+    dat <- dplyr::filter(dat,
+                         concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
+                         time.hours >= input$duration[1] & time.hours <= input$duration[2],
+                         cell.type %in% input$cell_type)
   })
   
   #-----------------------------------------------------------------
   # Generate Boxplot visualization of gene expression
   plotDataBox <- reactive({
-    df <- selectedGeneData()
-    
-    # Combine metadata with expression values (transpose to long format)
-    dat <- data.frame(metadata, t(df))
-    dat <- pivot_longer(dat, cols = c(12:ncol(dat)),
-                        values_to = "y",
-                        names_to = "Gene")
-    
-    # Filter dataset based on selected slider/checkbox inputs
-    dat <- dplyr::filter(dat,
-                         concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
-                         time.hours >= input$duration[1] & time.hours <= input$duration[2],
-                         cell.type %in% input$cell_type)
-    
+    dat <- selectedGeneData()
+
     # Validate that some data is available
     validate(
       need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
@@ -122,20 +124,8 @@ server <- function(input, output, session) {
   filterSummary <- reactive({
 
     # Load gene expression data and merge with metadata
-    df <- selectedGeneData()
-    dat <- data.frame(metadata, t(df))
-    
-    # Reshape to long format for proper filtering
-    dat <- pivot_longer(dat, cols = c(12:ncol(dat)),
-                        values_to = "data",
-                        names_to = "Gene")
-    
-    # Apply current filters
-    dat <- dplyr::filter(dat,
-                         concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
-                         time.hours >= input$duration[1] & time.hours <= input$duration[2],
-                         cell.type %in% input$cell_type)
-    
+    dat <- selectedGeneData()
+
     # If no rows remain, return fallback
     if (nrow(dat) == 0) {
       return(" ")
@@ -181,21 +171,9 @@ server <- function(input, output, session) {
   #-----------------------------------------------------------------
   # Compute statistics (Wilcoxon test + summary)
   statisticsData <- reactive({
-    df <- selectedGeneData()
-    dat <- data.frame(metadata, t(df))  # Merge with metadata
-    
-    # Convert to long format for stats
-    dat <- pivot_longer(dat, cols = c(12:ncol(dat)),
-                        values_to = "data",
-                        names_to = "Gene")
-    
-    # Apply same filters as for plot
-    dat <- dplyr::filter(dat,
-                         concentration.micromolar >= input$concentration[1] & concentration.micromolar <= input$concentration[2],
-                         time.hours >= input$duration[1] & time.hours <= input$duration[2],
-                         cell.type %in% input$cell_type)
-    
-    # Ensure there's data to analyze
+    dat <- selectedGeneData()
+
+    # Ensure there's y to analyze
     validate(
       need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
     )
@@ -204,15 +182,15 @@ server <- function(input, output, session) {
     stats_result <- dat %>%
       group_by(Gene) %>%
       summarise(
-        mean_control = round(mean(data[treatment == "control"], na.rm = TRUE), 2),
-        sd_control = round(sd(data[treatment == "control"], na.rm = TRUE), 2),
-        n_control = sum(treatment == "control" & !is.na(data)),
-        mean_palmitate = round(mean(data[treatment == "palmitate"], na.rm = TRUE), 2),
-        sd_palmitate = round(sd(data[treatment == "palmitate"], na.rm = TRUE), 2),
-        n_palmitate = sum(treatment == "palmitate" & !is.na(data)),
+        mean_control = round(mean(y[treatment == "control"], na.rm = TRUE), 2),
+        sd_control = round(sd(y[treatment == "control"], na.rm = TRUE), 2),
+        n_control = sum(treatment == "control" & !is.na(y)),
+        mean_palmitate = round(mean(y[treatment == "palmitate"], na.rm = TRUE), 2),
+        sd_palmitate = round(sd(y[treatment == "palmitate"], na.rm = TRUE), 2),
+        n_palmitate = sum(treatment == "palmitate" & !is.na(y)),
         logFoldChange = mean_palmitate - mean_control,
         FoldChange = round(2^logFoldChange, 2),
-        p_value = tryCatch(wilcox.test(data ~ treatment, data = cur_data())$p.value, error = function(e) NA),
+        p_value = tryCatch(wilcox.test(y ~ treatment, data = cur_data())$p.value, error = function(e) NA),
         FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_list)),
         .groups = 'drop'
       ) %>%

@@ -74,12 +74,6 @@ server <- function(input, output, session) {
     # Ensure output preserves original input order
     df <- selected_row[genename, , drop = FALSE]
     data.frame(df)
-  })
-  
-  #-----------------------------------------------------------------
-  # Generate Boxplot visualization of gene expression
-  plotDataBox <- reactive({
-    df <- selectedGeneData()
     
     # Combine metadata with expression values (transpose to long format)
     dat <- data.frame(metadata, t(df))
@@ -107,6 +101,13 @@ server <- function(input, output, session) {
       filter(Diagnosis %in% input$diagnosis_diabetes,
              Treatment %in% input$treatment,
              pairID %in% valid_pairs)
+  })
+  
+  
+  #-----------------------------------------------------------------
+  # Generate Boxplot visualization of gene expression
+  plotDataBox <- reactive({
+    dat <- selectedGeneData()
     
     # Validate that some data is available
     validate(
@@ -137,32 +138,8 @@ server <- function(input, output, session) {
   filterSummary <- reactive({
     
     # Load gene expression data and merge with metadata
-    df <- selectedGeneData()
-    dat <- data.frame(metadata, t(df))
-    
-    # Reshape to long format for proper filtering
-    dat <- pivot_longer(dat, cols = c(13:ncol(dat)),
-                        values_to = "data",
-                        names_to = "Gene")
-    
-    #filter according to selected categories
-    dat <- dplyr::filter(dat,
-                         Diagnosis %in% input$diagnosis_diabetes,
-                         Treatment %in% input$treatment)
-    
-    # Identify pairIDs where POST Time is within the selected time range
-    valid_pairs <- dat %>%
-      filter(Condition == "POST",
-             Time >= as.numeric(input$duration[1]),
-             Time <= as.numeric(input$duration[2])) %>%
-      pull(pairID)
-    
-    # Filter the full dataset by valid pairIDs and other filters
-    dat <- dat %>%
-      filter(Diagnosis %in% input$diagnosis_diabetes,
-             Treatment %in% input$treatment,
-             pairID %in% valid_pairs)
-    
+    dat <- selectedGeneData()
+
     # If no rows remain, return fallback
     if (nrow(dat) == 0) {
       return(" ")
@@ -207,26 +184,8 @@ server <- function(input, output, session) {
   #-----------------------------------------------------------------
   # Compute statistics (Wilcoxon test + summary)
   statisticsData <- reactive({
-    df <- selectedGeneData()
-    dat <- data.frame(metadata, t(df))  # Merge with metadata
-    
-    # Reshape to long format for proper filtering
-    dat <- pivot_longer(dat, cols = c(13:ncol(dat)),
-                        values_to = "data",
-                        names_to = "Gene")
-    
-    #filter according to selected categories
-    dat <- dplyr::filter(dat,
-                         Diagnosis %in% input$diagnosis_diabetes,
-                         Treatment %in% input$treatment)
-    
-    # Identify pairIDs where POST Time is within the selected time range
-    valid_pairs <- dat %>%
-      filter(Condition == "POST",
-             Time >= as.numeric(input$duration[1]),
-             Time <= as.numeric(input$duration[2])) %>%
-      pull(pairID)
-    
+    dat <- selectedGeneData()
+
     # Ensure there's data to analyze
     validate(
       need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
@@ -236,15 +195,15 @@ server <- function(input, output, session) {
     stats_result <- dat %>%
       group_by(Gene) %>%
       summarise(
-        mean_pre = round(mean(data[Condition == "PRE"], na.rm = TRUE), 2),
-        sd_pre = round(sd(data[Condition == "PRE"], na.rm = TRUE), 2),
-        n_pre = sum(Condition == "PRE" & !is.na(data)),
-        mean_post = round(mean(data[Condition == "POST"], na.rm = TRUE), 2),
-        sd_post = round(sd(data[Condition == "POST"], na.rm = TRUE), 2),
-        n_post = sum(Condition == "POST" & !is.na(data)),
+        mean_pre = round(mean(y[Condition == "PRE"], na.rm = TRUE), 2),
+        sd_pre = round(sd(y[Condition == "PRE"], na.rm = TRUE), 2),
+        n_pre = sum(Condition == "PRE" & !is.na(y)),
+        mean_post = round(mean(y[Condition == "POST"], na.rm = TRUE), 2),
+        sd_post = round(sd(y[Condition == "POST"], na.rm = TRUE), 2),
+        n_post = sum(Condition == "POST" & !is.na(y)),
         logFoldChange = mean_post - mean_pre,
         FoldChange = round(2^logFoldChange, 2),
-        p_value = tryCatch(wilcox.test(data ~ Condition, data = cur_data())$p.value, error = function(e) NA),
+        p_value = tryCatch(wilcox.test(y ~ Condition, data = cur_data())$p.value, error = function(e) NA),
         FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_list)),
         .groups = 'drop'
       ) %>%

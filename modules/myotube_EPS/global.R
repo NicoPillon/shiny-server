@@ -4,39 +4,36 @@
 #
 #--------------------------------------------------------------------------------------------------------
 
-# Load data and libraries
-library(feather)
-library(shinycssloaders)
-library(tidyverse)
-library(ggplot2)
-library(ggpubr)
-library(ggforce)
-library(cowplot)
-library(DT)
-library(matrixStats)
-library(pheatmap)
+#======================
+# Load Required Packages
+#======================
+# Efficient disk-based dataset access (used to load parquet files)
 library(arrow)
 
-# function to format p values
-p_value_formatter <<- function(p) { # <<- operator forces the function into the global environment.
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}
+# For advanced shiny options
+library(shinycssloaders)
+library(shinyWidgets)
 
-# Load static reference data
+# Data wrangling and transformation (includes dplyr, tidyr, readr, etc.)
+library(tidyverse)
+
+# For advanced ggplot geoms like geom_sina (used for scatter overlay)
+library(ggforce)
+
+# Interactive tables
+library(DT)
+
+
+
+#======================
+# Load Static Data Files
+#======================
+
+# Sample-level metadata (used for filtering, plotting, and statistics)
 metadata <- readRDS("data/metadata.Rds")
+
+# References table with dataset descriptions
 references <- readRDS("data/references.Rds")
-gene_to_file <- readRDS("data/list_gene.Rds")
 
-
-
-datamatrix <- data.frame(rbind(
-  arrow::read_feather("data/datamatrix_1.feather"),
-  arrow::read_feather("data/datamatrix_2.feather")
-))
-rownames(datamatrix) <- gene_to_file$TARGET
+# Lookup table that maps gene symbols to files and rows
+gene_list <- readRDS("data/list_gene.Rds")
