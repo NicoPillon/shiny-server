@@ -31,78 +31,79 @@ saveRDS(gene_map, "gene_uniprot_map.rds")
 #--------------------------------------------------------------------------------------------------
 # Collect statistics from all apps
 #--------------------------------------------------------------------------------------------------
+# Need to spell out the whole web address to get out of the overview iframe.
 
 fiber2vs1_mRNA <- readRDS("../../rawdata/fiber_types/data_out/transcriptome_stats_IIvsI.Rds")
 fiber2vs1_mRNA$SYMBOL <- rownames(fiber2vs1_mRNA)
 fiber2vs1_mRNA$experiment <- "Fiber Type 2 vs Type 1 (mRNA)"
 fiber2vs1_mRNA$model <- "Muscle Fiber"
-fiber2vs1_mRNA$url <- "../fiber_types.html"
+fiber2vs1_mRNA$url <- "https://shiny.nicopillon.com/modules/fiber_types.html"
 
 fiber2vs1_protein <- readRDS("../../rawdata/fiber_types/data_out/proteome_stats_IIvsI.Rds")
 fiber2vs1_protein$SYMBOL <- rownames(fiber2vs1_protein)
 fiber2vs1_protein$experiment <- "Fiber Type 2 vs Type 1 (protein)"
 fiber2vs1_protein$model <- "Muscle Fiber"
-fiber2vs1_protein$url <- "../fiber_types.html"
+fiber2vs1_protein$url <- "https://shiny.nicopillon.com/modules/fiber_types.html"
 
 clamp <- readRDS("../../rawdata/muscle_clamp/data_out/stats.Rds")
 clamp$SYMBOL <- rownames(clamp)
 clamp$experiment <- "Hyperinsulinemic Euglycemic Clamp (mRNA)"
 clamp$model <- "Muscle Tissue"
-clamp$url <- "../muscle_clamp.html"
+clamp$url <- "https://shiny.nicopillon.com/modules/muscle_clamp.html"
 
 palmitate <- readRDS("../../rawdata/myotube_palmitate/data_out/stats.Rds")
 palmitate$SYMBOL <- rownames(palmitate)
 palmitate$experiment <- "Myotubes Exposed to Palmitate (mRNA)"
 palmitate$model <- "Myotube"
-palmitate$url <- "../myotube_palmitate/"
+palmitate$url <- "https://shiny.nicopillon.com/modules/myotube_palmitate/"
 
 EPS <- readRDS("../../rawdata/myotube_EPS/data_out/stats.Rds")
 EPS$SYMBOL <- rownames(EPS)
 EPS$experiment <- "Myotubes Exposed to Electrical Pulse Stimulation (mRNA)"
 EPS$model <- "Myotube"
-EPS$url <- "../myotube_EPS.html"
+EPS$url <- "https://shiny.nicopillon.com/modules/myotube_EPS.html"
 
 age <- readRDS("../../rawdata/human_muscle_aging/transcriptomics/data_out/AgingDataset_stats.Rds")
 age$SYMBOL <- rownames(age)
 age$experiment <- "Old vs Young Age (mRNA)"
 age$model <- "Muscle Tissue"
-age$url <- "../human_muscle_aging.html"
+age$url <- "https://shiny.nicopillon.com/modules/human_muscle_aging.html"
 
 obesity_mRNA <- readRDS("../../rawdata/human_muscle_obesity/transcriptomics/data_out/stats.Rds")
 obesity_mRNA$SYMBOL <- rownames(obesity_mRNA)
 obesity_mRNA$experiment <- "Obesity vs Lean Weight (mRNA)"
 obesity_mRNA$model <- "Muscle Tissue"
-obesity_mRNA$url <- "../human_muscle_obesity.html"
+obesity_mRNA$url <- "https://shiny.nicopillon.com/modules/human_muscle_obesity.html"
 
 exercise.AA <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_AA.csv", row.names = 1)
 exercise.AA$SYMBOL <- rownames(exercise.AA)
 exercise.AA$experiment <- "Acute Aerobic Exercise (mRNA)"
 exercise.AA$model <- "Muscle Tissue"
-exercise.AA$url <- "../MetaMEx.html"
+exercise.AA$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
 exercise.AR <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_AR.csv", row.names = 1)
 exercise.AR$SYMBOL <- rownames(exercise.AR)
 exercise.AR$experiment <- "Acute Resistance Exercise (mRNA)"
 exercise.AR$model <- "Muscle Tissue"
-exercise.AR$url <- "../MetaMEx.html"
+exercise.AR$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
 exercise.TA <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_TA.csv", row.names = 1)
 exercise.TA$SYMBOL <- rownames(exercise.TA)
 exercise.TA$experiment <- "Aerobic Training (mRNA)"
 exercise.TA$model <- "Muscle Tissue"
-exercise.TA$url <- "../MetaMEx.html"
+exercise.TA$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
 exercise.TR <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_TR.csv", row.names = 1)
 exercise.TR$SYMBOL <- rownames(exercise.TR)
 exercise.TR$experiment <- "Resistance Training (mRNA)"
 exercise.TR$model <- "Muscle Tissue"
-exercise.TR$url <- "../MetaMEx.html"
+exercise.TR$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
 exercise.IN <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_IN.csv", row.names = 1)
 exercise.IN$SYMBOL <- rownames(exercise.IN)
 exercise.IN$experiment <- "Inactivity (mRNA)"
 exercise.IN$model <- "Muscle Tissue"
-exercise.IN$url <- "../MetaMEx.html"
+exercise.IN$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
 datamatrix <- rbind(
   fiber2vs1_mRNA, fiber2vs1_protein,

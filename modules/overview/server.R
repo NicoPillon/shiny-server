@@ -161,7 +161,7 @@ server <- function(input, output, session) {
                                    overflow = "allow"))
       ) %>%
       hc_yAxis(
-        title = list(text = "logFC", style = list(color = "black", fontSize = "14px")),
+        title = list(text = "Fold-change (log2)", style = list(color = "black", fontSize = "14px")),
         labels = list(style = list(color = "gray", fontSize = "12px")),
         gridLineWidth = 1,
         gridLineColor = "#e0e0e0",
@@ -177,7 +177,7 @@ server <- function(input, output, session) {
       hc_plotOptions(series = list(
         cursor = "pointer",
         point = list(events = list(
-          click = JS("function() { window.location.href = this.url; }")
+          click = JS("function() { window.open(this.url, '_blank'); }")
         ))
       )) %>%
       hc_tooltip(
@@ -189,22 +189,6 @@ server <- function(input, output, session) {
   
   #----------------------------------------------------------------------------------------
   # Gene description
-  # output$gene_description <- renderText({
-  #   req(input$inputGeneSymbol)
-  #   symbol <- toupper(input$inputGeneSymbol)
-  #   
-  #   tryCatch({
-  #     search <- entrez_search(db = "gene", term = paste0(symbol, "[Gene Name] AND Homo sapiens[Organism]"))
-  #     if (length(search$ids) == 0) return("🧬 No NCBI match found.")
-  #     
-  #     summary <- entrez_summary(db = "gene", id = search$ids[1])
-  #     return(paste0("🧬 ", summary$summary))
-  #   }, error = function(e) {
-  #     return("⚠️ Description could not be retrieved.")
-  #   })
-  # })
-  
-  
   output$gene_description <- renderUI({
     req(input$inputGeneSymbol)
     symbol <- toupper(input$inputGeneSymbol)
