@@ -10,7 +10,7 @@ ui <- fluidPage(
   
   #---------------------------------------------------------
   # Load custom CSS for consistent style across the app
-  #tags$head(includeCSS("../../www/style.css")),
+  tags$head(includeCSS("../../www/style.css")),
   
   #---------------------------------------------------------
   # Navigation bar layout with multiple tabs
