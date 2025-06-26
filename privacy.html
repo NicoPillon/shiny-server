@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RQ1ZSE9VVR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RQ1ZSE9VVR');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy</title>
+  <link rel="stylesheet" href="www/style.css">
+</head>
+
+<body>
+
+  <!-- Include shared header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+  </script>
+
+  <!-- Page Wrapper starts here -->
+  <div class="page-wrapper">
+    <div class="main-content" style="max-width: 1100px; margin-top: 20px; margin-bottom: 50px; font-size: 1.05rem; line-height: 1.6;">
+
+      <h2>Privacy Policy</h2>
+
+      <p>
+        Muscleomics.org respects your privacy. This page describes what data we collect and how it is used.
+      </p>
+
+      <h3>Analytics</h3>
+      <p>
+        This site uses Google Analytics to help us understand how visitors use the platform. This includes information such as:
+      </p>
+      <ul style="padding-left: 1.5rem;">
+        <li>Pages visited</li>
+        <li>Time spent on pages</li>
+        <li>Browser type and country</li>
+      </ul>
+      <p>
+        All data collected by Google Analytics is <strong>anonymous</strong> and does not include any personally identifiable information.
+      </p>
+
+      <h3>Cookies</h3>
+      <p>
+        Google Analytics may set browser cookies to help track usage patterns. By using this website, you agree to the use of such cookies.
+      </p>
+
+      <h3>Your Options</h3>
+      <p>
+        If you prefer not to be tracked, you can opt out using the 
+        <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics Opt-Out Browser Add-on</a>.
+      </p>
+
+      <h3>External Links</h3>
+      <p>
+        This website may include links to external resources. We are not responsible for the content or privacy policies of external websites.
+      </p>
+
+      <h3>Contact</h3>
+      <p>
+        If you have questions about this policy, please <a href="contact.html">contact us</a>.
+      </p>
+
+      <p>
+        View the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a> for more information.
+      </p>
+
+    </div>
+  </div>
+  <!-- Page Wrapper ends here -->
+
+  <!-- Include shared footer -->
+  <div id="footer-placeholder"></div>
+  <script>
+    fetch('/footer.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+  </script>
+
+</body>
+</html>
