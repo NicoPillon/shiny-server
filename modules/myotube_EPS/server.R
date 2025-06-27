@@ -237,7 +237,7 @@ server <- function(input, output, session) {
   })
   
   # Display significance table only
-  output$statistics1 <- DT::renderDataTable({
+  output$statistics1 <- DT::renderDT({
     dat <- statisticsData()
     dat <- dat[!dat$Statistics %in% c("mean control", "sd control", "n control", "mean EPS", "sd EPS", "n EPS"),]
     colnames(dat)[1] <- "Differential Expression Analysis"
@@ -260,7 +260,7 @@ server <- function(input, output, session) {
   })
   
   # Display group statistics table
-  output$statistics2 <- DT::renderDataTable({
+  output$statistics2 <- DT::renderDT({
     dat <- statisticsData()
     dat <- dat[dat$Statistics %in% c("mean control", "sd control", "n control", "mean EPS", "sd EPS", "n EPS"),]
     colnames(dat)[1] <- "Group Summary Statistics"
@@ -285,7 +285,7 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------------------------
   # Show references table (metadata about datasets)
-  output$references <- renderDataTable({
+  output$references <- DT::renderDT({
     DT::datatable(
       references, 
       escape = FALSE, 
@@ -325,6 +325,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       df <- selectedGeneData()
+      df <- pivot_wider(df, names_from = "Gene", values_from = "y")
       df <- data.frame(metadata, t(df))
       if (!is.null(df)) {
         write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)

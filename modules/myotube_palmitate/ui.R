@@ -96,11 +96,11 @@ ui <- fluidPage(
                          tags$hr(),
                          
                          # Table 1: Differential expression results
-                         DT::dataTableOutput("statistics1"),
+                         DT::DTOutput("statistics1"),
                          tags$br(),
                          
                          # Table 2: Summary statistics (mean, SD, n)
-                         DT::dataTableOutput("statistics2"),
+                         DT::DTOutput("statistics2"),
                          tags$br()
                )
              )

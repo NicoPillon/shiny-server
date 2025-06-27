@@ -80,11 +80,11 @@ ui <- fluidPage(
                          tags$hr(),
                          
                          # Table 1: Differential expression results
-                         DT::dataTableOutput("statistics1"),
+                         DT::DTOutput("statistics1"),
                          tags$br(),
                          
                          # Table 2: Summary statistics (mean, SD, n)
-                         DT::dataTableOutput("statistics2"),
+                         DT::DTOutput("statistics2"),
                          tags$br()
                )
              )
@@ -100,8 +100,7 @@ ui <- fluidPage(
              # Introduction
              h3("Why this app?"),
              p("This app provides an interactive resource to investigate how gene expression differs in primary human skeletal muscle cells from individuals with and without type 2 diabetes (T2D). 
-         By pooling and harmonizing multiple publicly available transcriptomic studies—including both myoblasts and myotubes—this tool enables exploration of diabetes-related molecular signatures 
-         in skeletal muscle cells, with applications for research, diagnosis, and therapeutic development."),
+         By pooling and harmonizing multiple publicly available transcriptomic studies, this tool enables exploration of diabetes-related molecular signatures in skeletal muscle cells, with applications for research, diagnosis, and therapeutic development."),
              
              # Data processing and integration methodology
              h3("Methods"),

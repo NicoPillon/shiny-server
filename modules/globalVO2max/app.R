@@ -136,7 +136,7 @@ ui <- fluidPage(title="globalVO2max",
                               a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
                       )
                     ),    
-                    DT::dataTableOutput("studies_included")
+                    DT::DTOutput("studies_included")
                   ),
                   
                   # Code to send height to resizing iframe
