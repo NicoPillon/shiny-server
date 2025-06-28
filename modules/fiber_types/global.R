@@ -1,46 +1,62 @@
-#-----------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
 #
-# Profile of skeletal muscle fibers
+# Transcriptomic profile of skeletal muscle cells - Global
 #
-#----------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
 
-# Load data and libraries
-library(feather)
-library(shinycssloaders)
-library(tidyverse)
-library(ggplot2)
-library(ggpubr)
-library(ggforce)
-library(cowplot)
-library(DT)
-library(matrixStats)
-library(pheatmap)
+#======================
+# Load Required Packages
+#======================
+# Efficient disk-based dataset access (used to load parquet files)
 library(arrow)
-library(openxlsx)
+
+# For advanced shiny options
+library(shinycssloaders)
+library(shinyWidgets)
+
+# Data wrangling and transformation (includes dplyr, tidyr, readr, etc.)
+library(tidyverse)
+
+# For advanced ggplot geoms like geom_sina (used for scatter overlay)
+library(ggforce)
+
+# Interactive tables
+library(DT)
+
+#======================
+# Load Static Data Files
+#======================
 
 # metadata
-metadata_proteome <- readRDS("data/metadata_proteome.Rds")[,1:3]
+metadata_proteome <- readRDS("data/metadata_proteome.Rds")
 metadata_transcriptome <- readRDS("data/metadata_transcriptome.Rds")
 
+metadata_proteome <- data.frame(
+  study = metadata_proteome$study,
+  sample_id = metadata_proteome$sample_id,
+  fiber_type = metadata_proteome$FiberType,
+  OMICS = "Proteome"
+)
+
+metadata_transcriptome <- data.frame(
+  study = metadata_transcriptome$GEO,
+  sample_id = metadata_transcriptome$geo_accession,
+  fiber_type = metadata_transcriptome$FiberType,
+  OMICS = "Transcriptome"
+)
+
+metadata <- rbind(metadata_proteome, metadata_transcriptome)
+
+
 # List of genes
-gene_to_file_proteome <- readRDS("data/gene_list_proteome.Rds")
-gene_list_proteome <- gene_to_file_proteome$SYMBOL
+gene_to_file_proteome <- readRDS("data/list_gene_proteome.Rds")
+gene_to_file_proteome$OMICS <- "Proteome"
 
-gene_to_file_transcriptome <- readRDS("data/gene_list_transcriptome.Rds")
-gene_list_transcriptome <- gene_to_file_transcriptome$SYMBOL
+gene_to_file_transcriptome <- readRDS("data/list_gene_transcriptome.Rds")
+gene_to_file_transcriptome$OMICS <- "Transcriptome"
 
-gene_list_all <- union(gene_list_proteome, gene_list_transcriptome)
+gene_to_file <- rbind(gene_to_file_proteome, gene_to_file_transcriptome)
 
+
+# references
 references <- readRDS("data/references.Rds")
-
-
-# function to format p values
-p_value_formatter <<- function(p) { # <<- operator forces the function into the global environment.
-  sapply(p, function(x) {
-    if (x < 0.001) {
-      return("italic(p) < 0.001")
-    } else {
-      return(sprintf("italic(p) == %.3f", x))
-    }
-  })
-}

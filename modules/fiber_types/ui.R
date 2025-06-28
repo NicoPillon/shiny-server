@@ -4,76 +4,147 @@
 #
 #----------------------------------------------------------------------
 
-ui <- fluidPage(title="FiberTypes",
-                style="padding:0%",
-                
-                # CSS for style
-                tags$head(includeCSS("../../www/style.css")),
-                
-                # main page
-                navbarPage("FiberTypes",
-                           
-                           tabPanel(
-                             title = "Plots",
-                             
-                             # main page
-                             sidebarLayout(
-                               sidebarPanel(width = 3,
-                                            selectizeInput("inputGeneSymbol", "Gene Symbols:", choices=NULL, multiple=T, width=600),
-                                            actionButton("updatePlot", "Refresh plot", icon("refresh")),
-                                            tags$hr(),
-                                            tags$b("Statistics:"),
-                                            em("Kruskal–Wallis tests to assess whether at least one fiber type differs from the others. Reported p-values are not adjusted for multiple comparisons."),
-                                            tags$hr(),
-                                            downloadButton("downloadGeneData", "Download Data")
-                               ),
-                               mainPanel(width = 9, style="padding:0% 4% 1% 4%;",
-                                         plotOutput("GenePlot", height="400px") %>% withSpinner(color="#5b768e", type = 8),
-                                         plotOutput("ProteinPlot", height="400px") %>% withSpinner(color="#5b768e", type = 8)
-                               )
-                             )
-                           ),
-                           
-                           # description of methods
-                           tabPanel("Description",
-                                    
-                                    h3("Citation"),
-                                    "Unpublished analysis",
-                                    
-                                    tags$hr(),
-                                    
-                                    h3("Methods"),
-                                    
-                                    p("This analysis integrates proteomic and transcriptomic datasets of human skeletal muscle fibers to identify and compare fiber-type specific signatures."),
-                                    
-                                    p("For proteomics, raw intensity values were retrieved from supplementary Excel files, and metadata were cleaned and harmonized. Protein expression matrices were constructed by aligning sample identifiers and gene symbols. Rows with multiple gene mappings were split and only those with fewer missing values were retained. Fiber types were annotated based on the relative abundance of MYH isoforms, using published criteria: Type I (MYH7 ≥ 80%), Type IIA (MYH2 ≥ 80%), and Type IIX (MYH1 ≥ 20%)."),
-                                    
-                                    p("For transcriptomics, raw UMI counts or CEL files were preprocessed with standard Bioconductor pipelines. Lowly expressed genes were filtered, normalized using TMM or RMA, and batch effects were removed with `limma::removeBatchEffect`. Gene identifiers were mapped to gene symbols. Metadata were extracted and harmonized to enable sample-wise comparison. Single muscle fibers were annotated based on the expression levels of MYH7, MYH1, and MYH2. Normalized expression values were back-transformed to linear scale and used to compute isoform contributions. Fibers were classified into 'Type I', 'Type IIA', or 'Type IIX' based on tertiles of isoform expression, with intermediate profiles labeled as 'Mixed' and excluded."),
-                                    
-                                    tags$hr(),
-                                    
-                                    h3("Datasets Included in the Analysis"),
-                                    tags$p(
-                                      tags$b("Are we missing a relevant study? Please "),
-                                      a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
-                                    ),
-                                    dataTableOutput("references")
-                           ),
-                           
-                           # Code to send height to resizing iframe
-                           tags$head(
-                             tags$script(HTML("
-    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
-      const height = document.documentElement.scrollHeight;
-      parent.postMessage({ frameHeight: height }, '*');
-    });
+ui <- fluidPage(
+  title="FiberTypes",    # Title of the browser tab
+  style="padding:0%",    # Remove default padding around the page
+  
+  #---------------------------------------------------------
+  # Load custom CSS for consistent style across the app
+  tags$head(includeCSS("../../www/style.css")),
+  
+  #---------------------------------------------------------
+  # Navigation bar layout with multiple tabs
+  navbarPage(
+    # Custom title: logo image + text
+    title = HTML('
+      <div style="display: flex; align-items: center;margin: -10px;">
+        <img src="../../www/img/snippet/fiber_types.png" style="height: 40px; margin-right: 10px;">
+        <span style="font-size: 20px; font-weight: bold; margin-right: 10px;">Fiber Types</span>
+      </div>
+    '),
+    
+    #=====================================================================
+    #============================ TAB 1 =================================
+    #=====================================================================
+    tabPanel("Analysis",
+             
+             # Introductory text with link to the methods section
+             p(HTML('Proteome and transcriptome of human skeletal muscle fibers. \n To understand how the data was generated, read the 
+             <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Methods\\\')\').click()">methods</a>.')),
+             
+             tags$br(),
+             
+             # Layout: Sidebar on the left + Main content on the right
+             sidebarLayout(
+               
+               #-----------------------------
+               # Sidebar panel with input filters
+               sidebarPanel(width = 3,
+                            h4(tags$b("Select your criteria")),
+                            
+                            # Gene selector (multi-select)
+                            selectizeInput("inputTarget", "Targets of Interest", choices=NULL, multiple=T, width=600),
 
-    window.addEventListener('resize', function() {
-      const height = document.documentElement.scrollHeight;
-      parent.postMessage({ frameHeight: height }, '*');
-    });
-  "))
-                           )
-                           
-                )
+                            # select dataset
+                            selectInput(
+                              inputId = "inputOmics",
+                              label = "OMICS",
+                              choices = c("Proteome", "Transcriptome"),
+                              selected = NULL,
+                              multiple = FALSE,
+                              selectize = TRUE
+                            ),
+                            
+                            # Checkbox filters for fibers of interest
+                            checkboxGroupInput("fibers", 
+                                               label = "Fiber Types", 
+                                               selected = c("Type I", "Type IIA", "Type IIX"),
+                                               choices = c("Type I", "Type IIA", "Type IIX")),
+                            
+                            # Button to reset all filters
+                            actionButton("resetInputs", "Reset Filters", icon = icon("undo")),
+                            
+                            tags$hr(),
+                            
+                            # Download section
+                            h4(tags$b("Download")),
+                            downloadButton("downloadPlot", "Plot (.png)"), tags$br(), 
+                            downloadButton("downloadData", "Data (.csv)"), tags$br(), 
+                            downloadButton("downloadStats", "Statistics (.csv)")
+               ),
+               
+               #-----------------------------
+               # Main panel with output: plot + tables
+               mainPanel(width = 9, style = "padding:0% 4% 0% 1%;",
+                         
+                         plotOutput("TargetPlot", height="400px") %>% withSpinner(color="#5b768e", type = 8),
+
+                         #tags$hr(),
+                         tags$em(textOutput("filterSummaryText")),
+                         
+                         tags$hr(),
+                         
+                         # Table 1: Differential expression results
+                         DT::dataTableOutput("statistics1"),
+                         tags$br(),
+                         
+                         # Table 2: Summary statistics (mean, SD, n)
+                         DT::dataTableOutput("statistics2"),
+                         tags$br()
+               )
+             )
+    ),
+    
+    #=====================================================================
+    #============================ TAB 2 =================================
+    #=====================================================================
+    tabPanel("Methods",  # Tab describing methodology
+             
+             style = "padding:0% 5% 1% 5%;",
+             
+             # Introduction
+             h3("Why this app?"),
+             p("This analysis integrates proteomic and transcriptomic datasets of human skeletal muscle fibers to identify and compare fiber-type specific signatures."),
+             
+             # Data processing and integration methodology
+             h3("Methods"),
+             p("For proteomics, raw intensity values were retrieved from supplementary Excel files, and metadata were cleaned and harmonized. Protein expression matrices were constructed by aligning sample identifiers and names. Rows with multiple name mappings were split and only those with fewer missing values were retained. Fiber types were annotated based on the relative abundance of MYH isoforms, using published criteria: Type I (MYH7 ≥ 80%), Type IIA (MYH2 ≥ 80%), and Type IIX (MYH1 ≥ 20%)."),
+             
+             p("For transcriptomics, raw UMI counts or CEL files were preprocessed with standard Bioconductor pipelines. Lowly expressed genes were filtered, normalized using TMM or RMA, and batch effects were removed with `limma::removeBatchEffect`. Gene identifiers were mapped to gene symbols. Metadata were extracted and harmonized to enable sample-wise comparison. Single muscle fibers were annotated based on the expression levels of MYH7, MYH1, and MYH2. Normalized expression values were back-transformed to linear scale and used to compute isoform contributions. Fibers were classified into 'Type I', 'Type IIA', or 'Type IIX' based on tertiles of isoform expression, with intermediate profiles labeled as 'Mixed' and excluded."),
+             
+             # Statistical tests
+             h3("Statistics"),
+             p("The results table presents both unadjusted and Bonferroni-adjusted p-values to correct for multiple testing across all transcripts in the database, ensuring a highly conservative approach. Significance is indicated as follows: * for FDR < 0.05, ** for FDR < 0.01, and *** for FDR < 0.001. 'ns' denotes non-significant results."),
+             
+             # Citation
+             h3("Citation"),
+             "Pillon NJ. Unpublished analysis",
+             
+             # References table for included datasets
+             h3("Datasets"),
+             tags$p(
+               tags$em("Have we missed a relevant study? Please ",
+                       a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+               )
+             ),
+             dataTableOutput("references")
+    ),
+    
+    #=====================================================================
+    #======================= IFRAME HEIGHT SYNC ==========================
+    #=====================================================================
+    tags$head(
+      tags$script(HTML("
+        Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+
+        window.addEventListener('resize', function() {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+      "))
+    )
+  )
 )

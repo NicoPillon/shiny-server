@@ -5,248 +5,412 @@
 #----------------------------------------------------------------------
 
 server <- function(input, output, session) {
-
-  # Code to send the height of the app to adjust iframe  
-  updateSelectizeInput(session, 'inputGeneSymbol', 
-                         choices=gene_list_all, 
-                         server=TRUE, 
-                         selected=c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2"), 
-                         options=NULL)
+  
+  #-----------------------------------------------
+  # Resize the iframe containing the app
+  # Sends a custom message to the parent HTML to adjust height dynamically
+  session$onFlushed(function() {
+    session$sendCustomMessage("resizeFrame", list())
+  }, once = FALSE)
+  
+  #-----------------------------------------------
+  # Code to collect target name from loading page    
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    
+    if (!is.null(query$target)) {
+      selected_target <- toupper(query$target)  # normalize to uppercase
+      updateSelectizeInput(session, "inputTarget",
+                           choices = gene_to_file$TARGET,
+                           selected = selected_target,
+                           server = TRUE)
+    } else {
+      updateSelectizeInput(session, "inputTarget",
+                           choices = gene_to_file$TARGET,
+                           selected = c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2"),  # default genes
+                           server = TRUE)
+    }
+  })
+  
+  #-----------------------------------------------
+  # Reset button functionality: resets all UI inputs to their default values
+  observeEvent(input$resetInputs, {
+    updateSelectizeInput(session, "inputTarget", selected = character(0))
+  })
   
   #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s) from dataset
-  selectedGeneData <- reactive({
-    req(input$inputGeneSymbol)
-    genename <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
-    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+  selectedTargetData <- reactive({
+    req(input$inputTarget, input$inputOmics)
+    targetname <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
+    omics <- "Transcriptome"
     
-    # Match gene to file and row info
-    file_row <- gene_to_file_transcriptome[gene_to_file_transcriptome$SYMBOL %in% genename, ]
+    targetname <- toupper(unlist(strsplit(input$inputTarget, "[,;\\s]+")))
+    omics <- input$inputOmics
     
-    # Split by file
-    split_rows <- split(file_row, file_row$file)
-    
-    # Load available data
-    selected_list <- lapply(split_rows, function(rows) {
-      path <- file.path("data", unique(rows$file))
-      df <- arrow::read_feather(path)
-      
-      selected <- df[rows$row, , drop = FALSE] %>%
-        data.frame()
-      
-      # Ensure rownames are matched properly
-      rownames(selected) <- rows$SYMBOL[order(rows$row)]
-      selected <- selected[match(rows$SYMBOL, rownames(selected)), , drop = FALSE]
-      
-      return(selected)
-    })
-    
-    # Combine all available rows
-    selected_row <- do.call(rbind, selected_list)
-    rownames(selected_row) <- gsub(".*.feather\\.", "", rownames(selected_row))
-    
-    # Add missing genes as NA
-    missing_genes <- setdiff(genename, rownames(selected_row))
-    if (length(missing_genes) > 0) {
-      missing_df <- matrix(NA, nrow = length(missing_genes), ncol = ncol(selected_row))
-      rownames(missing_df) <- missing_genes
-      colnames(missing_df) <- colnames(selected_row)
-      selected_row <- rbind(selected_row, missing_df)
-    }
-    
-    selected_row <- selected_row[genename, , drop = FALSE]  # preserve original input order
-    data.frame(selected_row)
-  })
-  
-  #-----------------------------------------------------------------
-  # REACTIVE: load only selected gene(s) from dataset  
-  selectedProteinData <- reactive({
-    req(input$inputGeneSymbol)
-    genename <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
-    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
-    
-    # Match gene to file and row info
-    file_row <- gene_to_file_proteome[gene_to_file_proteome$SYMBOL %in% genename, ]
+    # Match gene to file and row info - gene and OMICS
+    file_row <- gene_to_file %>%
+      filter(TARGET %in% targetname & OMICS %in% omics)
     
     # Split by file
     split_rows <- split(file_row, file_row$file)
     
-    # Load available data
+    # Load selected genes from each file using lazy loading via Arrow
     selected_list <- lapply(split_rows, function(rows) {
-      path <- file.path("data", unique(rows$file))
-      df <- arrow::read_feather(path)
+      path <- file.path("data", unique(rows$file))  # Path to parquet dataset
+      ds <- arrow::open_dataset(path, format = "parquet")  # Lazy load dataset
+      selected <- ds %>%
+        filter(TARGET %in% rows$TARGET) %>%
+        collect() %>%
+        as.data.frame()
       
-      selected <- df[rows$row, , drop = FALSE] %>%
-        data.frame()
-      
-      # Ensure rownames are matched properly
-      rownames(selected) <- rows$SYMBOL[order(rows$row)]
-      selected <- selected[match(rows$SYMBOL, rownames(selected)), , drop = FALSE]
-      
+      # Reorder rows to match input gene order
+      rownames(selected) <- selected$TARGET
+      selected <- selected[match(rows$TARGET, rownames(selected)), , drop = FALSE]
+      selected <- selected[, !(colnames(selected) %in% "TARGET"), drop = FALSE]
       return(selected)
     })
     
-    # Combine all available rows
+    # Combine rows across files
     selected_row <- do.call(rbind, selected_list)
-    rownames(selected_row) <- gsub(".*.feather\\.", "", rownames(selected_row))
+    rownames(selected_row) <- file_row$TARGET
     
-    # Add missing genes as NA
-    missing_genes <- setdiff(genename, rownames(selected_row))
-    if (length(missing_genes) > 0) {
-      missing_df <- matrix(NA, nrow = length(missing_genes), ncol = ncol(selected_row))
-      rownames(missing_df) <- missing_genes
+    # Handle genes not found: fill with NA rows
+    missing_targets <- setdiff(targetname, rownames(selected_row))
+    if (length(missing_targets) > 0) {
+      missing_df <- matrix(NA, nrow = length(missing_targets), ncol = ncol(selected_row))
+      rownames(missing_df) <- missing_targets
       colnames(missing_df) <- colnames(selected_row)
       selected_row <- rbind(selected_row, missing_df)
     }
     
-    selected_row <- selected_row[genename, , drop = FALSE]  # preserve original input order
-    data.frame(selected_row)
+    # Ensure output preserves original input order
+    df <- selected_row[targetname, , drop = FALSE]
+    df <- data.frame(sample_id = colnames(df), t(df))
+    
+    # Merge with metadata
+    dat <- right_join(metadata, df) 
+    
+    # Convert to long format for stats
+    dat <- pivot_longer(dat, cols = c(5:ncol(dat)),
+                        values_to = "y",
+                        names_to = "Target")
+    
+    # Apply same filters as for plot
+    dat <- dplyr::filter(dat,
+                         fiber_type %in% input$fibers)
   })
   
   
   #-----------------------------------------------------------------
-  # Boxplot - transcriptome
-  plotDataGene <- eventReactive(input$updatePlot, {
-    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+  # Boxplot
+  boxplotTarget <- reactive({
+    
+    dat <- selectedTargetData()
 
-    gene_data <- as.data.frame(t(selectedGeneData()))
-    colnames(gene_data) <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
-    
-    plotdata <- cbind(metadata_transcriptome, gene_data)
-    
-    # exclude mixed fibers
-    plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
-    
-    # Extract and reshape data for plotting
-    plotdata <- pivot_longer(plotdata, 
-                             cols = genename, 
-                             names_to = "gene", 
-                             values_to = "data")
-    
-    plotdata$FiberType <- factor(plotdata$FiberType,
-                                 levels = c("Type I", "Mixed Type I/II", 
-                                            "Type IIA", "Mixed Type IIA/IIX", "Type IIX"))
+    dat$fiber_type <- factor(dat$fiber_type,
+                             levels = c("Type I", "Type IIA", "Type IIX", "Mixed"))
     
     # Plot
-    ggplot(plotdata, aes(x = gene, y = data, fill = FiberType)) +
+    ggplot(dat, aes(x = Target, y = y, fill = fiber_type)) +
       geom_boxplot(position = position_dodge(0.8), outlier.size = 0) +
       #geom_sina(size = 0.5, position = position_dodge(0.8), alpha = 0.5) +
-      theme_bw(base_size = 16) + 
+      theme_bw(base_size = 16) +
       labs(x = NULL, 
-           y = "Relative expression, log2", 
-           subtitle = "Transcriptome") +
+           y = "Relative expression, log2",
+           fill = NULL) +
       scale_y_continuous(expand = c(0, 4)) +
       scale_fill_manual(values = c("Type I" = "#8B0000", 
                                    "Type IIA" = "#F5DEB3", 
                                    "Type IIX"= "#D3D3D3", 
-                                   "Mixed" = "#A0522D")) +
-      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                         parse = TRUE,
-                         size = 4, 
-                         vjust = -1)
+                                   "Mixed" = "#A0522D")) 
     
     
   })
   
-  output$GenePlot <- renderPlot({
-    plotDataGene()
+  output$TargetPlot <- renderPlot({
+    boxplotTarget()
   })
   
   #-----------------------------------------------------------------
-  # Boxplot - proteome
-  plotDataProtein <- eventReactive(input$updatePlot, {
-    genename <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
- 
-    protein_data <- as.data.frame(t(selectedProteinData()))
-    colnames(protein_data) <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
+  # Reactive text description of the current filters (used in UI summary)
+  filterSummary <- reactive({
     
-    plotdata <- cbind(metadata_proteome,
-                      protein_data)
+    dat <- selectedTargetData()
     
-    # exclude mixed fibers
-    plotdata <- plotdata[!grepl("Mixed", plotdata$FiberType),]
+    if (nrow(dat) == 0) {
+      return(" ")
+    }
     
-    # Extract and reshape data for plotting
-    plotdata <- pivot_longer(plotdata, 
-                             cols = genename, 
-                             names_to = "gene", 
-                             values_to = "data")
+    # Format readable list of fiber types
+    format_list <- function(x) {
+      x <- sort(unique(x))
+      n <- length(x)
+      if (n == 0) return("")
+      if (n == 1) return(x)
+      if (n == 2) return(paste(x, collapse = " and "))
+      paste(paste(x[-n], collapse = ", "), "and", x[n])
+    }
     
-    plotdata$FiberType <- factor(plotdata$FiberType,
-                                 levels = c("Type I", "Mixed Type I/II", 
-                                            "Type IIA", "Mixed Type IIA/IIX", "Type IIX"))
+    fiber_types <- sort(unique(dat$fiber_type))
+    fiber_text <- format_list(fiber_types)
     
-    # Plot
-    ggplot(plotdata, aes(x = gene, y = data, fill = FiberType)) +
-      geom_boxplot(position = position_dodge(0.8), outlier.size = 0) +
-      #geom_sina(size = 0.5, position = position_dodge(0.8), alpha = 0.2) +
-      theme_bw(base_size = 16) + 
-      labs(x = NULL, 
-           y = "Relative expression, log2", 
-           subtitle = "Proteome") +
-      scale_y_continuous(expand = c(0, 4)) +
-      scale_fill_manual(values = c("Type I" = "#8B0000", "Type IIA" = "#F5DEB3", 
-                                   "Type IIX"= "#D3D3D3", "Mixed" = "#A0522D")) +
-      stat_compare_means(aes(label = after_stat(p_value_formatter(..p..))),
-                         parse = TRUE,
-                         size = 4, 
-                         vjust = -1)
+    # Flags
+    has_I   <- "Type I"   %in% fiber_types
+    has_IIA <- "Type IIA" %in% fiber_types
+    has_IIX <- "Type IIX" %in% fiber_types
+    
+    # Custom phrasing for full selection
+    if (all(c("Type I", "Type IIA", "Type IIX") %in% fiber_types)) {
+      comparison_sentence <- "Statistics are calculated comparing Type I to Type IIA/X or Type IIA to Type IIX fibers."
+    } else {
+      comparison_text <- c()
+      if (has_I & has_IIA) comparison_text <- c(comparison_text, "Type I to Type IIA")
+      if (has_I & has_IIX) comparison_text <- c(comparison_text, "Type I to Type IIX")
+      if (has_IIA & has_IIX) comparison_text <- c(comparison_text, "Type IIA to Type IIX")
+      
+      if (length(comparison_text) == 0) {
+        comparison_sentence <- "No valid pairwise comparisons available based on selected fiber types."
+      } else {
+        comparison_sentence <- paste(
+          "Statistics are calculated comparing",
+          paste(comparison_text, collapse = " or "),
+          "fibers."
+        )
+      }
+    }
+    
+    # Final output
+    glue::glue(
+      "Based on your selection, the plot and statistics reflect data from {fiber_text} muscle fibers. {comparison_sentence}"
+    )
   })
   
-  output$ProteinPlot <- renderPlot({
-    plotDataProtein()
+  
+  
+  output$filterSummaryText <- renderText({
+    filterSummary()
   })
   
   
-  ##################################################################################################################
-  #Dataset tables
-  output$references <- renderDataTable(options=list(signif = 3),{
+  #-----------------------------------------------------------------
+  # Compute statistics (Wilcoxon test + summary)
+  statisticsData <- reactive({
+    dat <- selectedTargetData()
+    
+    # Ensure there's y to analyze
+    shiny::validate(
+      need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
+    )
+    
+    # Group and compute statistics per gene - Type I vs Type II
+    stats_result_IvsII <- dat %>%
+      mutate(fiber_type = ifelse(fiber_type %in% c("Type IIA", "Type IIX"), "Type II", fiber_type)) %>% 
+      filter(fiber_type %in% c("Type I", "Type II")) %>%
+      group_by(Target) %>%
+      summarise(
+        mean_I = round(mean(y[fiber_type == "Type I"], na.rm = TRUE), 2),
+        sd_I = round(sd(y[fiber_type == "Type I"], na.rm = TRUE), 2),
+        n_I = sum(fiber_type == "Type I" & !is.na(y)),
+        mean_II = round(mean(y[fiber_type == "Type II"], na.rm = TRUE), 2),
+        sd_II = round(sd(y[fiber_type == "Type II"], na.rm = TRUE), 2),
+        n_II = sum(fiber_type == "Type II" & !is.na(y)),
+        logFoldChange = mean_II - mean_I,
+        FoldChange = round(2^logFoldChange, 2),
+        p_value = tryCatch(wilcox.test(y ~ fiber_type, data = cur_data())$p.value, error = function(e) NA),
+        FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_to_file)),
+        .groups = 'drop'
+      ) %>%
+      mutate(
+        Significance = case_when(
+          FDR < 0.001 ~ "***",
+          FDR < 0.01  ~ "**",
+          FDR < 0.05  ~ "*",
+          TRUE ~ "ns"
+        ),
+        p_value = format(p_value, scientific = TRUE, digits = 2),
+        FDR = format(FDR, scientific = TRUE, digits = 2)
+      ) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) %>%
+      as.data.frame() %>%
+      tibble::column_to_rownames("Target")
+
+    # Reformat table for display
+    stats_result_IvsII <- data.frame(Statistics = colnames(stats_result_IvsII),
+                                     t(stats_result_IvsII))
+    stats_result_IvsII$Comparison <- "Type II vs Type I"
+    
+    # Group and compute statistics per gene - Type IIX vs Type IIA
+    stats_result_IIXvsIIA <- dat %>%
+      filter(fiber_type %in% c("Type IIA", "Type IIX")) %>%
+      group_by(Target) %>%
+      summarise(
+        mean_IIA = round(mean(y[fiber_type == "Type IIA"], na.rm = TRUE), 2),
+        sd_IIA = round(sd(y[fiber_type == "Type IIA"], na.rm = TRUE), 2),
+        n_IIA = sum(fiber_type == "Type IIA" & !is.na(y)),
+        mean_IIX = round(mean(y[fiber_type == "Type IIX"], na.rm = TRUE), 2),
+        sd_IIX = round(sd(y[fiber_type == "Type IIX"], na.rm = TRUE), 2),
+        n_IIX = sum(fiber_type == "Type IIX" & !is.na(y)),
+        logFoldChange = mean_IIX - mean_IIA,
+        FoldChange = round(2^logFoldChange, 2),
+        p_value = tryCatch(wilcox.test(y ~ fiber_type, data = cur_data())$p.value, error = function(e) NA),
+        FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_to_file)),
+        .groups = 'drop'
+      ) %>%
+      mutate(
+        Significance = case_when(
+          FDR < 0.001 ~ "***",
+          FDR < 0.01  ~ "**",
+          FDR < 0.05  ~ "*",
+          TRUE ~ "ns"
+        ),
+        p_value = format(p_value, scientific = TRUE, digits = 2),
+        FDR = format(FDR, scientific = TRUE, digits = 2)
+      ) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) %>%
+      as.data.frame() %>%
+      tibble::column_to_rownames("Target")
+
+    # Reformat table for display
+    stats_result_IIXvsIIA <- data.frame(Statistics = colnames(stats_result_IIXvsIIA),
+                                        t(stats_result_IIXvsIIA))
+    stats_result_IIXvsIIA$Comparison <- "Type IIX vs Type IIA"
+    
+    # Merge stats
+    stats_result <- rbind(stats_result_IvsII, stats_result_IIXvsIIA)
+    
+    # Remove rows with only NA or only NaN
+    stats_result <- stats_result[
+      !apply(stats_result[, input$inputTarget, drop = FALSE], 1, function(x) {
+        all(trimws(as.character(x)) %in% c("NaN", "NA", "ns", "0", ""))
+      }),
+    ]
+    
+    # rename rows
+    stats_result$Statistics <- gsub("_", " ", stats_result$Statistics)
+    stats_result$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result$Statistics)
+    stats_result$Statistics <- gsub("FoldChange", "Fold-change", stats_result$Statistics)
+    stats_result$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result$Statistics)
+    
+    return(stats_result)
+  })
+  
+  # Display significance table only
+  output$statistics1 <- DT::renderDT({
+    dat <- statisticsData()
+    dat <- dat[!dat$Statistics %in% c("mean I", "sd I", "n I", 
+                                      "mean II", "sd II", "n II", 
+                                      "mean IIA", "sd IIA", "n IIA",
+                                      "mean IIX", "sd IIX", "n IIX"),]
+    dat$Statistics <- paste(dat$Comparison, dat$Statistics, sep = ", ")
+    dat$Comparison <- NULL
+    colnames(dat)[1] <- "Differential Expression Analysis"
+    DT::datatable(
+      dat,
+      escape = FALSE, 
+      rownames = FALSE,
+      options = list(
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE,
+        ordering = FALSE,
+        dom = 't',
+        columnDefs = list(
+          list(targets = 0, width = '30rem'),  # Set fixed width
+          list(targets = 1:(ncol(dat)-1), className = 'dt-center')
+        )
+      )
+    )
+  })
+  
+  # Display group statistics table
+  output$statistics2 <- DT::renderDT({
+    dat <- statisticsData()
+    dat <- dat[dat$Statistics %in% c("mean I", "sd I", "n I", 
+                                     "mean IIA", "sd IIA", "n IIA",
+                                     "mean IIX", "sd IIX", "n IIX"),]
+    dat$Comparison <- NULL
+    colnames(dat)[1] <- "Group Summary Statistics"
+    DT::datatable(
+      dat,
+      escape = FALSE, 
+      rownames = FALSE,
+      options = list(
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE,
+        ordering = FALSE,
+        dom = 't',
+        columnDefs = list(
+          list(targets = 0, width = '30rem'),  # Set fixed width
+          list(targets = 1:(ncol(dat)-1), className = 'dt-center')
+        )
+      )
+    )
+  })
+  
+  #-----------------------------------------------------------------
+  # Show references table (metadata about datasets)
+  output$references <- DT::renderDT({
     DT::datatable(
       references, 
       escape = FALSE, 
       rownames = FALSE,
       options = list(
         columnDefs = list(
-          list(className = 'dt-center', targets = 2),  # Align column to the center
-          list(className = 'dt-center', targets = 3),  # Align column to the center
-          list(className = 'dt-center', targets = 4)  # Align column to the right
-          # Add more lines for additional columns if needed
-        )
+          list(className = 'dt-center', targets = 1),
+          list(className = 'dt-center', targets = 2)
+        ),
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE,
+        dom = 't'
       )
     )
   })
   
-  ##################################################################################################################
-  # Download button
-  output$downloadGeneData <- downloadHandler(
+  #-----------------------------------------------------------------
+  # Download: Boxplot as PNG
+  output$downloadPlot <- downloadHandler(
     filename = function() {
-      paste0("FiberTypes_", Sys.Date(), ".xlsx")
+      paste0("MyotubePalmitate_plot_", Sys.Date(), ".png")
     },
     content = function(file) {
-      gene_data <- as.data.frame(t(selectedGeneData()))
-      colnames(gene_data) <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
-      gene_data <- cbind(metadata_transcriptome, gene_data)
-      
-      prot_data <- as.data.frame(t(selectedProteinData()))
-      colnames(prot_data) <- toupper(unlist(strsplit(input$inputGeneSymbol, "[,;\\s]+")))
-      prot_data <- cbind(metadata_proteome, prot_data)
-      
-      # Create a workbook
-      wb <- createWorkbook()
-      
-      # Add sheets
-      addWorksheet(wb, "Transcriptome")
-      addWorksheet(wb, "Proteome")
-      
-      # Write data to sheets
-      writeData(wb, "Transcriptome", gene_data)
-      writeData(wb, "Proteome", prot_data)
-      
-      # Save workbook
-      if (!is.null(wb)) {
-        saveWorkbook(wb, file, overwrite = TRUE)
+      plot_obj <- boxplotTarget() + labs(caption = "Plot generated on MuscleOmics.org")
+      png(filename = file, width = 3200, height = 1800, res = 300)
+      print(plot_obj)
+      dev.off()
+    }
+  )
+  
+  #-----------------------------------------------------------------
+  # Download: Raw expression data (selected gene(s))
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste0("MyotubePalmitate_data_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      df <- selectedTargetData()
+      df <- pivot_wider(df, names_from = "Target", values_from = "y")
+      if (!is.null(df)) {
+        write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
+        cat("\n# Data generated on MuscleOmics.org\n", file = file, append = TRUE)
       }
     }
   )
   
+  #-----------------------------------------------------------------
+  # Download: Statistics table
+  output$downloadStats <- downloadHandler(
+    filename = function() {
+      paste0("MyotubePalmitate_statistics_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      df <- statisticsData()
+      if (!is.null(df)) {
+        write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
+        cat("\n# Data generated on MuscleOmics.org\n", file = file, append = TRUE)
+      }
+    }
+  )
 }
