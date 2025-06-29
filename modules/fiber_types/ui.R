@@ -50,7 +50,7 @@ ui <- fluidPage(
                               inputId = "inputOmics",
                               label = "OMICS",
                               choices = c("Proteome", "Transcriptome"),
-                              selected = c("Proteome"),
+                              selected = c("Transcriptome"),
                               multiple = FALSE,
                               selectize = TRUE
                             ),
