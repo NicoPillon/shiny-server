@@ -106,6 +106,7 @@ ui <- fluidPage(
              
              p("Expression data from all platforms were merged by gene symbol using the curated ortholog annotation table. To minimize technical variability, we excluded genes with more than 50% missing data across all samples. The resulting expression matrix was normalized across arrays using quantile normalization (normalizeBetweenArrays function from the limma package). No batch correction was applied across platforms to avoid artificially removing genuine biological differences between species, acknowledging the inherent trade-off between batch effect mitigation and preservation of species-specific signal."),
              
+             # Citation
              h3("Citation"),
              HTML('
   <div style="margin: 0rem;">

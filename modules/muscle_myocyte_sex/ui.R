@@ -18,7 +18,7 @@ ui <- fluidPage(
     # Custom title: logo image + text
     title = HTML('
       <div style="display: flex; align-items: center;margin: -10px;">
-        <img src="../../www/img/snippet/myotube_palmitate.png" style="height: 40px; margin-right: 10px;">
+        <img src="../../www/img/snippet/muscle_myocyte_sex.png" style="height: 40px; margin-right: 10px;">
         <span style="font-size: 20px; font-weight: bold; margin-right: 10px;">Muscle myocyte sex</span>
       </div>
     '),
