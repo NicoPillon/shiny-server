@@ -41,7 +41,7 @@ server <- function(input, output, session) {
   #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s) from dataset
   selectedTargetData <- reactive({
-    # req(input$inputTarget, input$inputOmics)
+    req(input$inputTarget, input$inputOmics)
     # targetname <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
     # omics <- "Transcriptome"
     
