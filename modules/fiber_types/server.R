@@ -48,6 +48,12 @@ server <- function(input, output, session) {
     targetname <- toupper(unlist(strsplit(input$inputTarget, "[,;\\s]+")))
     omics <- input$inputOmics
     
+        # Ensure there's something to analyze
+    shiny::validate(
+      shiny::need(!is.null(targetname) && length(targetname) > 0,
+                  "No data available for the selected filters. Please adjust your selections.")
+    )
+    
     # Match gene to file and row info - gene and OMICS
     file_row <- gene_to_file %>%
       filter(TARGET %in% targetname & OMICS %in% omics)
