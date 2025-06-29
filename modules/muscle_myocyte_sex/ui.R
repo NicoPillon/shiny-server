@@ -96,32 +96,48 @@ ui <- fluidPage(
              p("This app offers an accessible resource to explore how biologcial sex affect skeletal muscle cells. 
                By examining the effect of biological sex on the muscle cell transcriptome, this tool opens new 
          avenues for research, therapeutic discovery, and prevention strategies targeting metabolic disorders."),
-         
-         # Data processing and integration methodology
-         h3("Methods"),
-         p("Publicly available datasets were downloaded from the Gene Expression Omnibus (GEO), including both 
+             
+             # Data processing and integration methodology
+             h3("Methods"),
+             p("Publicly available datasets were downloaded from the Gene Expression Omnibus (GEO), including both 
         microarray and RNA-seq platforms from human, mouse, and rat skeletal muscle cell models. Each dataset 
         was processed using platform-appropriate normalization methods — Robust Multi-array Average (RMA) for 
         microarrays and Variance Stabilizing Transformation (VST) for RNA-seq. Lowly expressed genes were filtered 
         out."),
-        
-        
-        # Statistical tests
-        h3("Statistics"),
-        p("Statistical analysis is based on the Wilcoxon signed-rank test comparing females to males. 
+             
+             # Statistical tests
+             h3("Statistics"),
+             p("Statistical analysis is based on the Wilcoxon signed-rank test comparing females to males. 
         The results table presents both unadjusted and Bonferroni-adjusted p-values to correct for multiple testing across 
         all transcripts in the database, ensuring a highly conservative approach. Significance is indicated as follows: 
         * for FDR < 0.05, ** for FDR < 0.01, and *** for FDR < 0.001. 'ns' denotes non-significant results."),
-        
-      
-      # References table for included datasets
-      h3("Datasets"),
-      tags$p(
-        tags$em("Have we missed a relevant study? Please ",
-                a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
-        )
-      ),
-      dataTableOutput("references")
+             
+             # Citation
+             h3("Citation"),
+             HTML('
+  <div style="margin: 0rem;">
+    <div>
+      MacGregor K, Ellefsen S, Pillon NJ, Hammarström D Krook A.
+      <strong>Sex differences in skeletal muscle metabolism in exercise and type 2 diabetes mellitus.</strong>
+      <em>
+Nat Rev Endocrinol.</em> 2025 Mar;21(3):166-179.
+      <a href="https://doi.org/10.1038/s41574-024-01058-9" target="_blank">https://doi.org/10.1038/s41574-024-01058-9</a>
+    </div>
+    <div style="margin-top: 1rem;">
+      <script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
+      <span class="__dimensions_badge_embed__" data-id="pub.1182757379" data-legend="always"></span>
+    </div>
+  </div>
+'),
+             
+             # References table for included datasets
+             h3("Datasets"),
+             tags$p(
+               tags$em("Have we missed a relevant study? Please ",
+                       a("let us know!", href = "mailto:nicolas.pillon@ki.se", target = "_blank")
+               )
+             ),
+             dataTableOutput("references")
     ),
     
     #=====================================================================
