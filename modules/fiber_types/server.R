@@ -162,12 +162,12 @@ server <- function(input, output, session) {
     
     # Custom phrasing for full selection
     if (all(c("Type I", "Type IIA", "Type IIX") %in% fiber_types)) {
-      comparison_sentence <- "Statistics are calculated comparing Type I to Type IIA/X or Type IIA to Type IIX fibers."
+      comparison_sentence <- "Statistics are calculated comparing Type I to Type IIA/X or Type IIX to Type IIA fibers."
     } else {
       comparison_text <- c()
       if (has_I & has_IIA) comparison_text <- c(comparison_text, "Type I to Type IIA")
       if (has_I & has_IIX) comparison_text <- c(comparison_text, "Type I to Type IIX")
-      if (has_IIA & has_IIX) comparison_text <- c(comparison_text, "Type IIA to Type IIX")
+      if (has_IIA & has_IIX) comparison_text <- c(comparison_text, "Type IIX to Type IIA")
       
       if (length(comparison_text) == 0) {
         comparison_sentence <- "No valid pairwise comparisons available based on selected fiber types."
@@ -212,10 +212,10 @@ server <- function(input, output, session) {
         mean_I = round(mean(y[fiber_type == "Type I"], na.rm = TRUE), 2),
         sd_I = round(sd(y[fiber_type == "Type I"], na.rm = TRUE), 2),
         n_I = sum(fiber_type == "Type I" & !is.na(y)),
-        mean_II = round(mean(y[fiber_type == "Type II"], na.rm = TRUE), 2),
-        sd_II = round(sd(y[fiber_type == "Type II"], na.rm = TRUE), 2),
-        n_II = sum(fiber_type == "Type II" & !is.na(y)),
-        logFoldChange = mean_II - mean_I,
+        mean_IIAX = round(mean(y[fiber_type == "Type II"], na.rm = TRUE), 2),
+        sd_IIAX = round(sd(y[fiber_type == "Type II"], na.rm = TRUE), 2),
+        n_IIAX = sum(fiber_type == "Type II" & !is.na(y)),
+        logFoldChange = mean_IIAX - mean_I,
         FoldChange = round(2^logFoldChange, 2),
         p_value = tryCatch(wilcox.test(y ~ fiber_type, data = cur_data())$p.value, error = function(e) NA),
         FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_to_file)),
@@ -238,7 +238,7 @@ server <- function(input, output, session) {
     # Reformat table for display
     stats_result_IvsII <- data.frame(Statistics = colnames(stats_result_IvsII),
                                      t(stats_result_IvsII))
-    stats_result_IvsII$Comparison <- "Type II vs Type I"
+    stats_result_IvsII$Comparison <- "Type IIA/X vs Type I"
     
     # Group and compute statistics per gene - Type IIX vs Type IIA
     stats_result_IIXvsIIA <- dat %>%
@@ -287,7 +287,8 @@ server <- function(input, output, session) {
     ]
     
     # rename rows
-    stats_result$Statistics <- gsub("_", " ", stats_result$Statistics)
+    stats_result$Statistics <- gsub("_", " Type ", stats_result$Statistics)
+    stats_result$Statistics <- gsub("AX", " A/X ", stats_result$Statistics)
     stats_result$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result$Statistics)
     stats_result$Statistics <- gsub("FoldChange", "Fold-change", stats_result$Statistics)
     stats_result$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result$Statistics)
@@ -298,10 +299,7 @@ server <- function(input, output, session) {
   # Display significance table only
   output$statistics1 <- DT::renderDT({
     dat <- statisticsData()
-    dat <- dat[!dat$Statistics %in% c("mean I", "sd I", "n I", 
-                                      "mean II", "sd II", "n II", 
-                                      "mean IIA", "sd IIA", "n IIA",
-                                      "mean IIX", "sd IIX", "n IIX"),]
+    dat <- dat[!grepl("(mean |sd |n )", dat$Statistics), ]
     dat$Statistics <- paste(dat$Comparison, dat$Statistics, sep = ", ")
     dat$Comparison <- NULL
     colnames(dat)[1] <- "Differential Expression Analysis"
@@ -326,9 +324,8 @@ server <- function(input, output, session) {
   # Display group statistics table
   output$statistics2 <- DT::renderDT({
     dat <- statisticsData()
-    dat <- dat[dat$Statistics %in% c("mean I", "sd I", "n I", 
-                                     "mean IIA", "sd IIA", "n IIA",
-                                     "mean IIX", "sd IIX", "n IIX"),]
+    dat <- dat[grepl("(mean |sd |n )", dat$Statistics), ]
+    dat <- dat[!grepl("(A/X)", dat$Statistics), ]
     dat$Comparison <- NULL
     colnames(dat)[1] <- "Group Summary Statistics"
     DT::datatable(

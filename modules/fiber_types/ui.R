@@ -114,7 +114,7 @@ ui <- fluidPage(
              
              # Statistical tests
              h3("Statistics"),
-             p("The results table presents both unadjusted and Bonferroni-adjusted p-values to correct for multiple testing across all transcripts in the database, ensuring a highly conservative approach. Significance is indicated as follows: * for FDR < 0.05, ** for FDR < 0.01, and *** for FDR < 0.001. 'ns' denotes non-significant results."),
+             p("When all fiber types are selected, Type IIA and Type IIX fibers are grouped together as 'Type II' to enable a comparison with Type I fibers. If only Type IIA or only Type IIX is selected along with Type I, the comparison is performed between those specific fiber types. When both Type IIA and Type IIX are selected, a dedicated comparison is performed between these two fast-twitch fiber types. For each target, summary statistics (mean, standard deviation, and sample size) are computed per fiber type. Differential expression is assessed using the Wilcoxon rank-sum test, and p-values are adjusted using the Bonferroni method to correct for multiple testing across all genes in the dataset. Adjusted p-values are shown as FDR (Bonferroni). Statistical significance is indicated as follows: * for FDR < 0.05, ** for FDR < 0.01, and *** for FDR < 0.001. 'ns' indicates a non-significant result."),
              
              # Citation
              h3("Citation"),
