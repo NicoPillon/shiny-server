@@ -42,21 +42,20 @@ server <- function(input, output, session) {
   # REACTIVE: load only selected gene(s) from dataset
   selectedTargetData <- reactive({
     req(input$inputTarget, input$inputOmics)
-    # targetname <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
-    # omics <- "Transcriptome"
+    targetname <- c("LDHA", "LDHB", "MYH7", "MYH1", "MYH2")
+    omics <- "Proteome"
     
     targetname <- toupper(unlist(strsplit(input$inputTarget, "[,;\\s]+")))
     omics <- input$inputOmics
     
-        # Ensure there's something to analyze
-    shiny::validate(
-      shiny::need(!is.null(targetname) && length(targetname) > 0,
-                  "No data available for the selected filters. Please adjust your selections.")
-    )
-    
     # Match gene to file and row info - gene and OMICS
     file_row <- gene_to_file %>%
       filter(TARGET %in% targetname & OMICS %in% omics)
+    
+    # Ensure there's y to analyze
+    shiny::validate(
+      need(nrow(file_row) > 0, "No data available for the selected filters. Please adjust your selections.")
+    )
     
     # Split by file
     split_rows <- split(file_row, file_row$file)
