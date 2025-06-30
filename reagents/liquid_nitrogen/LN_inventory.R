@@ -8,7 +8,7 @@ library(dplyr)
 library(readxl)
 
 #Gets names of excel files for LN tanks and puts them in a character vector
-LN_file_names <- "../../../000_IntFys_secure/Liquid_nitrogen/LN inventory.xlsx"
+LN_file_names <- "../../../000_IntFys_documents/Cell_lab/Liquid_nitrogen/LN inventory - Egg14.xlsx"
 
 #Stores excel files as workbooks into a list
 LN_tank_workbooks <- list()
@@ -46,13 +46,10 @@ for (i in 1 : length(LN_dataframes)){
 rm(i)
 
 columns_names <- data.frame(
-  colnames(Egg13_ABC),
-  colnames(Egg13_DEF),
-  colnames(Egg13_GHI),
-  colnames(Egg13_JKL),
-  colnames(Egg13_MNOP),
   colnames(Egg14_A),
-  colnames(Egg14_BC)
+  colnames(Egg14_B),
+  colnames(Egg14_C),
+  colnames(Egg14_D)
 )
 
 #put all tabs in one file

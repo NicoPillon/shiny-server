@@ -6,7 +6,7 @@
 library(DT)
 library(openxlsx)
 Egg_all <- readRDS("full_inventory.Rds")
-last_update <- "September 28th, 2023"
+last_update <- readRDS("last_update.Rds")
 
 # Define UI ----
 ui <- fluidPage(
