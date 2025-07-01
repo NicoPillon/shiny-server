@@ -213,7 +213,7 @@ server <- function(input, output, session) {
         n_post = sum(Condition == "POST" & !is.na(y)),
         logFoldChange = mean_post - mean_pre,
         FoldChange = round(2^logFoldChange, 2),
-        p_value = tryCatch(wilcox.test(y ~ Condition, data = cur_data())$p.value, error = function(e) NA),
+        p_value = tryCatch(wilcox.test(y ~ Condition, data = pick(everything()), exact = FALSE)$p.value, error = function(e) NA),
         FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_list)),
         .groups = 'drop'
       ) %>%

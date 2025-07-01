@@ -13,6 +13,22 @@ ui <- fluidPage(
   tags$head(includeCSS("../../www/style.css")),
   
   #---------------------------------------------------------
+  # Custom JS for iframe resizing
+  tags$head(
+    tags$script(HTML("
+        Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+
+        window.addEventListener('resize', function() {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+      "))
+  ),
+  
+  #---------------------------------------------------------
   # Navigation bar layout with multiple tabs
   navbarPage(
     # Custom title: logo image + text
@@ -132,23 +148,6 @@ ui <- fluidPage(
                )
              ),
              dataTableOutput("references")
-    ),
-    
-    #=====================================================================
-    #======================= IFRAME HEIGHT SYNC ==========================
-    #=====================================================================
-    tags$head(
-      tags$script(HTML("
-        Shiny.addCustomMessageHandler('resizeFrame', function(message) {
-          const height = document.documentElement.scrollHeight;
-          parent.postMessage({ frameHeight: height }, '*');
-        });
-
-        window.addEventListener('resize', function() {
-          const height = document.documentElement.scrollHeight;
-          parent.postMessage({ frameHeight: height }, '*');
-        });
-      "))
     )
   )
 )

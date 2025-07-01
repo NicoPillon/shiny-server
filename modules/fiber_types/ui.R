@@ -13,6 +13,22 @@ ui <- fluidPage(
   tags$head(includeCSS("../../www/style.css")),
   
   #---------------------------------------------------------
+  # Custom JS for iframe resizing
+  tags$head(
+    tags$script(HTML("
+        Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+
+        window.addEventListener('resize', function() {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+      "))
+  ),
+  
+  #---------------------------------------------------------
   # Navigation bar layout with multiple tabs
   navbarPage(
     # Custom title: logo image + text
@@ -61,6 +77,16 @@ ui <- fluidPage(
                                                selected = c("Type I", "Type IIA", "Type IIX"),
                                                choices = c("Type I", "Type IIA", "Type IIX")),
                             
+                            # select comparison
+                            selectInput(
+                              inputId = "inputComparison",
+                              label = "Statistical Comparison",
+                              choices = c("Type I vs Type IIA", "Type I vs Type IIX", "Type IIA vs Type IIX"),
+                              selected = c("Type I vs Type IIA"),
+                              multiple = FALSE,
+                              selectize = TRUE
+                            ),
+                            
                             # Button to reset all filters
                             actionButton("resetInputs", "Reset Filters", icon = icon("undo")),
                             
@@ -85,12 +111,7 @@ ui <- fluidPage(
                          tags$hr(),
                          
                          # Table 1: Differential expression results
-                         DT::dataTableOutput("statistics1"),
-                         tags$br(),
-                         
-                         # Table 2: Summary statistics (mean, SD, n)
-                         DT::dataTableOutput("statistics2"),
-                         tags$br()
+                         DT::DTOutput("statisticsTable"),
                )
              )
     ),
@@ -128,23 +149,7 @@ ui <- fluidPage(
                )
              ),
              dataTableOutput("references")
-    ),
-    
-    #=====================================================================
-    #======================= IFRAME HEIGHT SYNC ==========================
-    #=====================================================================
-    tags$head(
-      tags$script(HTML("
-        Shiny.addCustomMessageHandler('resizeFrame', function(message) {
-          const height = document.documentElement.scrollHeight;
-          parent.postMessage({ frameHeight: height }, '*');
-        });
-
-        window.addEventListener('resize', function() {
-          const height = document.documentElement.scrollHeight;
-          parent.postMessage({ frameHeight: height }, '*');
-        });
-      "))
     )
+
   )
 )

@@ -25,7 +25,7 @@ datamatrix <- readRDS("../../rawdata/fiber_types/data_out/transcriptome_matrix.R
 
 # Determine how many genes to include per chunk to divide the data in ~3 parts
 n_genes <- nrow(datamatrix)
-chunk_size <- ceiling(n_genes / 8)  # Number of genes per file
+chunk_size <- ceiling(n_genes / 6)  # Number of genes per file
 splits <- split(1:n_genes, ceiling(seq_along(1:n_genes) / chunk_size))  # Split row indices
 file_names <- paste0("datamatrix_transcriptome_", seq_along(splits), ".parquet")      # Output file names
 

@@ -172,7 +172,7 @@ server <- function(input, output, session) {
     
     # Unique concentrations and durations (sorted for clarity)
     pulse_param <- format_list2(dat$Pulse_parameters)
-    time <- format_list2(dat$time.hours)
+    time <- format_list2(dat$time_hours)
     
     # Construct final sentence
     glue::glue(
@@ -208,7 +208,7 @@ server <- function(input, output, session) {
         n_EPS = sum(Condition == "EPS" & !is.na(y)),
         logFoldChange = mean_EPS - mean_control,
         FoldChange = round(2^logFoldChange, 2),
-        p_value = tryCatch(wilcox.test(y ~ Condition, data = cur_data())$p.value, error = function(e) NA),
+        p_value = tryCatch(wilcox.test(y ~ Condition, data = pick(everything()), exact = FALSE)$p.value, error = function(e) NA),
         FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_list)),
         .groups = 'drop'
       ) %>%

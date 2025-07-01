@@ -38,6 +38,27 @@ server <- function(input, output, session) {
     updateSelectizeInput(session, "inputTarget", selected = character(0))
   })
   
+  #-----------------------------------------------
+  observeEvent(input$fibers, {
+    fibers <- sort(input$fibers)
+    
+    # Only allow comparisons if exactly two fiber types are selected
+    if (length(fibers) == 2) {
+      # Create the appropriate comparison string
+      comp <- paste(fibers, collapse = " vs ")
+      
+      # Update the selectInput with only this comparison and preselect it
+      updateSelectInput(session, "inputComparison",
+                        choices = comp,
+                        selected = comp)
+    } else {
+      # If not exactly two selected, allow all options
+      updateSelectInput(session, "inputComparison",
+                        choices = c("Type I vs Type IIA", "Type I vs Type IIX", "Type IIA vs Type IIX"),
+                        selected = "Type I vs Type IIA")
+    }
+  })
+  
   #-----------------------------------------------------------------
   # REACTIVE: load only selected gene(s) from dataset
   selectedTargetData <- reactive({
@@ -52,7 +73,7 @@ server <- function(input, output, session) {
     file_row <- gene_to_file %>%
       filter(TARGET %in% targetname & OMICS %in% omics)
     
-    # Ensure there's y to analyze
+    # Ensure there's something to analyze
     shiny::validate(
       need(nrow(file_row) > 0, "No data available for the selected filters. Please adjust your selections.")
     )
@@ -111,7 +132,8 @@ server <- function(input, output, session) {
   # Boxplot
   boxplotTarget <- reactive({
     
-    dat <- selectedTargetData()
+    dat <- selectedTargetData() %>%
+      filter(is.finite(y))
 
     dat$fiber_type <- factor(dat$fiber_type,
                              levels = c("Type I", "Type IIA", "Type IIX", "Mixed"))
@@ -144,8 +166,11 @@ server <- function(input, output, session) {
     dat <- selectedTargetData()
     
     if (nrow(dat) == 0) {
-      return(" ")
+      return("No data available for the selected filters.")
     }
+    
+    # Unique fiber types in the filtered dataset
+    fiber_types <- sort(unique(dat$fiber_type))
     
     # Format readable list of fiber types
     format_list <- function(x) {
@@ -157,41 +182,45 @@ server <- function(input, output, session) {
       paste(paste(x[-n], collapse = ", "), "and", x[n])
     }
     
-    fiber_types <- sort(unique(dat$fiber_type))
     fiber_text <- format_list(fiber_types)
     
-    # Flags
+    # Early exit if less than 2 types
+    if (length(fiber_types) < 2) {
+      return(glue::glue(
+        "Only {fiber_text} muscle fibers are selected. At least two fiber types are required for statistical comparisons."
+      ))
+    }
+    
+    # Flags for comparison logic
     has_I   <- "Type I"   %in% fiber_types
     has_IIA <- "Type IIA" %in% fiber_types
     has_IIX <- "Type IIX" %in% fiber_types
     
-    # Custom phrasing for full selection
+    # Generate sentence about what comparisons are possible
     if (all(c("Type I", "Type IIA", "Type IIX") %in% fiber_types)) {
-      comparison_sentence <- "Statistics are calculated comparing Type I to Type IIA/X or Type IIX to Type IIA fibers."
+      comparison_sentence <- "Statistics are available for comparing Type I to Type IIA, Type I to Type IIX, and Type IIA to Type IIX fibers."
     } else {
       comparison_text <- c()
       if (has_I & has_IIA) comparison_text <- c(comparison_text, "Type I to Type IIA")
       if (has_I & has_IIX) comparison_text <- c(comparison_text, "Type I to Type IIX")
-      if (has_IIA & has_IIX) comparison_text <- c(comparison_text, "Type IIX to Type IIA")
+      if (has_IIA & has_IIX) comparison_text <- c(comparison_text, "Type IIA to Type IIX")
       
       if (length(comparison_text) == 0) {
-        comparison_sentence <- "No valid pairwise comparisons available based on selected fiber types."
+        comparison_sentence <- "No valid pairwise comparisons can be performed with the current fiber selection."
       } else {
         comparison_sentence <- paste(
-          "Statistics are calculated comparing",
+          "Statistics are available for comparing",
           paste(comparison_text, collapse = " or "),
           "fibers."
         )
       }
     }
     
-    # Final output
+    # Final summary
     glue::glue(
       "Based on your selection, the plot and statistics reflect data from {fiber_text} muscle fibers. {comparison_sentence}"
     )
   })
-  
-  
   
   output$filterSummaryText <- renderText({
     filterSummary()
@@ -200,33 +229,38 @@ server <- function(input, output, session) {
   
   #-----------------------------------------------------------------
   # Compute statistics (Wilcoxon test + summary)
-  statisticsData <- reactive({
-    dat <- selectedTargetData()
-    
-    # Ensure there's y to analyze
-    shiny::validate(
-      need(nrow(dat) > 0, "No data available for the selected filters. Please adjust your selections.")
+  statisticsData_IvsIIA <- reactive({
+    # Validate at least two fibers are selected
+    validate(
+      need(length(input$fibers) >= 2,
+           "Please select at least two fiber types to calculate statistics.")
     )
     
-    # Group and compute statistics per gene - Type I vs Type II
-    stats_result_IvsII <- dat %>%
-      mutate(fiber_type = ifelse(fiber_type %in% c("Type IIA", "Type IIX"), "Type II", fiber_type)) %>% 
-      filter(fiber_type %in% c("Type I", "Type II")) %>%
+    dat <- selectedTargetData()
+
+    # Group and compute statistics per gene - Type I vs Type IIA
+    stats_result_IvsIIA <- dat %>%
+      filter(fiber_type %in% c("Type I", "Type IIA")) 
+
+    # Make table
+    stats_result_IvsIIA <- stats_result_IvsIIA %>%
       group_by(Target) %>%
       summarise(
         mean_I = round(mean(y[fiber_type == "Type I"], na.rm = TRUE), 2),
         sd_I = round(sd(y[fiber_type == "Type I"], na.rm = TRUE), 2),
         n_I = sum(fiber_type == "Type I" & !is.na(y)),
-        mean_IIAX = round(mean(y[fiber_type == "Type II"], na.rm = TRUE), 2),
-        sd_IIAX = round(sd(y[fiber_type == "Type II"], na.rm = TRUE), 2),
-        n_IIAX = sum(fiber_type == "Type II" & !is.na(y)),
-        logFoldChange = mean_IIAX - mean_I,
+        mean_IIA = round(mean(y[fiber_type == "Type IIA"], na.rm = TRUE), 2),
+        sd_IIA = round(sd(y[fiber_type == "Type IIA"], na.rm = TRUE), 2),
+        n_IIA = sum(fiber_type == "Type IIA" & !is.na(y)),
+        logFoldChange = mean_IIA - mean_I,
         FoldChange = round(2^logFoldChange, 2),
-        p_value = tryCatch(wilcox.test(y ~ fiber_type, data = cur_data())$p.value, error = function(e) NA),
+        p_value = tryCatch(wilcox.test(y ~ fiber_type, data = pick(everything()))$p.value, error = function(e) NA),
         FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_to_file)),
         .groups = 'drop'
       ) %>%
       mutate(
+        summary_I = sprintf("%.1f ± %.1f, n = %d", mean_I, sd_I, n_I),
+        summary_IIA = sprintf("%.1f ± %.1f, n = %d", mean_IIA, sd_IIA, n_IIA),
         Significance = case_when(
           FDR < 0.001 ~ "***",
           FDR < 0.01  ~ "**",
@@ -236,18 +270,118 @@ server <- function(input, output, session) {
         p_value = format(p_value, scientific = TRUE, digits = 2),
         FDR = format(FDR, scientific = TRUE, digits = 2)
       ) %>%
+      select(Target, logFoldChange, FoldChange, p_value, FDR, Significance, summary_I, summary_IIA) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) %>%
       as.data.frame() %>%
       tibble::column_to_rownames("Target")
 
     # Reformat table for display
-    stats_result_IvsII <- data.frame(Statistics = colnames(stats_result_IvsII),
-                                     t(stats_result_IvsII))
-    stats_result_IvsII$Comparison <- "Type IIA/X vs Type I"
+    stats_result_IvsIIA <- data.frame(Statistics = colnames(stats_result_IvsIIA),
+                                      t(stats_result_IvsIIA))
+
+    # rename rows
+    stats_result_IvsIIA$Statistics <- gsub("summary_IIA", "Type IIA (mean ± sd, n)", stats_result_IvsIIA$Statistics)
+    stats_result_IvsIIA$Statistics <- gsub("summary_I", "Type I (mean ± sd, n)", stats_result_IvsIIA$Statistics)
+    stats_result_IvsIIA$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result_IvsIIA$Statistics)
+    stats_result_IvsIIA$Statistics <- gsub("FoldChange", "Fold-change", stats_result_IvsIIA$Statistics)
+    stats_result_IvsIIA$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result_IvsIIA$Statistics)
     
-    # Group and compute statistics per gene - Type IIX vs Type IIA
-    stats_result_IIXvsIIA <- dat %>%
-      filter(fiber_type %in% c("Type IIA", "Type IIX")) %>%
+    return(stats_result_IvsIIA)
+  })
+  
+  
+  #-----------------------------------------------------------------
+  # Compute statistics (Wilcoxon test + summary)
+  statisticsData_IvsIIX <- reactive({
+    # Validate at least two fibers are selected
+    validate(
+      need(length(input$fibers) >= 2,
+           "Please select at least two fiber types to calculate statistics.")
+    )
+    
+    dat <- selectedTargetData()
+    
+    # Group and compute statistics per gene - Type I vs Type IIX
+    stats_result_IvsIIX <- dat %>%
+      filter(fiber_type %in% c("Type I", "Type IIX")) 
+
+    # Validate that both fiber types are present
+    validate(
+      need(length(unique(stats_result_IvsIIX$fiber_type)) == 2,
+           "Statistics impossible to calculate with the selected criteria: one of the fiber types (Type I or Type IIX) is missing.")
+    )
+    
+    # Make table
+    stats_result_IvsIIX <- stats_result_IvsIIX %>%
+      group_by(Target) %>%
+      summarise(
+        mean_I = round(mean(y[fiber_type == "Type I"], na.rm = TRUE), 2),
+        sd_I = round(sd(y[fiber_type == "Type I"], na.rm = TRUE), 2),
+        n_I = sum(fiber_type == "Type I" & !is.na(y)),
+        mean_IIX = round(mean(y[fiber_type == "Type IIX"], na.rm = TRUE), 2),
+        sd_IIX = round(sd(y[fiber_type == "Type IIX"], na.rm = TRUE), 2),
+        n_IIX = sum(fiber_type == "Type IIX" & !is.na(y)),
+        logFoldChange = mean_IIX - mean_I,
+        FoldChange = round(2^logFoldChange, 2),
+        p_value = tryCatch(wilcox.test(y ~ fiber_type, data = pick(everything()))$p.value, error = function(e) NA),
+        FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_to_file)),
+        .groups = 'drop'
+      ) %>%
+      mutate(
+        summary_I = sprintf("%.1f ± %.1f, n = %d", mean_I, sd_I, n_I),
+        summary_IIX = sprintf("%.1f ± %.1f, n = %d", mean_IIX, sd_IIX, n_IIX),
+        Significance = case_when(
+          FDR < 0.001 ~ "***",
+          FDR < 0.01  ~ "**",
+          FDR < 0.05  ~ "*",
+          TRUE ~ "ns"
+        ),
+        p_value = format(p_value, scientific = TRUE, digits = 2),
+        FDR = format(FDR, scientific = TRUE, digits = 2)
+      ) %>%
+      select(Target, logFoldChange, FoldChange, p_value, FDR, Significance, summary_I, summary_IIX) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) %>%
+      as.data.frame() %>%
+      tibble::column_to_rownames("Target")
+    
+    # Reformat table for display
+    stats_result_IvsIIX <- data.frame(Statistics = colnames(stats_result_IvsIIX),
+                                      t(stats_result_IvsIIX))
+    
+    # rename rows
+    stats_result_IvsIIX$Statistics <- gsub("summary_IIX", "Type IIX (mean ± sd, n)", stats_result_IvsIIX$Statistics)
+    stats_result_IvsIIX$Statistics <- gsub("summary_I", "Type I (mean ± sd, n)", stats_result_IvsIIX$Statistics)
+    stats_result_IvsIIX$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result_IvsIIX$Statistics)
+    stats_result_IvsIIX$Statistics <- gsub("FoldChange", "Fold-change", stats_result_IvsIIX$Statistics)
+    stats_result_IvsIIX$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result_IvsIIX$Statistics)
+    
+    return(stats_result_IvsIIX)
+  })
+  
+  
+  #-----------------------------------------------------------------
+  # Compute statistics (Wilcoxon test + summary)
+  statisticsData_IIAvsIIX <- reactive({
+    # Validate at least two fibers are selected
+    validate(
+      need(length(input$fibers) >= 2,
+           "Please select at least two fiber types to calculate statistics.")
+    )
+    
+    dat <- selectedTargetData()
+    
+    # Group and compute statistics per gene - Type IIA vs Type IIX
+    stats_result_IIAvsIIX <- dat %>%
+      filter(fiber_type %in% c("Type IIA", "Type IIX")) 
+
+    # Validate that both fiber types are present
+    validate(
+      need(length(unique(stats_result_IIAvsIIX$fiber_type)) == 2,
+           "Statistics impossible to calculate with the selected criteria: one of the fiber types is missing.")
+    )
+    
+    # Make table
+    stats_result_IIAvsIIX <- stats_result_IIAvsIIX %>%
       group_by(Target) %>%
       summarise(
         mean_IIA = round(mean(y[fiber_type == "Type IIA"], na.rm = TRUE), 2),
@@ -263,6 +397,8 @@ server <- function(input, output, session) {
         .groups = 'drop'
       ) %>%
       mutate(
+        summary_IIA = sprintf("%.1f ± %.1f, n = %d", mean_IIA, sd_IIA, n_IIA),
+        summary_IIX = sprintf("%.1f ± %.1f, n = %d", mean_IIX, sd_IIX, n_IIX),
         Significance = case_when(
           FDR < 0.001 ~ "***",
           FDR < 0.01  ~ "**",
@@ -272,44 +408,44 @@ server <- function(input, output, session) {
         p_value = format(p_value, scientific = TRUE, digits = 2),
         FDR = format(FDR, scientific = TRUE, digits = 2)
       ) %>%
+      select(Target, logFoldChange, FoldChange, p_value, FDR, Significance, summary_IIA, summary_IIX) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) %>%
       as.data.frame() %>%
       tibble::column_to_rownames("Target")
-
+    
     # Reformat table for display
-    stats_result_IIXvsIIA <- data.frame(Statistics = colnames(stats_result_IIXvsIIA),
-                                        t(stats_result_IIXvsIIA))
-    stats_result_IIXvsIIA$Comparison <- "Type IIX vs Type IIA"
-    
-    # Merge stats
-    stats_result <- rbind(stats_result_IvsII, stats_result_IIXvsIIA)
-    
-    # Remove rows with only NA or only NaN
-    stats_result <- stats_result[
-      !apply(stats_result[, input$inputTarget, drop = FALSE], 1, function(x) {
-        all(trimws(as.character(x)) %in% c("NaN", "NA", "ns", "0", ""))
-      }),
-    ]
+    stats_result_IIAvsIIX <- data.frame(Statistics = colnames(stats_result_IIAvsIIX),
+                                        t(stats_result_IIAvsIIX))
     
     # rename rows
-    stats_result$Statistics <- gsub("_", " Type ", stats_result$Statistics)
-    stats_result$Statistics <- gsub("AX", " A/X ", stats_result$Statistics)
-    stats_result$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result$Statistics)
-    stats_result$Statistics <- gsub("FoldChange", "Fold-change", stats_result$Statistics)
-    stats_result$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result$Statistics)
+    stats_result_IIAvsIIX$Statistics <- gsub("summary_IIX", "Type IIX (mean ± sd, n)", stats_result_IIAvsIIX$Statistics)
+    stats_result_IIAvsIIX$Statistics <- gsub("summary_IIA", "Type IIA (mean ± sd, n)", stats_result_IIAvsIIX$Statistics)
+    stats_result_IIAvsIIX$Statistics <- gsub("logFoldChange", "log2(fold-change)", stats_result_IIAvsIIX$Statistics)
+    stats_result_IIAvsIIX$Statistics <- gsub("FoldChange", "Fold-change", stats_result_IIAvsIIX$Statistics)
+    stats_result_IIAvsIIX$Statistics <- gsub("FDR", "FDR (Bonferroni)", stats_result_IIAvsIIX$Statistics)
     
-    return(stats_result)
+    return(stats_result_IIAvsIIX)
   })
+  
   
   # Display significance table only
-  output$statistics1 <- DT::renderDT({
-    dat <- statisticsData()
-    dat <- dat[!grepl("(mean |sd |n )", dat$Statistics), ]
-    dat$Statistics <- paste(dat$Comparison, dat$Statistics, sep = ", ")
-    dat$Comparison <- NULL
-    colnames(dat)[1] <- "Differential Expression Analysis"
+  output$statisticsTable <- DT::renderDT({
+    req(input$inputComparison)
+    
+    # Dynamically select the correct data
+    stats_df <- switch(input$inputComparison,
+                       "Type I vs Type IIA" = statisticsData_IvsIIA(),
+                       "Type I vs Type IIX" = statisticsData_IvsIIX(),
+                       "Type IIA vs Type IIX" = statisticsData_IIAvsIIX())
+    
+    # If no valid dataset, don't render the table
+    req(!is.null(stats_df))
+    
+    # Rename first column to match selected comparison
+    colnames(stats_df)[1] <- input$inputComparison
+    
     DT::datatable(
-      dat,
+      stats_df,
       escape = FALSE, 
       rownames = FALSE,
       options = list(
@@ -320,36 +456,12 @@ server <- function(input, output, session) {
         dom = 't',
         columnDefs = list(
           list(targets = 0, width = '30rem'),  # Set fixed width
-          list(targets = 1:(ncol(dat)-1), className = 'dt-center')
+          list(targets = 1:(ncol(stats_df)-1), className = 'dt-center')
         )
       )
     )
   })
-  
-  # Display group statistics table
-  output$statistics2 <- DT::renderDT({
-    dat <- statisticsData()
-    dat <- dat[grepl("(mean |sd |n )", dat$Statistics), ]
-    dat <- dat[!grepl("(A/X)", dat$Statistics), ]
-    dat$Comparison <- NULL
-    colnames(dat)[1] <- "Group Summary Statistics"
-    DT::datatable(
-      dat,
-      escape = FALSE, 
-      rownames = FALSE,
-      options = list(
-        searching = FALSE,
-        paging = FALSE,
-        info = FALSE,
-        ordering = FALSE,
-        dom = 't',
-        columnDefs = list(
-          list(targets = 0, width = '30rem'),  # Set fixed width
-          list(targets = 1:(ncol(dat)-1), className = 'dt-center')
-        )
-      )
-    )
-  })
+
   
   #-----------------------------------------------------------------
   # Show references table (metadata about datasets)
@@ -375,7 +487,7 @@ server <- function(input, output, session) {
   # Download: Boxplot as PNG
   output$downloadPlot <- downloadHandler(
     filename = function() {
-      paste0("MyotubePalmitate_plot_", Sys.Date(), ".png")
+      paste0("FiberTypes_plot_", Sys.Date(), ".png")
     },
     content = function(file) {
       plot_obj <- boxplotTarget() + labs(caption = "Plot generated on MuscleOmics.org")
@@ -389,7 +501,7 @@ server <- function(input, output, session) {
   # Download: Raw expression data (selected gene(s))
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste0("MyotubePalmitate_data_", Sys.Date(), ".csv")
+      paste0("FiberTypes_data_", Sys.Date(), ".csv")
     },
     content = function(file) {
       df <- selectedTargetData()
@@ -402,17 +514,36 @@ server <- function(input, output, session) {
   )
   
   #-----------------------------------------------------------------
-  # Download: Statistics table
+  # Download: Statistics table (all comparisons combined)
   output$downloadStats <- downloadHandler(
     filename = function() {
-      paste0("MyotubePalmitate_statistics_", Sys.Date(), ".csv")
+      paste0("FiberTypes_statistics_", Sys.Date(), ".csv")
     },
     content = function(file) {
-      df <- statisticsData()
-      if (!is.null(df)) {
-        write.table(df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
-        cat("\n# Data generated on MuscleOmics.org\n", file = file, append = TRUE)
-      }
+      # Get the three data frames from their reactive expressions
+      df_IvsIIA <- statisticsData_IvsIIA()
+      df_IvsIIX <- statisticsData_IvsIIX()
+      df_IIAvsIIX <- statisticsData_IIAvsIIX()
+      
+      # Add a 'Comparison' column to each one
+      df_IvsIIA$Comparison <- "Type I vs Type IIA"
+      df_IvsIIX$Comparison <- "Type I vs Type IIX"
+      df_IIAvsIIX$Comparison <- "Type IIA vs Type IIX"
+      
+      # Reorder columns to put 'Comparison' first
+      df_IvsIIA <- df_IvsIIA[, c(ncol(df_IvsIIA), 1:(ncol(df_IvsIIA) - 1))]
+      df_IvsIIX <- df_IvsIIX[, c(ncol(df_IvsIIX), 1:(ncol(df_IvsIIX) - 1))]
+      df_IIAvsIIX <- df_IIAvsIIX[, c(ncol(df_IIAvsIIX), 1:(ncol(df_IIAvsIIX) - 1))]
+      
+      # Combine all into a single data frame
+      combined_df <- rbind(df_IvsIIA, df_IvsIIX, df_IIAvsIIX)
+      
+      # Write to CSV
+      write.table(combined_df, file, sep = ",", row.names = FALSE, col.names = TRUE, quote = TRUE)
+      
+      # Append generation note
+      cat("\n# Data generated on MuscleOmics.org\n", file = file, append = TRUE)
     }
   )
+  
 }

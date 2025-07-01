@@ -98,7 +98,8 @@ server <- function(input, output, session) {
   #-----------------------------------------------------------------
   # Generate Boxplot visualization of gene expression
   plotDataBox <- reactive({
-    dat <- selectedGeneData()
+    dat <- selectedGeneData() %>%
+      filter(is.finite(y))
 
     # Validate that some data is available
     validate(
@@ -183,7 +184,7 @@ server <- function(input, output, session) {
         n_T2D = sum(condition == "T2D" & !is.na(y)),
         logFoldChange = mean_T2D - mean_Healthy,
         FoldChange = round(2^logFoldChange, 2),
-        p_value = tryCatch(wilcox.test(y ~ condition, data = cur_data())$p.value, error = function(e) NA),
+        p_value = tryCatch(wilcox.test(y ~ condition, data = pick(everything()), exact = FALSE)$p.value, error = function(e) NA),
         FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_list)),
         .groups = 'drop'
       ) %>%
