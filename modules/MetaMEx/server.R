@@ -128,8 +128,8 @@ server <- function(input, output, session) {
   observeEvent(input$jumpToMouseOverview, {updateTabsetPanel(session, "inTabset", selected="panelAppMouse")
     updateTabsetPanel(session, "inTabsetMeta", selected="panelAppOverviewMouse")})
 
-  observeEvent(input$jumpToHelp, {updateTabsetPanel(session, "inTabset", selected="Tutorial")
-    updateTabsetPanel(session, "inTabsetMeta", selected="Tutorial")})
+  observeEvent(input$jumpToHelp, {updateTabsetPanel(session, "inTabset", selected="Methods")
+    updateTabsetPanel(session, "inTabsetMeta", selected="Methods")})
 
   
   #=======================================================================================
@@ -1075,7 +1075,7 @@ server <- function(input, output, session) {
     # Create the plot using base ggplot2
     ggplot(overview_data, aes(x = Study, y = beta, fill = Study)) +
       geom_col(position = position_dodge(), width = 0.8, 
-               size = 0.2, color = "black") +                       # black border on bars
+               linewidth = 0.2, color = "black") +                       # black border on bars
       geom_errorbar(aes(ymin = ci.lb, ymax = ci.ub), 
                     width = 0.2, position = position_dodge(.9)) +
       geom_hline(yintercept = 0) +
@@ -1151,8 +1151,8 @@ server <- function(input, output, session) {
     
     # format values
     res$estimate <- round(res$estimate, 2)
-    res$p.value <- scientific(res$p.value, 1)
-    res$adj.P.Val <- scientific(res$adj.P.Val, 1)
+    res$p.value <- format(res$p.value, 1, scientific = TRUE, digits = 2)
+    res$adj.P.Val <- format(res$adj.P.Val, 1, scientific = TRUE, digits = 2)
 
     return(res)
   })
@@ -1212,8 +1212,8 @@ server <- function(input, output, session) {
     
     # format values
     res$estimate <- round(res$estimate, 2)
-    res$p.value <- scientific(res$p.value, 1)
-    res$adj.P.Val <- scientific(res$adj.P.Val, 1)
+    res$p.value <- format(res$p.value, 1, digits = 2, scientific = TRUE)
+    res$adj.P.Val <- format(res$adj.P.Val, 1, digits = 2, scientific = TRUE)
     
     return(res)
   })
@@ -1365,7 +1365,7 @@ server <- function(input, output, session) {
     active <- ggplot(data, aes(x=Gene2, y=Gene1)) +
       geom_hline(yintercept = 0) +
       geom_vline(xintercept = 0) +
-      geom_smooth(method=lm, se=F, fullrange=TRUE, size=0.75, color="black") +
+      geom_smooth(method=lm, se=F, fullrange=TRUE, linewidth=0.75, color="black") +
       geom_point(aes(x=Gene2, y=Gene1, 
                      color=data_category,
                      shape=data_category),
@@ -1855,7 +1855,7 @@ server <- function(input, output, session) {
     # Create the plot using base ggplot2
     ggplot(overview_data, aes(x = Study, y = beta, fill = Study)) +
       geom_col(position = position_dodge(), width = 0.8, 
-               size = 0.2, color = "black") +                       # black border on bars
+               linewidth = 0.2, color = "black") +                       # black border on bars
       geom_errorbar(aes(ymin = ci.lb, ymax = ci.ub), 
                     width = 0.2, position = position_dodge(.9)) +
       geom_hline(yintercept = 0) +

@@ -1,8 +1,8 @@
 tabMetaanalysis_mouse <- tabPanel("Mouse", value="panelAppMouse", 
                                   
                                   # Row introduction ####################################################################################
-                                  fluidRow(style="background-color: #5b768e;margin:-18px -15px 0px -15px;padding:0.5% 1.5% 0% 1.3%", # need to offset the margins
-                                           h5(style="color:white","Use the meta-analysis to obtain an overview of the mRNA expression of your gene of interest in all available exercise and inactivity studies."
+                                  fluidRow(style="margin:-18px -15px 0px -15px;padding:0.5% 1.5% 0% 1.3%", # need to offset the margins
+                                           h5("Use the meta-analysis to obtain an overview of the mRNA expression of your gene of interest in all available exercise and inactivity studies."
                                            ),
                                            selectizeInput("genename_metaanalysis_mouse", label=NULL, 
                                                           choices=NULL, 
@@ -10,7 +10,7 @@ tabMetaanalysis_mouse <- tabPanel("Mouse", value="panelAppMouse",
                                   ),
                                   
                                   # Row App and plots ###################################################################################
-                                  fluidRow(style="padding:0% 2% 1% 2%;background-color: #5b768e",
+                                  fluidRow(style="padding:0% 2% 1% 2%;",
                                            tabsetPanel(type="pills", id="inTabsetMeta", 
                                                        
                                                        #= Tab overview =====================================================        
@@ -121,7 +121,7 @@ tabMetaanalysis_mouse <- tabPanel("Mouse", value="panelAppMouse",
                                   tags$br(),
                                   fluidRow(style="position:center;background-color:#f4eae7;padding:0 0 1% 2%;margin:0 6% 5% 5%",
                                            h3("Customize your mouse population of interest", style="color:#c93f1e"),
-                                           column(2, checkboxGroupInput("mouse_sex", tags$b("Sex"),
+                                           column(3, checkboxGroupInput("mouse_sex", tags$b("Sex"),
                                                                         choices=mouse_input[['sex_choice']],
                                                                         selected=mouse_input[['sex_choice']]), #checkbox to select category
                                                   # checkboxInput('mouse_sex_allnone', 'All/None', value=T),
@@ -129,7 +129,7 @@ tabMetaanalysis_mouse <- tabPanel("Mouse", value="panelAppMouse",
                                                   sliderInput("mouse_age", tags$b("Age (weeks)"),
                                                               min = 4, max = 24, value = c(4,24), step = 1, sep = "")
                                            ), 
-                                           column(2, checkboxGroupInput("mouse_muscle", tags$b("Muscle"), 
+                                           column(3, checkboxGroupInput("mouse_muscle", tags$b("Muscle"), 
                                                                         choices=mouse_input[['muscle_choice']],
                                                                         selected=mouse_input[['muscle_choice']]
                                            ),
