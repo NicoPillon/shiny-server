@@ -12,14 +12,28 @@ fluidPage(title="MetaMEx",
           # Code to send height to resizing iframe
           tags$head(
             tags$script(HTML("
-    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+    function sendHeight() {
       const height = document.documentElement.scrollHeight;
       parent.postMessage({ frameHeight: height }, '*');
+    }
+
+    Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+      sendHeight();
     });
 
-    window.addEventListener('resize', function() {
-      const height = document.documentElement.scrollHeight;
-      parent.postMessage({ frameHeight: height }, '*');
+    window.addEventListener('resize', sendHeight);
+
+    document.addEventListener('shiny:connected', function() {
+      sendHeight();
+    });
+
+    document.addEventListener('shiny:value', function() {
+      setTimeout(sendHeight, 100); // slight delay to allow DOM to settle
+    });
+
+    // Optional: observe tab switches
+    document.addEventListener('click', function() {
+      setTimeout(sendHeight, 100);
     });
   "))
           ),
