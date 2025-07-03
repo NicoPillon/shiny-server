@@ -86,7 +86,7 @@ server <- function(input, output, session) {
       paste('SelectedSamples-', Sys.Date(), '.xlsx', sep='')
     },
     content = function(con) {
-      asd <- Egg_all[input$LNtable_rows_selected, c(1,4,2,5:11)]
+      asd <- Egg_all[input$LNtable_rows_selected, c(3,4,1,2,5:9)]
       asd[nrow(asd)+2,1] <- "REMEMBER TO DELETE THE VIALS YOU PICKED IN THE EXCEL FILE!"
       asd[nrow(asd)+1,1] <- "P:/C3_Integrative_Physiology_Group/Liquid Nitrogen/LN inventory.xlsx"
       write.xlsx(asd, con, row.names=F)
