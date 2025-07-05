@@ -18,90 +18,102 @@ library(highcharter)
 #--------------------------------------------------------------------------------------------------
 # Need to spell out the whole web address to get out of the overview iframe.
 
+# fiber_types
 fiber2vs1_mRNA <- readRDS("../../rawdata/fiber_types/data_out/transcriptome_stats_IIvsI.Rds")
 fiber2vs1_mRNA$SYMBOL <- rownames(fiber2vs1_mRNA)
 fiber2vs1_mRNA$experiment <- "Fiber Type 2 vs Type 1 (mRNA)"
 fiber2vs1_mRNA$model <- "Muscle Fiber"
+fiber2vs1_mRNA$omics <- "Transcriptomics"
 fiber2vs1_mRNA$url <- "https://shiny.nicopillon.com/modules/fiber_types.html"
 
 fiber2vs1_protein <- readRDS("../../rawdata/fiber_types/data_out/proteome_stats_IIvsI.Rds")
 fiber2vs1_protein$SYMBOL <- rownames(fiber2vs1_protein)
 fiber2vs1_protein$experiment <- "Fiber Type 2 vs Type 1 (protein)"
 fiber2vs1_protein$model <- "Muscle Fiber"
+fiber2vs1_protein$omics <- "Proteomics"
 fiber2vs1_protein$url <- "https://shiny.nicopillon.com/modules/fiber_types.html"
 
-clamp <- readRDS("../../rawdata/muscle_clamp/data_out/stats.Rds")
-clamp$SYMBOL <- rownames(clamp)
-clamp$experiment <- "Hyperinsulinemic Euglycemic Clamp (mRNA)"
-clamp$model <- "Muscle Tissue"
-clamp$url <- "https://shiny.nicopillon.com/modules/muscle_clamp.html"
-
-palmitate <- readRDS("../../rawdata/myotube_palmitate/data_out/stats.Rds")
-palmitate$SYMBOL <- rownames(palmitate)
-palmitate$experiment <- "Myotubes Exposed to Palmitate (mRNA)"
-palmitate$model <- "Myotube"
-palmitate$url <- "https://shiny.nicopillon.com/modules/myotube_palmitate.html"
-
-EPS <- readRDS("../../rawdata/myotube_EPS/data_out/stats.Rds")
-EPS$SYMBOL <- rownames(EPS)
-EPS$experiment <- "Myotubes Exposed to Electrical Pulse Stimulation (mRNA)"
-EPS$model <- "Myotube"
-EPS$url <- "https://shiny.nicopillon.com/modules/myotube_EPS.html"
-
+# human_muscle_aging
 age <- readRDS("../../rawdata/human_muscle_aging/transcriptomics/data_out/AgingDataset_stats.Rds")
 age$SYMBOL <- rownames(age)
 age$experiment <- "Old vs Young Age (mRNA)"
 age$model <- "Muscle Tissue"
+age$omics <- "Transcriptomics"
 age$url <- "https://shiny.nicopillon.com/modules/human_muscle_aging.html"
 
+# human_muscle_obesity
 obesity_mRNA <- readRDS("../../rawdata/human_muscle_obesity/transcriptomics/data_out/stats.Rds")
 obesity_mRNA$SYMBOL <- rownames(obesity_mRNA)
 obesity_mRNA$experiment <- "Obesity vs Lean Weight (mRNA)"
 obesity_mRNA$model <- "Muscle Tissue"
+obesity_mRNA$omics <- "Transcriptomics"
 obesity_mRNA$url <- "https://shiny.nicopillon.com/modules/human_muscle_obesity.html"
 
-exercise.AA <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_AA.csv", row.names = 1)
-exercise.AA$SYMBOL <- rownames(exercise.AA)
-exercise.AA$experiment <- "Acute Aerobic Exercise (mRNA)"
-exercise.AA$model <- "Muscle Tissue"
-exercise.AA$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
+# MetaMEx
+exercise.acute_mRNA <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_AA.csv", row.names = 1)
+exercise.acute_mRNA$SYMBOL <- rownames(exercise.acute_mRNA)
+exercise.acute_mRNA$experiment <- "Acute Exercise (mRNA)"
+exercise.acute_mRNA$model <- "Muscle Tissue"
+exercise.acute_mRNA$omics <- "Transcriptomics"
+exercise.acute_mRNA$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
-exercise.AR <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_AR.csv", row.names = 1)
-exercise.AR$SYMBOL <- rownames(exercise.AR)
-exercise.AR$experiment <- "Acute Resistance Exercise (mRNA)"
-exercise.AR$model <- "Muscle Tissue"
-exercise.AR$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
+exercise.training_mRNA <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_TA.csv", row.names = 1)
+exercise.training_mRNA$SYMBOL <- rownames(exercise.training_mRNA)
+exercise.training_mRNA$experiment <- "Exercise Training (mRNA)"
+exercise.training_mRNA$model <- "Muscle Tissue"
+exercise.training_mRNA$omics <- "Transcriptomics"
+exercise.training_mRNA$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
-exercise.TA <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_TA.csv", row.names = 1)
-exercise.TA$SYMBOL <- rownames(exercise.TA)
-exercise.TA$experiment <- "Aerobic Training (mRNA)"
-exercise.TA$model <- "Muscle Tissue"
-exercise.TA$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
+inactivity_mRNA <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_IN.csv", row.names = 1)
+inactivity_mRNA$SYMBOL <- rownames(inactivity_mRNA)
+inactivity_mRNA$experiment <- "Inactivity (mRNA)"
+inactivity_mRNA$model <- "Muscle Tissue"
+inactivity_mRNA$omics <- "Transcriptomics"
+inactivity_mRNA$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
 
-exercise.TR <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_TR.csv", row.names = 1)
-exercise.TR$SYMBOL <- rownames(exercise.TR)
-exercise.TR$experiment <- "Resistance Training (mRNA)"
-exercise.TR$model <- "Muscle Tissue"
-exercise.TR$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
+# muscle_clamp
+clamp <- readRDS("../../rawdata/muscle_clamp/data_out/stats.Rds")
+clamp$SYMBOL <- rownames(clamp)
+clamp$experiment <- "Hyperinsulinemic Euglycemic Clamp (mRNA)"
+clamp$model <- "Muscle Tissue"
+clamp$omics <- "Transcriptomics"
+clamp$url <- "https://shiny.nicopillon.com/modules/muscle_clamp.html"
 
-exercise.IN <- read.csv("../../../Project_MetaMEx/3_MetaMEx_statistics/human_limma_IN.csv", row.names = 1)
-exercise.IN$SYMBOL <- rownames(exercise.IN)
-exercise.IN$experiment <- "Inactivity (mRNA)"
-exercise.IN$model <- "Muscle Tissue"
-exercise.IN$url <- "https://shiny.nicopillon.com/modules/MetaMEx.html"
+# muscle_myocyte_sex
+sex_mRNA <- readRDS("../../rawdata/muscle_myocyte_sex/human/data_out/stats.Rds")
+colnames(sex_mRNA)[9] <- "SYMBOL"
+sex_mRNA$experiment <- "Male vs Female (mRNA)"
+sex_mRNA$model <- "Muscle Tissue"
+sex_mRNA$omics <- "Transcriptomics"
+sex_mRNA$url <- "https://shiny.nicopillon.com/modules/muscle_myocyte_sex.html"
 
+# myotube_EPS
+EPS <- readRDS("../../rawdata/myotube_EPS/data_out/stats.Rds")
+EPS$SYMBOL <- rownames(EPS)
+EPS$experiment <- "Myotubes Exposed to Electrical Pulse Stimulation (mRNA)"
+EPS$model <- "Myotube"
+EPS$omics <- "Transcriptomics"
+EPS$url <- "https://shiny.nicopillon.com/modules/myotube_EPS.html"
+
+# myotube_palmitate
+palmitate <- readRDS("../../rawdata/myotube_palmitate/data_out/stats.Rds")
+palmitate$SYMBOL <- rownames(palmitate)
+palmitate$experiment <- "Myotubes Exposed to Palmitate (mRNA)"
+palmitate$model <- "Myotube"
+palmitate$omics <- "Transcriptomics"
+palmitate$url <- "https://shiny.nicopillon.com/modules/myotube_palmitate.html"
+
+
+# merge all 
 datamatrix <- rbind(
   fiber2vs1_mRNA, fiber2vs1_protein,
   age,
   obesity_mRNA,
   clamp,
+  sex_mRNA,
   palmitate,
   EPS,
-  exercise.AA,
-  exercise.AR,
-  exercise.TA,
-  exercise.TR,
-  exercise.IN
+  exercise.acute_mRNA, exercise.training_mRNA, inactivity_mRNA
 )
 rownames(datamatrix) <- gsub(" ", "_", paste(datamatrix$SYMBOL, datamatrix$experiment))
 
@@ -165,13 +177,18 @@ signif_colors <- c(
 )
 
 # Convert to list of points for highcharter
-data_points <- purrr::pmap(dat, function(experiment, logFC, adj.P.Val, url, Significance, ...) {
+data_points <- purrr::pmap(dat, function(experiment, logFC, adj.P.Val, url, Significance, model, omics,...) {
   list(
-    y = round(logFC,2),
-    FDR = signif(adj.P.Val, 2),
+    y = round(logFC, 2),
     name = experiment,
+    omics = omics,
     color = signif_colors[[Significance]],
-    url = url
+    url = url,
+    custom = list(
+      model = model,
+      logFC = round(logFC, 2),
+      FDR = signif(adj.P.Val, 2)
+    )
   )
 })
 
@@ -223,5 +240,12 @@ highchart() %>%
   )) %>%
   hc_tooltip(
     useHTML = TRUE,
-    pointFormat = "Click to explore this dataset!</b>"
+    pointFormat = paste0(
+      "<b>OMICS:</b> {point.omics}<br>",
+      "<b>Model:</b> {point.custom.model}<br>",
+      "<b>logFC:</b> {point.custom.logFC}<br>",
+      "<b>FDR:</b> {point.custom.FDR}<br>",
+      "<i>Click to explore this dataset!</i>"
+    )
   )
+

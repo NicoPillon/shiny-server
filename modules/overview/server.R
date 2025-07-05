@@ -96,14 +96,18 @@ server <- function(input, output, session) {
     )
     
     # Convert to list of points for highcharter
-    data_points <- purrr::pmap(dat, function(experiment, logFC, adj.P.Val, url, Significance, ...) {
+    data_points <- purrr::pmap(dat, function(experiment, logFC, adj.P.Val, url, Significance, model, omics,...) {
       list(
-        y = round(logFC,2),
-        FDR = signif(adj.P.Val, 2),
+        y = round(logFC, 2),
         name = experiment,
+        omics = omics,
         color = signif_colors[[Significance]],
-        #url = url,
-        url = paste0(url, "?target=", URLencode(input$inputGeneSymbol))
+        url = url,
+        custom = list(
+          model = model,
+          logFC = round(logFC, 2),
+          FDR = signif(adj.P.Val, 2)
+        )
       )
     })
     
@@ -128,13 +132,13 @@ server <- function(input, output, session) {
         gridLineWidth = 1,
         gridLineColor = "#e0e0e0",
         labels = list(style = list(color = "black", 
-                                   fontSize = "15px",
+                                   fontSize = "14px",
                                    whiteSpace = "nowrap",
                                    textOverflow = "none",
                                    overflow = "allow"))
       ) %>%
       hc_yAxis(
-        title = list(text = "Fold-change (log2)", style = list(color = "black", fontSize = "16px")),
+        title = list(text = "logFC", style = list(color = "black", fontSize = "14px")),
         labels = list(style = list(color = "gray", fontSize = "12px")),
         gridLineWidth = 1,
         gridLineColor = "#e0e0e0",
@@ -155,7 +159,13 @@ server <- function(input, output, session) {
       )) %>%
       hc_tooltip(
         useHTML = TRUE,
-        pointFormat = "Click to explore this dataset!</b>"
+        pointFormat = paste0(
+          "<b>OMICS:</b> {point.omics}<br>",
+          "<b>Model:</b> {point.custom.model}<br>",
+          "<b>logFC:</b> {point.custom.logFC}<br>",
+          "<b>FDR:</b> {point.custom.FDR}<br>",
+          "<i>Click to explore this dataset!</i>"
+        )
       )
     
   })

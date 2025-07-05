@@ -41,7 +41,7 @@ server <- function(input, output, session) {
     updateCheckboxGroupInput(session, "cell_type", selected = c("human primary", "human LHCN-M2", "mouse C2C12", "rat primary"))
   })
 
- 
+
   #-----------------------------------------------------------------
   # REACTIVE: Load only selected gene(s) from on-disk parquet files
   selectedGeneData <- reactive({
@@ -89,7 +89,7 @@ server <- function(input, output, session) {
     dat <- data.frame(metadata, t(df)) 
     
     # Convert to long format for stats
-    dat <- pivot_longer(dat, cols = c(13:ncol(dat)),
+    dat <- pivot_longer(dat, cols = c(17:ncol(dat)),
                         values_to = "y",
                         names_to = "Gene")
     
@@ -106,14 +106,15 @@ server <- function(input, output, session) {
     )
     
     # Generate boxplot with ggplot2
-    ggplot(dat, aes(x=Gene, y=y, fill=sex)) + 
+    ggplot(dat, aes(x=cellType, y=y, fill=sex)) + 
       geom_boxplot(outlier.size = 0.1, alpha = 0.5, position = position_dodge(0.8))  + 
       geom_sina(size = 1.5, position = position_dodge(0.8), alpha = 0.1) +  # Sina plot for distribution
+      facet_wrap(~ Gene, ncol =3)+
       theme_minimal(17, base_family = "Arial") + 
       theme(axis.text.x = element_text(face = "bold", size = 14, color = "black"),
             axis.text.y = element_text("black"),
             axis.title.y = element_text(face = "bold", color = "black")) +
-      labs(x="", y="mRNA expression (log2)", fill = "Treatment") +
+      labs(x="", y="mRNA expression (log2)", fill = "Sex") +
       scale_shape_manual(values=rep(c(15,16,17), 20)) +
       scale_fill_manual(values = c("#5B768E", "#bd1a0e")) +  # Custom treatment colors
       scale_y_continuous(expand = expansion(mult = c(0.05, .15)))
@@ -157,11 +158,7 @@ server <- function(input, output, session) {
     }
     
     # Generate a combined cell type description (e.g., "human C2C12")
-    cell_types <- format_list1(dat$cell.type)
-    
-    # Unique concentrations and durations (sorted for clarity)
-    conc <- format_list2(dat$concentration.micromolar)
-    time <- format_list2(dat$time.hours)
+    cell_types <- format_list1(dat$cellType)
     
   })
   
@@ -184,27 +181,67 @@ server <- function(input, output, session) {
     stats_result <- dat %>%
       group_by(Gene) %>%
       summarise(
-        mean_female = round(mean(y[sex == "female"], na.rm = TRUE), 2),
-        sd_female = round(sd(y[sex == "female"], na.rm = TRUE), 2),
-        n_female = sum(sex == "female" & !is.na(y)),
-        mean_male = round(mean(y[sex == "male"], na.rm = TRUE), 2),
-        sd_male = round(sd(y[sex == "male"], na.rm = TRUE), 2),
-        n_male = sum(sex == "male" & !is.na(y)),
-        logFoldChange = mean_female - mean_male,
-        FoldChange = round(2^logFoldChange, 2),
-        p_value = tryCatch(wilcox.test(y ~ sex, data = cur_data())$p.value, error = function(e) NA),
-        FDR = p.adjust(as.numeric(p_value), method = "bonferroni", n = nrow(gene_list)),
+        ## Skeletal muscle
+        Female_skeletal_muscle = paste(round(mean(y[sex == "Female" & cellType == "Skeletal muscle"], na.rm = TRUE), 2),
+                                            " ± ",
+                                                          round(sd(y[sex == "Female" & cellType == "Skeletal muscle"], na.rm = TRUE), 2),
+                                            " (n:",
+                                            sum(sex == "Female" & !is.na(y) & cellType == "Skeletal muscle"),
+                                            ")",
+          sep =""),
+        Male_skeletal_muscle = paste(round(mean(y[sex == "Male" & cellType == "Skeletal muscle"], na.rm = TRUE), 2),
+                                                          " ± ",
+                                                          round(sd(y[sex == "Male" & cellType == "Skeletal muscle"], na.rm = TRUE), 2),
+                                                          " (n:",
+                                                          sum(sex == "Male" & !is.na(y) & cellType == "Skeletal muscle"),
+                                                          ")",
+                                                          sep =""),
+        
+        logFoldChange_skeletal_muscle = round(mean(y[sex == "Female" & cellType == "Skeletal muscle"], na.rm = TRUE) -
+                                                mean(y[sex == "Male"  & cellType == "Skeletal muscle"], na.rm = TRUE), 2),
+        FoldChange_skeletal_muscle = round(2^logFoldChange_skeletal_muscle, 2),
+        p_value_skeletal_muscle = tryCatch(wilcox.test(y ~ sex, data = pick(everything()), exact = FALSE)$p.value, error = function(e) NA),
+        FDR_skeletal_muscle = p.adjust(as.numeric(p_value_skeletal_muscle), method = "bonferroni", n = nrow(gene_list)),
+       ## Myocyte
+       Female_skeletal_myocyte = paste(round(mean(y[sex == "Female" & cellType == "Skeletal myocyte"], na.rm = TRUE), 2),
+                                                         " ± ",
+                                                         round(sd(y[sex == "Female" & cellType == "Skeletal myocyte"], na.rm = TRUE), 2),
+                                                         " (n:",
+                                                         sum(sex == "Female" & !is.na(y) & cellType == "Skeletal myocyte"),
+                                                         ")",
+                                                         sep =""),
+       Male_skeletal_myocyte = paste(round(mean(y[sex == "Male" & cellType == "Skeletal myocyte"], na.rm = TRUE), 2),
+                                                       " ± ",
+                                                       round(sd(y[sex == "Male" & cellType == "Skeletal myocyte"], na.rm = TRUE), 2),
+                                                       " (n:",
+                                                       sum(sex == "Male" & !is.na(y) & cellType == "Skeletal myocyte"),
+                                                       ")",
+                                                       sep =""),
+       
+       logFoldChange_skeletal_myocyte = round(mean(y[sex == "Female" & cellType == "Skeletal myocyte"], na.rm = TRUE) -
+                                               mean(y[sex == "Male"  & cellType == "Skeletal myocyte"], na.rm = TRUE), 2),
+        FoldChange_skeletal_myocyte = round(2^logFoldChange_skeletal_myocyte, 2),
+        p_value_skeletal_myocyte = tryCatch(wilcox.test(y ~ sex, data = pick(everything()), exact = FALSE)$p.value, error = function(e) NA),
+        FDR_skeletal_myocyte = p.adjust(as.numeric(p_value_skeletal_myocyte), method = "bonferroni", n = nrow(gene_list)),
         .groups = 'drop'
       ) %>%
       mutate(
-        Significance = case_when(
-          FDR < 0.001 ~ "***",
-          FDR < 0.01  ~ "**",
-          FDR < 0.05  ~ "*",
+        Significance_skeletal_muscle = case_when(
+          FDR_skeletal_muscle < 0.001 ~ "***",
+          FDR_skeletal_muscle < 0.01  ~ "**",
+          FDR_skeletal_muscle < 0.05  ~ "*",
           TRUE ~ "ns"
         ),
-        p_value = format(p_value, scientific = TRUE, digits = 2),
-        FDR = format(FDR, scientific = TRUE, digits = 2)
+        Significance_skeletal_myocyte = case_when(
+          FDR_skeletal_myocyte < 0.001 ~ "***",
+          FDR_skeletal_myocyte < 0.01  ~ "**",
+          FDR_skeletal_myocyte < 0.05  ~ "*",
+          TRUE ~ "ns"
+        ),
+        p_value_skeletal_muscle = format(p_value_skeletal_muscle, scientific = TRUE, digits = 2),
+        FDR_skeletal_muscle= format(FDR_skeletal_muscle, scientific = TRUE, digits = 2),
+        p_value_skeletal_myocyte = format(p_value_skeletal_myocyte, scientific = TRUE, digits = 2),
+        FDR_skeletal_myocyte = format(FDR_skeletal_myocyte, scientific = TRUE, digits = 2)
       ) %>%
       as.data.frame() %>%
       tibble::column_to_rownames("Gene")
@@ -223,8 +260,41 @@ server <- function(input, output, session) {
   # Display significance table only
   output$statistics1 <- DT::renderDT({
     dat <- statisticsData()
-    dat <- dat[!dat$Statistics %in% c("mean control", "sd female", "n female", "mean male", "sd male", "n male"),]
-    colnames(dat)[1] <- "Differential Expression Analysis"
+    dat <- dat[dat$Statistics %in% c("log2(fold-change) skeletal muscle",
+                                      "Fold-change skeletal muscle",
+                                      "p value skeletal muscle",
+                                      "FDR (Bonferroni) skeletal muscle",
+                                     "Significance skeletal muscle"
+                                      ),]
+    colnames(dat)[1] <- "Differential Expression Analysis: Skeletal muscle"
+    DT::datatable(
+      dat,
+      escape = FALSE, 
+      rownames = FALSE,
+      options = list(
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE,
+        ordering = FALSE,
+        dom = 't',
+        columnDefs = list(
+          list(targets = 0, width = '30rem'),  # Set fixed width
+          list(targets = 1:(ncol(dat)-1), className = 'dt-center')
+        )
+      )
+    )
+  })
+  
+  # Display significance table only
+  output$statistics2 <- DT::renderDT({
+    dat <- statisticsData()
+    dat <- dat[dat$Statistics %in% c("log2(fold-change) skeletal myocyte",
+                                     "Fold-change skeletal myocyte",
+                                     "p value skeletal myocyte",
+                                     "FDR (Bonferroni) skeletal myocyte",
+                                     "Significance skeletal myocyte"
+    ),]
+    colnames(dat)[1] <- "Differential Expression Analysis: Skeletal myocyte"
     DT::datatable(
       dat,
       escape = FALSE, 
@@ -244,9 +314,13 @@ server <- function(input, output, session) {
   })
   
   # Display group statistics table
-  output$statistics2 <- DT::renderDT({
+  output$statistics3 <- DT::renderDT({
     dat <- statisticsData()
-    dat <- dat[dat$Statistics %in% c("mean control", "sd female", "n female", "mean male", "sd male", "n male"),]
+    dat <- dat[dat$Statistics %in% c("Female skeletal muscle",
+                                     "Male skeletal muscle",
+                                     "Female skeletal myocyte",
+                                     "Male skeletal myocyte"
+    ),]
     colnames(dat)[1] <- "Group Summary Statistics"
     DT::datatable(
       dat,

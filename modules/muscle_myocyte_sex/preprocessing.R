@@ -15,12 +15,48 @@ library(arrow)      # For writing Parquet files (used for efficient data access 
 library(tidyverse)  # For data manipulation (dplyr, purrr, etc.)
 
 #==================================================================================================
-# SECTION 1: PROCESS AND EXPORT EXPRESSION MATRIX
+# SECTION 1: EXPORT METADATA
+#==================================================================================================
+
+# Load sample-level metadata (sample ID, treatment, cell type, etc.)
+metaMyocyte <- readRDS("../../rawdata/muscle_myocyte_sex/myocyte/data_out/metadata.Rds")
+metaHuman <-  readRDS("../../rawdata/muscle_myocyte_sex/human/data_out/metadata.Rds")
+
+metaHuman <- metaHuman |> 
+  dplyr::rename(geo = ref_dataset,
+         geo_accession = sample_id,
+         description = title,
+         weight = bmi_category,
+         disease = diagnosis,
+         timepoint = timepoint_treatment) |> 
+  dplyr::select(-c(keep)) |> 
+  mutate(species = "human",
+         cellType = "Skeletal muscle")
+
+meta <- full_join(metaHuman, metaMyocyte)  |> 
+  mutate(group = paste(sex, cellType, sep = ": "))
+
+# Save to app directory
+saveRDS(meta, file = "data/metadata.Rds")
+
+#==================================================================================================
+# SECTION 2: PROCESS AND EXPORT EXPRESSION MATRIX
 #==================================================================================================
 
 # Load full expression matrix (genes x samples)
-datamatrix <- readRDS("../../rawdata/muscle_myocyte_sex/data_out/datamatrix.Rds") %>%
+myocyte <- readRDS("../../rawdata/muscle_myocyte_sex/myocyte/data_out/datamatrix.Rds") %>%
   data.frame()
+
+# Load full expression matrix (genes x samples)
+human <- readRDS("../../rawdata/muscle_myocyte_sex/human/data_out/datamatrix.Rds") %>%
+  data.frame()
+
+human$SYMBOL <- rownames(human)
+myocyte$SYMBOL <- rownames(myocyte)
+
+datamatrix <- full_join(myocyte, human)
+datamatrix <- column_to_rownames(datamatrix, var = "SYMBOL")
+datamatrix <- datamatrix[, meta$geo_accession]
 
 # Determine how many genes to include per chunk to divide the data in ~3 parts
 n_genes <- nrow(datamatrix)
@@ -52,21 +88,14 @@ gene_list <- do.call(rbind, lapply(seq_along(splits), function(i) {
 saveRDS(gene_list, "data/list_gene.Rds")
 
 #==================================================================================================
-# SECTION 2: EXPORT METADATA
-#==================================================================================================
-
-# Load sample-level metadata (sample ID, treatment, cell type, etc.)
-metadata <- readRDS("../../rawdata/muscle_myocyte_sex/data_out/metadata.Rds")
-
-# Save to app directory
-saveRDS(metadata, file = "data/metadata.Rds")
-
-#==================================================================================================
 # SECTION 3: EXPORT REFERENCE TABLE
 #==================================================================================================
 
 # Load reference table containing study-level information (e.g. publication info)
-references <- readRDS("../../rawdata/muscle_myocyte_sex/data_out/references.Rds")
+referencesMyocyte <- readRDS("../../rawdata/muscle_myocyte_sex/myocyte/data_out/references.Rds")
+referencesHuman <- readRDS("../../rawdata/muscle_myocyte_sex/human/data_out/references.Rds")
+
+references <- left_join(referencesHuman, referencesMyocyte)
 
 # Save to app directory
 saveRDS(references, "data/references.Rds")

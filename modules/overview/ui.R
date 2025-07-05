@@ -13,6 +13,22 @@ ui <- fluidPage(
   tags$head(includeCSS("../../www/style.css")),
   
   #---------------------------------------------------------
+  # Custom JS for iframe resizing
+  tags$head(
+    tags$script(HTML("
+        Shiny.addCustomMessageHandler('resizeFrame', function(message) {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+
+        window.addEventListener('resize', function() {
+          const height = document.documentElement.scrollHeight;
+          parent.postMessage({ frameHeight: height }, '*');
+        });
+      "))
+  ),
+  
+  #---------------------------------------------------------
   # Navigation bar layout with multiple tabs
   navbarPage(
     # Custom title: logo image + text
@@ -33,20 +49,14 @@ ui <- fluidPage(
              # Introductory text with link to the methods section
              p(HTML('Overview of the main experimental responses across all datasets. \n To understand how the data was generated, read the 
              <a href="#" onclick="$(\'.navbar-nav a:contains(\\\'Methods\\\')\').click()">methods</a>.')),
-             
-             # Spacer
-             br(),
-             
+
              # Gene selection input
              selectizeInput("inputGeneSymbol", 
                             label = "Choose a target:",
-                            choices = NULL,
+                            choices = character(0),
                             multiple = FALSE,
                             width = "50%"),
-             
-             # Spacer
-             br(),
-             
+
              # Main plot
              highchartOutput("overviewBarHighcharter", height = "400px") %>% withSpinner(color = "#5B768E", type = 8),
              
@@ -81,24 +91,6 @@ ui <- fluidPage(
              
              h3("Citation"),
              p("Pillon NJ, Rizo Roca D, Macgregor K. Unpublished. Please contact the authors before reuse.")
-    ),
-    
-    
-    #=====================================================================
-    #======================= IFRAME HEIGHT SYNC ==========================
-    #=====================================================================
-    tags$head(
-      tags$script(HTML("
-        Shiny.addCustomMessageHandler('resizeFrame', function(message) {
-          const height = document.documentElement.scrollHeight;
-          parent.postMessage({ frameHeight: height }, '*');
-        });
-
-        window.addEventListener('resize', function() {
-          const height = document.documentElement.scrollHeight;
-          parent.postMessage({ frameHeight: height }, '*');
-        });
-      "))
     )
   )
 )
